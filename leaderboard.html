@@ -50,6 +50,7 @@
     <a href="index.html">Home</a>
     <a href="play.html">Play</a>
     <a href="leaderboard.html" style="color:var(--t1)">Leaderboard</a>
+    <a href="shop.html">Shop</a>
   </div>
   <div class="nav-actions">
     <a href="play.html" class="btn btn-primary">⚔️ Play Now</a>
@@ -85,7 +86,7 @@ const API = 'http://localhost:3001';
 let allPlayers = [];
 let filtered = [];
 
-const COLORS = [
+const AVATAR_COLORS = [
   'linear-gradient(135deg,#f59e0b,#ef4444)',
   'linear-gradient(135deg,#7c3aed,#06b6d4)',
   'linear-gradient(135deg,#10b981,#06b6d4)',
@@ -95,6 +96,22 @@ const COLORS = [
   'linear-gradient(135deg,#ef4444,#f97316)',
   'linear-gradient(135deg,#6ee7b7,#10b981)',
 ];
+
+const COLOR_MAP = {
+  default: '#f1f5f9', cyan: '#06b6d4', green: '#10b981', gold: '#f59e0b',
+  purple: 'linear-gradient(135deg,#a78bfa,#7c3aed)',
+  flame:  'linear-gradient(135deg,#f97316,#ef4444)',
+  pink:   '#ec4899',
+  rainbow:'linear-gradient(135deg,#7c3aed,#06b6d4,#10b981)',
+};
+
+function usernameStyle(color) {
+  const css = COLOR_MAP[color] || '#f1f5f9';
+  if (css.startsWith('linear-gradient')) return `background:${css};-webkit-background-clip:text;-webkit-text-fill-color:transparent`;
+  return `color:${css}`;
+}
+
+const BADGE_MAP = { fire:'🔥', brain:'🧠', shark:'🦈', crown:'👑', diamond:'💎', lightning:'⚡', alien:'👽' };
 
 async function loadLeaderboard() {
   try {
@@ -121,7 +138,7 @@ function renderPodium() {
   podiumSection.style.display = 'block';
 
   function card(p, rank, extraClass) {
-    const color = COLORS[p.id % COLORS.length];
+    const color = AVATAR_COLORS[p.id % AVATAR_COLORS.length];
     const medals = ['🥇','🥈','🥉'];
     const eloColors = ['var(--gold)','#c0c0c0','#cd7f32'];
     return `
@@ -152,7 +169,7 @@ function renderTable() {
   const rows = filtered.map((p, i) => {
     const rank = i + 1;
     const rankDisp = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
-    const color = COLORS[p.id % COLORS.length];
+    const color = AVATAR_COLORS[p.id % AVATAR_COLORS.length];
     const eloColor = rank === 1 ? 'var(--gold)' : rank === 2 ? '#c0c0c0' : rank === 3 ? '#cd7f32' : 'var(--purple-l)';
     const total = p.wins + p.losses + p.draws;
     return `
@@ -160,7 +177,13 @@ function renderTable() {
       <div class="lb-rank" style="font-size:${rank<=3?'1.1rem':'0.85rem'};text-align:center">${rankDisp}</div>
       <div class="lb-player-sm">
         <div class="lb-avatar-sm" style="background:${color}">${p.username.charAt(0).toUpperCase()}</div>
-        <div><div class="lb-name-sm">${p.username}</div><div class="lb-sub-sm">${total} matches</div></div>
+        <div>
+          <div class="lb-name-sm">
+            <span style="${usernameStyle(p.color)}">${p.username}</span>
+            ${p.badge && BADGE_MAP[p.badge] ? `<span style="margin-left:4px">${BADGE_MAP[p.badge]}</span>` : ''}
+          </div>
+          <div class="lb-sub-sm">${total} matches</div>
+        </div>
       </div>
       <div style="font-size:1rem;font-weight:800;color:${eloColor}">${p.elo.toLocaleString()}</div>
       <div style="font-size:0.85rem;color:var(--t2);text-align:center">${p.wins}</div>

@@ -595,6 +595,11 @@ function renderResult() {
     </div>
 
     ${guestCTA}
+    ${win && currentUser && currentUser.wins > 0 && currentUser.wins % 5 === 0 ? `
+    <div style="margin:0 0 20px;padding:14px 20px;background:rgba(124,58,237,0.07);border:1px solid rgba(124,58,237,0.2);border-radius:var(--r);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div style="font-size:0.88rem;color:var(--t2)">🎨 <strong style="color:var(--t1)">${currentUser.wins} wins</strong> — customize how you look on the leaderboard</div>
+      <a href="shop.html" class="btn btn-ghost" style="font-size:0.82rem;padding:7px 14px;flex-shrink:0">Visit Shop →</a>
+    </div>` : ''}
 
     <div class="result-grid">
       <div class="result-card">

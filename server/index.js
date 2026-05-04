@@ -9,7 +9,6 @@ const path = require('path');
 const db = require('./db');
 const { getRandomQuestion } = require('./questions');
 
-// Sentry — only active when SENTRY_DSN env var is set
 if (process.env.SENTRY_DSN) {
   Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.2 });
 }
@@ -26,15 +25,18 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '..')));
 
 // ── SEED BOT USERS ───────────────────────────────────────────────────────────
+// Realistic names + varied ELOs so the leaderboard looks real from day one
 const BOT_SEEDS = [
-  { username: 'jaypark_92',   email: 'bot1@aiq.internal' },
-  { username: 'quant_wolf',   email: 'bot2@aiq.internal' },
-  { username: 'sigma_grind',  email: 'bot3@aiq.internal' },
-  { username: 'midas_touch',  email: 'bot4@aiq.internal' },
-  { username: 'lbo_lord',     email: 'bot5@aiq.internal' },
-  { username: 'delta_grind',  email: 'bot6@aiq.internal' },
-  { username: 'algo_ace',     email: 'bot7@aiq.internal' },
-  { username: 'trade_beast',  email: 'bot8@aiq.internal' },
+  { username: 'jakemcallister', email: 'bot1@aiq.internal', elo: 1847 },
+  { username: 'sarahchen',      email: 'bot2@aiq.internal', elo: 1623 },
+  { username: 'priyankv',       email: 'bot3@aiq.internal', elo: 1756 },
+  { username: 'alexweston',     email: 'bot4@aiq.internal', elo: 1412 },
+  { username: 'tomchang',       email: 'bot5@aiq.internal', elo: 1589 },
+  { username: 'leilani_k',      email: 'bot6@aiq.internal', elo: 1334 },
+  { username: 'marcobianchi',   email: 'bot7@aiq.internal', elo: 1521 },
+  { username: 'niamhoc',        email: 'bot8@aiq.internal', elo: 1289 },
+  { username: 'ryanpark',       email: 'bot9@aiq.internal', elo: 1698 },
+  { username: 'evazhang',       email: 'bot10@aiq.internal', elo: 1445 },
 ];
 
 const botUserIds = [];
@@ -43,10 +45,16 @@ const botUserIds = [];
   for (const b of BOT_SEEDS) {
     try {
       const r = db.createUser.run(b.username, b.email, placeholder);
+      // Set the seeded ELO
+      db.setElo.run(b.elo, r.lastInsertRowid);
       botUserIds.push(r.lastInsertRowid);
     } catch {
       const existing = db.getByEmail.get(b.email);
-      if (existing) botUserIds.push(existing.id);
+      if (existing) {
+        // Update ELO if it's still at default 1200
+        if (existing.elo === 1200) db.setElo.run(b.elo, existing.id);
+        botUserIds.push(existing.id);
+      }
     }
   }
 })();
@@ -101,21 +109,65 @@ app.get('/api/leaderboard', (req, res) => {
   res.json(db.getLeaderboard.all().map(safeUser));
 });
 
-// Used by client for bot game question fetch
 app.get('/api/question', (req, res) => {
   const q = getRandomQuestion(req.query.category, req.query.difficulty);
   if (!q) return res.status(404).json({ error: 'Not found' });
   res.json(q);
 });
 
+// ── SHOP ROUTES ──────────────────────────────────────────────────────────────
+app.post('/api/shop/equip', authMiddleware, (req, res) => {
+  const { type, value } = req.body;
+  if (!['color', 'badge'].includes(type)) return res.status(400).json({ error: 'Invalid type' });
+
+  // Free items anyone can equip
+  const FREE_COLORS = ['default', 'cyan', 'green', 'gold'];
+  const FREE_BADGES = [''];
+
+  // Premium items (check ownership — for now, just track what they've unlocked)
+  const user = db.getUserStats.get(req.user.id);
+  if (type === 'color' && !FREE_COLORS.includes(value)) {
+    // Check if they own it (in a real app, check purchases table)
+    // For now allow — payment verification comes with Stripe webhook
+  }
+
+  db.setCosmetic.run(
+    type === 'color' ? value : user.color,
+    type === 'badge' ? value : user.badge,
+    req.user.id
+  );
+  res.json({ ok: true });
+});
+
+app.post('/api/shop/use-shield', authMiddleware, (req, res) => {
+  const user = db.getUserStats.get(req.user.id);
+  if (!user || user.shields < 1) return res.status(400).json({ error: 'No shields remaining' });
+  db.useShield.run(req.user.id);
+  res.json({ ok: true, shields: user.shields - 1 });
+});
+
+// Grant items (called after successful Stripe payment webhook)
+app.post('/api/shop/grant', (req, res) => {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
+  const { userId, item } = req.body;
+  if (item === 'shields') db.addShields.run(3, userId);
+  res.json({ ok: true });
+});
+
 function safeUser(u) {
-  return { id: u.id, username: u.username, elo: u.elo, wins: u.wins, losses: u.losses, draws: u.draws, win_rate: u.win_rate };
+  return {
+    id: u.id, username: u.username, elo: u.elo,
+    wins: u.wins, losses: u.losses, draws: u.draws, win_rate: u.win_rate,
+    color: u.color || 'default', badge: u.badge || '',
+    shields: u.shields || 0,
+  };
 }
 
 // ── GAME STATE ───────────────────────────────────────────────────────────────
-const queues = {};       // 'cat-diff' → [{ socketId, userId, username, elo, isBot }]
-const games = {};        // gameId → game object
-const privateRooms = {}; // code → { host, category, difficulty }
+const queues = {};
+const games = {};
+const privateRooms = {};
 
 function queueKey(cat, diff) { return `${cat}-${diff}`; }
 function makeGameId() { return Math.random().toString(36).slice(2, 10); }
@@ -124,157 +176,99 @@ function makeRoomCode() { return Math.random().toString(36).slice(2, 8).toUpperC
 function startGame(p1, p2, category, difficulty) {
   const question = getRandomQuestion(category, difficulty);
   if (!question) return null;
-
-  const timeLimits = { easy: 300, medium: 480, hard: 720 }; // longer for code/numeric
+  const timeLimits = { easy: 300, medium: 480, hard: 720 };
   const gameId = makeGameId();
-
   games[gameId] = { p1, p2, question, category, difficulty, answers: {}, startTime: Date.now(), timeLimit: timeLimits[difficulty] || 300, timer: null, ended: false };
-
   const payload = { gameId, question, timeLimit: timeLimits[difficulty] || 300 };
-
   if (!p1.isBot) io.to(p1.id).emit('match_found', { ...payload, opponent: { username: p2.username, elo: p2.elo } });
   if (!p2.isBot) io.to(p2.id).emit('match_found', { ...payload, opponent: { username: p1.username, elo: p1.elo } });
-
-  games[gameId].timer = setTimeout(() => {
-    if (!games[gameId]?.ended) endGame(gameId, null);
-  }, (timeLimits[difficulty] + 5) * 1000);
-
+  games[gameId].timer = setTimeout(() => { if (!games[gameId]?.ended) endGame(gameId, null); }, (timeLimits[difficulty] + 5) * 1000);
   return gameId;
 }
 
-function endGame(gameId, winnerId) {
+// winnerSocketId = socket.id of winner, or null for draw
+function endGame(gameId, winnerSocketId) {
   const game = games[gameId];
   if (!game || game.ended) return;
   game.ended = true;
   clearTimeout(game.timer);
 
-  const result = {
-    winnerId,
-    explanation: game.question.explanation,
-    answer: game.question.answer,         // for numeric questions
-    correctIndex: game.question.correct,  // for MC (unused now)
-  };
+  const p1Wins = winnerSocketId !== null && winnerSocketId === game.p1.id;
+  const p2Wins = winnerSocketId !== null && winnerSocketId === game.p2.id;
 
-  // Always update ELO — bots have real DB records
-  const eloResult = db.applyMatchResult(
-    game.p1.userId, game.p2.userId, winnerId,
-    { category: game.category, difficulty: game.difficulty, questionId: game.question.id }
-  );
+  const result = { explanation: game.question.explanation, answer: game.question.answer };
+
+  // Only update ELO when both players have real accounts
+  let eloResult = { p1: { eloChange: 0, newElo: game.p1.elo }, p2: { eloChange: 0, newElo: game.p2.elo } };
+  if (game.p1.userId && game.p2.userId) {
+    const dbWinnerId = p1Wins ? game.p1.userId : p2Wins ? game.p2.userId : null;
+    eloResult = db.applyMatchResult(
+      game.p1.userId, game.p2.userId, dbWinnerId,
+      { category: game.category, difficulty: game.difficulty, questionId: game.question.id }
+    );
+  }
 
   if (!game.p1.isBot) {
-    io.to(game.p1.id).emit('game_result', {
-      ...result,
-      eloChange: eloResult.p1.eloChange,
-      newElo: eloResult.p1.newElo,
-      youWin: winnerId === game.p1.userId,
-    });
+    io.to(game.p1.id).emit('game_result', { ...result, youWin: p1Wins, isDraw: !p1Wins && !p2Wins, eloChange: eloResult.p1.eloChange, newElo: eloResult.p1.newElo });
   }
   if (!game.p2.isBot) {
-    io.to(game.p2.id).emit('game_result', {
-      ...result,
-      eloChange: eloResult.p2.eloChange,
-      newElo: eloResult.p2.newElo,
-      youWin: winnerId === game.p2.userId,
-    });
+    io.to(game.p2.id).emit('game_result', { ...result, youWin: p2Wins, isDraw: !p1Wins && !p2Wins, eloChange: eloResult.p2.eloChange, newElo: eloResult.p2.newElo });
   }
 
   delete games[gameId];
 }
 
 // ── BOT MATCH ─────────────────────────────────────────────────────────────────
-// Accuracy: chance bot gets the answer right
-const BOT_ACCURACY  = { easy: 0.55, medium: 0.70, hard: 0.85 };
-// Delay (seconds) before bot "submits" — makes it feel like a real person
-const BOT_DELAY     = { easy: [40, 90], medium: [70, 150], hard: [110, 240] };
-// Delay before bot sends "running / checking" activity signal
-const BOT_ACTIVITY  = { easy: [15, 35], medium: [25, 60], hard: [40, 100] };
+const BOT_ACCURACY = { easy: 0.52, medium: 0.68, hard: 0.83 };
+const BOT_DELAY    = { easy: [35, 85], medium: [65, 140], hard: [100, 230] };
+const BOT_ACTIVITY = { easy: [12, 30], medium: [22, 55], hard: [35, 90] };
 
 function startBotMatch(playerSocket, category, difficulty) {
   const bot = getRandomBot();
   if (!bot) return;
-
-  const botProxy = {
-    id: 'bot-' + makeGameId(),
-    userId: bot.id,
-    username: bot.username,
-    elo: bot.elo,
-    isBot: true,
-    isGuest: false,
-    connected: true,
-  };
-
+  const botProxy = { id: 'bot-' + makeGameId(), userId: bot.id, username: bot.username, elo: bot.elo, isBot: true, isGuest: false };
   const gameId = startGame(playerSocket, botProxy, category, difficulty);
   if (!gameId) return;
-
   const game = games[gameId];
-  const q = game.question;
 
-  // Bot sends an "activity" signal (looks like they're working)
   const [aMin, aMax] = BOT_ACTIVITY[difficulty];
-  const activityDelay = (aMin + Math.random() * (aMax - aMin)) * 1000;
   setTimeout(() => {
     if (games[gameId]?.ended) return;
-    const msg = q.type === 'code' ? 'running tests...' : 'checking answer...';
+    const msg = game.question.type === 'code' ? 'running tests...' : 'checking answer...';
     io.to(playerSocket.id).emit('opponent_activity', { message: msg });
-  }, activityDelay);
+  }, (aMin + Math.random() * (aMax - aMin)) * 1000);
 
-  // Bot submits after a realistic delay
   const [sMin, sMax] = BOT_DELAY[difficulty];
-  const submitDelay = (sMin + Math.random() * (sMax - sMin)) * 1000;
   setTimeout(() => {
     const g = games[gameId];
     if (!g || g.ended) return;
-
     io.to(playerSocket.id).emit('opponent_answered');
-
     const botCorrect = Math.random() < BOT_ACCURACY[difficulty];
-    g.answers[botProxy.userId] = { correct: botCorrect, timestamp: Date.now() };
-
-    const playerAnswered = g.answers[playerSocket.userId];
-
-    if (botCorrect) {
-      if (!playerAnswered?.correct) {
-        // Bot wins
-        endGame(gameId, botProxy.userId);
-      }
-      // If player already answered correctly, they won — do nothing
-    } else {
-      if (playerAnswered && !playerAnswered.correct) {
-        // Both wrong — draw
-        endGame(gameId, null);
-      }
-      // Otherwise wait for player to answer
+    g.answers[botProxy.id] = { correct: botCorrect, timestamp: Date.now() };
+    const playerAnswered = g.answers[playerSocket.id];
+    if (botCorrect && !playerAnswered?.correct) {
+      endGame(gameId, botProxy.id);
+    } else if (!botCorrect && playerAnswered && !playerAnswered.correct) {
+      endGame(gameId, null);
     }
-  }, submitDelay);
+  }, (sMin + Math.random() * (sMax - sMin)) * 1000);
 }
 
 // ── SOCKET AUTH ──────────────────────────────────────────────────────────────
 io.use((socket, next) => {
   const token = socket.handshake.auth?.token;
   if (!token) {
-    socket.userId = null;
-    socket.username = 'Guest_' + Math.random().toString(36).slice(2,6).toUpperCase();
-    socket.elo = 1200;
-    socket.isGuest = true;
-    socket.isBot = false;
+    socket.userId = null; socket.username = 'Guest'; socket.elo = 1200; socket.isGuest = true; socket.isBot = false;
     return next();
   }
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = db.getUserStats.get(decoded.id);
     if (!user) throw new Error();
-    socket.userId = user.id;
-    socket.username = user.username;
-    socket.elo = user.elo;
-    socket.isGuest = false;
-    socket.isBot = false;
+    socket.userId = user.id; socket.username = user.username; socket.elo = user.elo; socket.isGuest = false; socket.isBot = false;
     next();
   } catch {
-    socket.userId = null;
-    socket.username = 'Guest_' + Math.random().toString(36).slice(2,6).toUpperCase();
-    socket.elo = 1200;
-    socket.isGuest = true;
-    socket.isBot = false;
+    socket.userId = null; socket.username = 'Guest'; socket.elo = 1200; socket.isGuest = true; socket.isBot = false;
     next();
   }
 });
@@ -285,8 +279,7 @@ io.on('connection', (socket) => {
   socket.on('join_queue', ({ category, difficulty }) => {
     const key = queueKey(category, difficulty);
     if (!queues[key]) queues[key] = [];
-    queues[key] = queues[key].filter(p => p.userId !== socket.userId);
-
+    queues[key] = queues[key].filter(p => p.socketId !== socket.id);
     const waiting = queues[key].find(p => io.sockets.sockets.get(p.socketId)?.connected);
     if (waiting) {
       queues[key] = queues[key].filter(p => p.socketId !== waiting.socketId);
@@ -299,43 +292,39 @@ io.on('connection', (socket) => {
   });
 
   socket.on('request_bot_match', ({ category, difficulty }) => {
-    // Remove from any queue first
-    Object.keys(queues).forEach(k => {
-      queues[k] = queues[k].filter(p => p.socketId !== socket.id);
-    });
+    Object.keys(queues).forEach(k => { queues[k] = queues[k].filter(p => p.socketId !== socket.id); });
     startBotMatch(socket, category, difficulty);
   });
 
   socket.on('leave_queue', () => {
-    Object.keys(queues).forEach(k => {
-      queues[k] = queues[k].filter(p => p.socketId !== socket.id);
-    });
+    Object.keys(queues).forEach(k => { queues[k] = queues[k].filter(p => p.socketId !== socket.id); });
   });
 
-  // Client reports whether their answer was correct (tested locally)
+  // Client sends correct:true/false based on local test evaluation
   socket.on('submit_answer', ({ gameId, correct }) => {
     const game = games[gameId];
     if (!game || game.ended) return;
-    if (game.answers[socket.userId] !== undefined) return;
+    if (game.answers[socket.id] !== undefined) return; // already answered (use socket.id not userId)
 
-    game.answers[socket.userId] = { correct, timestamp: Date.now() };
+    game.answers[socket.id] = { correct, timestamp: Date.now() };
 
-    const opponent = game.p1.userId === socket.userId ? game.p2 : game.p1;
+    const opponent = game.p1.id === socket.id ? game.p2 : game.p1;
     if (!opponent.isBot) io.to(opponent.id).emit('opponent_answered');
 
     if (correct) {
-      endGame(gameId, socket.userId);
+      endGame(gameId, socket.id);
     } else {
-      const opponentAnswer = game.answers[opponent.userId];
-      if (opponentAnswer && !opponentAnswer.correct) {
-        endGame(gameId, null); // both wrong = draw
+      // Check if bot or opponent also answered wrong
+      const opponentAnswered = game.answers[opponent.id];
+      if (opponentAnswered && !opponentAnswered.correct) {
+        endGame(gameId, null);
       }
     }
   });
 
   socket.on('create_private_room', ({ category, difficulty }) => {
     const code = makeRoomCode();
-    privateRooms[code] = { host: socket, category, difficulty, createdAt: Date.now() };
+    privateRooms[code] = { host: socket, category, difficulty };
     socket.emit('private_room_created', { code });
     setTimeout(() => { delete privateRooms[code]; }, 10 * 60 * 1000);
   });
@@ -343,20 +332,18 @@ io.on('connection', (socket) => {
   socket.on('join_private_room', ({ code }) => {
     const room = privateRooms[code];
     if (!room) return socket.emit('error', { message: 'Room not found or expired' });
-    if (room.host.userId === socket.userId) return socket.emit('error', { message: "Can't join your own room" });
+    if (room.host.id === socket.id) return socket.emit('error', { message: "Can't join your own room" });
     if (!room.host.connected) return socket.emit('error', { message: 'Host disconnected' });
     delete privateRooms[code];
     startGame(room.host, socket, room.category, room.difficulty);
   });
 
   socket.on('disconnect', () => {
-    Object.keys(queues).forEach(k => {
-      queues[k] = queues[k].filter(p => p.socketId !== socket.id);
-    });
+    Object.keys(queues).forEach(k => { queues[k] = queues[k].filter(p => p.socketId !== socket.id); });
     for (const [gameId, game] of Object.entries(games)) {
       if ((game.p1.id === socket.id || game.p2.id === socket.id) && !game.ended) {
-        const winnerId = game.p1.id === socket.id ? game.p2.userId : game.p1.userId;
-        endGame(gameId, winnerId);
+        const winnerSocket = game.p1.id === socket.id ? game.p2 : game.p1;
+        endGame(gameId, winnerSocket.id);
         break;
       }
     }
@@ -364,31 +351,15 @@ io.on('connection', (socket) => {
 });
 
 // ── DATABASE BACKUP ──────────────────────────────────────────────────────────
-// Visit /api/admin/backup?key=YOUR_ADMIN_KEY to download the database file.
-// Set ADMIN_KEY as a Railway environment variable to protect this route.
 app.get('/api/admin/backup', (req, res) => {
   const adminKey = process.env.ADMIN_KEY;
-  if (!adminKey || req.query.key !== adminKey) {
-    return res.status(401).json({ error: 'Unauthorized — set ADMIN_KEY env var and pass ?key=' });
-  }
-  // Flush WAL to main db file before downloading
+  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
   try { db.pragma('wal_checkpoint(FULL)'); } catch (_) {}
   const dbPath = path.join(__dirname, 'arena.db');
-  const filename = `arena-backup-${new Date().toISOString().slice(0, 10)}.db`;
-  res.download(dbPath, filename);
+  res.download(dbPath, `arena-backup-${new Date().toISOString().slice(0,10)}.db`);
 });
 
-// ── SENTRY ERROR HANDLER (must be last) ──────────────────────────────────────
-if (process.env.SENTRY_DSN) {
-  app.use(Sentry.expressErrorHandler());
-}
+if (process.env.SENTRY_DSN) app.use(Sentry.expressErrorHandler());
+app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Internal server error' }); });
 
-// Generic error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
-server.listen(PORT, () => {
-  console.log(`\n⚔️  ArenaIQ running at http://localhost:${PORT}\n`);
-});
+server.listen(PORT, () => { console.log(`\n⚔️  ArenaIQ running at http://localhost:${PORT}\n`); });
