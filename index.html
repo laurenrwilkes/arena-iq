@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ArenaIQ — Compete. Win. Get Hired.</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">⚔️</div>
+    <span>ArenaIQ</span>
+  </a>
+  <div class="nav-links">
+    <a href="#how">How it Works</a>
+    <a href="#modes">Modes</a>
+    <a href="#categories">Categories</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </div>
+  <div class="nav-actions">
+    <a href="play.html" class="btn btn-ghost">Log In</a>
+    <a href="play.html" class="btn btn-primary">Play Free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+  <div class="grid-overlay"></div>
+  <div class="hero-content">
+    <div class="live-ticker">
+      <div class="live-dot"></div>
+      <span id="live-count">2,847</span> people competing right now
+    </div>
+    <div class="hero-badge">
+      <div class="live-dot"></div>
+      New: Investment Banking Battle Mode is live
+    </div>
+    <h1>Interview prep is<br><span class="grad-text">a sport.</span><br>Start competing.</h1>
+    <p class="hero-sub">Battle strangers or challenge friends across Tech, Quant, and Finance interviews. Real-time, head-to-head, ranked. First to crack it wins.</p>
+    <div class="hero-ctas">
+      <a href="play.html" class="btn btn-primary btn-lg">⚔️ Find a Match — Free</a>
+      <a href="#how" class="btn btn-outline btn-lg">See How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="questions-count">50k+</div><div class="stat-label">Curated Questions</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Battle Arenas</div></div>
+      <div class="stat"><div class="stat-num" id="players-count">142k+</div><div class="stat-label">Ranked Players</div></div>
+      <div class="stat"><div class="stat-num">ELO</div><div class="stat-label">Rating System</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE MATCH PREVIEW -->
+<section style="padding: 0 40px 100px;">
+  <div class="section-center">
+    <div class="section-tag">Live Preview</div>
+    <h2>What a battle looks like</h2>
+    <p class="section-sub">Real-time split-screen. You and your opponent solve the same question. Clock's ticking.</p>
+  </div>
+  <div class="match-preview fade-up">
+    <div class="match-bar">
+      <div class="match-players">
+        <span>🧠 you (1842 ELO)</span>
+        <div class="vs-badge">VS</div>
+        <span>QuantKing99 (1891 ELO)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span style="font-size:0.78rem;color:var(--t3)">Tech / Medium</span>
+        <div class="match-timer" id="preview-timer">04:32</div>
+      </div>
+    </div>
+    <div class="match-body">
+      <div class="match-panel">
+        <div class="panel-label">📋 Question</div>
+        <div class="match-question">
+          <strong>LRU Cache</strong><br/><br/>
+          Design a data structure that follows the Least Recently Used (LRU) cache constraint.<br/><br/>
+          Implement <code style="background:rgba(124,58,237,0.2);padding:2px 6px;border-radius:4px;font-family:monospace">LRUCache(capacity)</code>, <code style="background:rgba(124,58,237,0.2);padding:2px 6px;border-radius:4px;font-family:monospace">get(key)</code>, and <code style="background:rgba(124,58,237,0.2);padding:2px 6px;border-radius:4px;font-family:monospace">put(key, value)</code> in O(1) time.
+        </div>
+        <pre class="code-block">class LRUCache:
+    def __init__(self, capacity):
+        self.cap = capacity
+        self.cache = {}
+        self.order = collections.OrderedDict()
+
+    def get(self, key):
+        if key not in self.cache:
+            return -1
+        self.order.move_to_end(key)
+        return self.cache[key]</pre>
+      </div>
+      <div class="match-panel">
+        <div class="panel-label">⚡ Battle Progress</div>
+        <div class="progress-section">
+          <div class="progress-player"><span>You</span><span id="your-pct">68%</span></div>
+          <div class="prog-bar" style="margin-bottom:20px"><div class="prog-fill prog-you" id="your-prog" style="width:68%"></div></div>
+          <div class="progress-player"><span>QuantKing99</span><span id="opp-pct">54%</span></div>
+          <div class="prog-bar"><div class="prog-fill prog-opp" id="opp-prog" style="width:54%"></div></div>
+        </div>
+        <div style="margin-top:28px;padding:16px;background:var(--card2);border-radius:var(--r)">
+          <div style="font-size:0.72rem;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Live Feed</div>
+          <div id="live-feed" style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;color:var(--t2)">
+            <div>🧠 <strong>You</strong> passed test case 5/8</div>
+            <div>⚡ <strong>QuantKing99</strong> submitted — wrong answer</div>
+            <div>🧠 <strong>You</strong> passed test case 6/8</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;">
+          <div style="flex:1;padding:12px;background:var(--card2);border-radius:var(--r);text-align:center">
+            <div style="font-size:1.4rem;font-weight:800;color:var(--green)">+34</div>
+            <div style="font-size:0.72rem;color:var(--t3)">ELO if you win</div>
+          </div>
+          <div style="flex:1;padding:12px;background:var(--card2);border-radius:var(--r);text-align:center">
+            <div style="font-size:1.4rem;font-weight:800;color:var(--red)">-18</div>
+            <div style="font-size:0.72rem;color:var(--t3)">ELO if you lose</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background:var(--bg2);">
+  <div class="section-center">
+    <div class="section-tag">The Game</div>
+    <h2>Zero fluff. Pure competition.</h2>
+    <p class="section-sub">Three steps from opening the app to your heart racing.</p>
+  </div>
+  <div class="how-grid">
+    <div class="how-card fade-up">
+      <div class="how-num">01</div>
+      <span class="how-icon">🎯</span>
+      <h3>Pick Your Arena</h3>
+      <p>Choose Tech/Coding, Quant Finance, or Investment Banking. Select difficulty. Go solo or squad up.</p>
+    </div>
+    <div class="how-card fade-up">
+      <div class="how-num">02</div>
+      <span class="how-icon">⚡</span>
+      <h3>Get Matched Instantly</h3>
+      <p>ELO matchmaking pairs you with someone at your level. Both players see the same question. Timer starts.</p>
+    </div>
+    <div class="how-card fade-up">
+      <div class="how-num">03</div>
+      <span class="how-icon">🏆</span>
+      <h3>Win, Rank, Repeat</h3>
+      <p>First to solve correctly wins the round and ELO points. Climb global and category leaderboards. Get recruited.</p>
+    </div>
+    <div class="how-card fade-up">
+      <div class="how-num">04</div>
+      <span class="how-icon">💡</span>
+      <h3>Learn From Every Loss</h3>
+      <p>After each match, get the optimal solution, your opponent's approach, and personalized weak spots to drill.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GAME MODES -->
+<section id="modes">
+  <div class="section-center">
+    <div class="section-tag">Battle Modes</div>
+    <h2>Play your way</h2>
+    <p class="section-sub">Solo grind, team warfare, or private showdowns with friends.</p>
+  </div>
+  <div class="modes-grid">
+    <div class="mode-card fade-up">
+      <div class="mode-icon">⚔️</div>
+      <div class="mode-badge badge-purple">Ranked</div>
+      <h3>1v1 Ranked</h3>
+      <p>Get matched with a stranger at your ELO. Win to climb. Lose to learn. The main event.</p>
+      <div class="mode-features">
+        <div class="mode-feat">✅ ELO rating changes</div>
+        <div class="mode-feat">✅ Seasonal leaderboard</div>
+        <div class="mode-feat">✅ 5 min avg match time</div>
+      </div>
+    </div>
+    <div class="mode-card fade-up">
+      <div class="mode-icon">🛡️</div>
+      <div class="mode-badge badge-gold">Teams</div>
+      <h3>Team Battle</h3>
+      <p>Form a squad of 2-4. Your team's combined score vs. another team. Strategy matters.</p>
+      <div class="mode-features">
+        <div class="mode-feat">✅ Up to 4v4</div>
+        <div class="mode-feat">✅ Assign roles by category</div>
+        <div class="mode-feat">✅ Team ELO + individual ELO</div>
+      </div>
+    </div>
+    <div class="mode-card fade-up">
+      <div class="mode-icon">🔗</div>
+      <div class="mode-badge badge-cyan">Private</div>
+      <h3>Challenge a Friend</h3>
+      <p>Generate a link, send it to anyone. Custom question set or random. No stakes, just bragging rights.</p>
+      <div class="mode-features">
+        <div class="mode-feat">✅ Custom question packs</div>
+        <div class="mode-feat">✅ No ELO impact</div>
+        <div class="mode-feat">✅ Spectator mode</div>
+      </div>
+    </div>
+    <div class="mode-card fade-up">
+      <div class="mode-icon">🏟️</div>
+      <div class="mode-badge badge-green">Tournament</div>
+      <h3>Weekly Tournament</h3>
+      <p>128-player bracket. Elimination rounds. Top finishers split the prize pool and get company visibility.</p>
+      <div class="mode-features">
+        <div class="mode-feat">✅ Cash + recruiting prizes</div>
+        <div class="mode-feat">✅ All 3 arenas combined</div>
+        <div class="mode-feat">✅ Live spectators</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories" style="background:var(--bg2);">
+  <div class="section-center">
+    <div class="section-tag">Arenas</div>
+    <h2>Three fields. One platform.</h2>
+    <p class="section-sub">Whether you're grinding for Google, Jane Street, or Goldman — we've got your arena.</p>
+  </div>
+  <div class="cats-grid">
+    <div class="cat-card cat-code fade-up">
+      <div class="cat-header">
+        <div class="cat-icon">💻</div>
+        <h3>Tech / Coding</h3>
+        <p class="cat-desc">Data structures, algorithms, system design, SQL, and CS fundamentals. LeetCode meets a live arena.</p>
+        <div class="cat-tags">
+          <span class="tag">Arrays</span><span class="tag">Trees</span><span class="tag">DP</span>
+          <span class="tag">Graphs</span><span class="tag">System Design</span><span class="tag">SQL</span>
+        </div>
+      </div>
+      <div class="cat-divider"></div>
+      <div class="cat-sample">
+        <div class="cat-sample-label">Sample Question</div>
+        <div class="sample-q">
+          Given an array of integers, find the length of the longest increasing subsequence.
+        </div>
+        <div class="sample-diff">
+          <span class="diff-label diff-med">⬤ Medium</span>
+          <span class="diff-time">⏱ 20 min limit</span>
+        </div>
+      </div>
+    </div>
+    <div class="cat-card cat-quant fade-up">
+      <div class="cat-header">
+        <div class="cat-icon">📊</div>
+        <h3>Quant Finance</h3>
+        <p class="cat-desc">Probability, stats, options pricing, brain teasers, and stochastic calculus. For quant roles at top firms.</p>
+        <div class="cat-tags">
+          <span class="tag">Probability</span><span class="tag">Statistics</span><span class="tag">Options</span>
+          <span class="tag">Brain Teasers</span><span class="tag">Stochastic</span>
+        </div>
+      </div>
+      <div class="cat-divider"></div>
+      <div class="cat-sample">
+        <div class="cat-sample-label">Sample Question</div>
+        <div class="sample-q">
+          You flip a fair coin until you get heads. Your payout is $2ⁿ where n is the number of flips. What would you pay to play?
+        </div>
+        <div class="sample-diff">
+          <span class="diff-label diff-hard">⬤ Hard</span>
+          <span class="diff-time">⏱ 15 min limit</span>
+        </div>
+      </div>
+    </div>
+    <div class="cat-card cat-finance fade-up">
+      <div class="cat-header">
+        <div class="cat-icon">🏦</div>
+        <h3>Investment Banking</h3>
+        <p class="cat-desc">Valuation, M&A, LBO, accounting, and market sizing. Train for the SuperDay that actually matters.</p>
+        <div class="cat-tags">
+          <span class="tag">DCF</span><span class="tag">LBO</span><span class="tag">M&A</span>
+          <span class="tag">Accounting</span><span class="tag">Market Sizing</span><span class="tag">Comps</span>
+        </div>
+      </div>
+      <div class="cat-divider"></div>
+      <div class="cat-sample">
+        <div class="cat-sample-label">Sample Question</div>
+        <div class="sample-q">
+          A company has $500M revenue, 30% EBITDA margins, growing 15% YoY. Walk me through how you'd value it using DCF.
+        </div>
+        <div class="sample-diff">
+          <span class="diff-label diff-med">⬤ Medium</span>
+          <span class="diff-time">⏱ 25 min limit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERBOARD PREVIEW -->
+<section>
+  <div class="section-center">
+    <div class="section-tag">Rankings</div>
+    <h2>Global leaderboard</h2>
+    <p class="section-sub">Every win moves you up. Recruiters watch the top 100.</p>
+  </div>
+  <div class="lb-container">
+    <div class="lb-header">
+      <div class="lb-tabs">
+        <button class="lb-tab active" onclick="switchTab(this,'global')">Global</button>
+        <button class="lb-tab" onclick="switchTab(this,'tech')">Tech</button>
+        <button class="lb-tab" onclick="switchTab(this,'quant')">Quant</button>
+        <button class="lb-tab" onclick="switchTab(this,'ib')">IB</button>
+      </div>
+      <a href="leaderboard.html" class="btn btn-ghost" style="font-size:0.82rem;padding:8px 16px">Full Board →</a>
+    </div>
+    <div class="lb-table">
+      <div class="lb-row" style="background:rgba(245,158,11,0.05);border-bottom:1px solid var(--border)">
+        <div class="lb-rank rank-1">🥇</div>
+        <div class="lb-player">
+          <div class="lb-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">A</div>
+          <div><div class="lb-name">apex_coder</div><div class="lb-handle">Stanford CS · SWE</div></div>
+        </div>
+        <div><div class="lb-rating grad-text">2,847</div><div class="lb-wins">342 wins</div></div>
+        <div class="lb-change change-up">▲ 12</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank rank-2">🥈</div>
+        <div class="lb-player">
+          <div class="lb-avatar" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)">Q</div>
+          <div><div class="lb-name">QuantKing99</div><div class="lb-handle">MIT Math · Quant</div></div>
+        </div>
+        <div><div class="lb-rating" style="color:var(--purple-l)">2,791</div><div class="lb-wins">298 wins</div></div>
+        <div class="lb-change change-up">▲ 5</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank rank-3">🥉</div>
+        <div class="lb-player">
+          <div class="lb-avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4)">Z</div>
+          <div><div class="lb-name">z3r0_loss</div><div class="lb-handle">Wharton · IB</div></div>
+        </div>
+        <div><div class="lb-rating" style="color:var(--cyan)">2,754</div><div class="lb-wins">276 wins</div></div>
+        <div class="lb-change change-down">▼ 3</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank" style="color:var(--t3)">4</div>
+        <div class="lb-player">
+          <div class="lb-avatar" style="background:linear-gradient(135deg,#f97316,#f59e0b)">M</div>
+          <div><div class="lb-name">macro_maestro</div><div class="lb-handle">HBS · PE</div></div>
+        </div>
+        <div><div class="lb-rating" style="color:var(--t1)">2,701</div><div class="lb-wins">251 wins</div></div>
+        <div class="lb-change change-up">▲ 18</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank" style="color:var(--t3)">5</div>
+        <div class="lb-player">
+          <div class="lb-avatar" style="background:linear-gradient(135deg,#06b6d4,#10b981)">D</div>
+          <div><div class="lb-name">delta_hedge</div><div class="lb-handle">CMU CS+Finance</div></div>
+        </div>
+        <div><div class="lb-rating" style="color:var(--t1)">2,688</div><div class="lb-wins">239 wins</div></div>
+        <div class="lb-change change-up">▲ 7</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--bg2);">
+  <div class="section-center">
+    <div class="section-tag">What People Say</div>
+    <h2>They used ArenaIQ.<br>They got the offer.</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial fade-up">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"I used LeetCode for months and always felt like I was grinding in a vacuum. ArenaIQ flipped a switch — competing against someone live is a completely different experience. Got my SWE offer at Meta after 3 weeks."</p>
+      <div class="testimonial-author">
+        <div class="test-avatar" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)">J</div>
+        <div><div class="test-name">Jordan K.</div><div class="test-role">SWE @ Meta — was SWE Intern</div></div>
+      </div>
+    </div>
+    <div class="testimonial fade-up">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"The Quant arena is insane. Probability questions, options pricing, brain teasers — all in a timed battle against someone gunning for the same Jane Street seat. Way harder and more useful than any prep book."</p>
+      <div class="testimonial-author">
+        <div class="test-avatar" style="background:linear-gradient(135deg,#06b6d4,#10b981)">P</div>
+        <div><div class="test-name">Priya M.</div><div class="test-role">Quant Trader @ Jane Street</div></div>
+      </div>
+    </div>
+    <div class="testimonial fade-up">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"Ran team battles with my study group every night for two weeks before recruiting. IB cases, accounting, DCF speed drills. All five of us got offers in the same bulge bracket cycle. Coincidence? I think not."</p>
+      <div class="testimonial-author">
+        <div class="test-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">R</div>
+        <div><div class="test-name">Ryan T.</div><div class="test-role">Analyst @ Goldman Sachs IBD</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FREE SECTION -->
+<section style="background:var(--bg2);">
+  <div class="section-center">
+    <div class="section-tag">Pricing</div>
+    <h2>100% Free.<br><span class="grad-text">No credit card. Ever.</span></h2>
+    <p class="section-sub">Create an account, start competing immediately. That's it.</p>
+  </div>
+  <div style="max-width:700px;margin:48px auto 0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center">
+    <div class="how-card fade-up" style="border-top:3px solid var(--green)">
+      <span class="how-icon">⚔️</span>
+      <h3>Unlimited Battles</h3>
+      <p>Play as many ranked matches as you want, any time. No daily cap.</p>
+    </div>
+    <div class="how-card fade-up" style="border-top:3px solid var(--purple)">
+      <span class="how-icon">🏆</span>
+      <h3>Full ELO Ranking</h3>
+      <p>Real rating system. See where you stand globally across all arenas.</p>
+    </div>
+    <div class="how-card fade-up" style="border-top:3px solid var(--cyan)">
+      <span class="how-icon">🔗</span>
+      <h3>Invite Friends</h3>
+      <p>Create private rooms and challenge anyone with a shareable link.</p>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:40px">
+    <a href="play.html" class="btn btn-primary btn-lg">Create Free Account →</a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:80px 40px;">
+  <div class="cta-banner">
+    <div class="section-tag">Ready?</div>
+    <h2>Your future offer is<br><span class="grad-text">one match away.</span></h2>
+    <p>Join 142,000 candidates who made interview prep an addiction instead of a chore.</p>
+    <div class="hero-ctas">
+      <a href="play.html" class="btn btn-primary btn-lg">⚔️ Play Free — No Card Required</a>
+      <a href="leaderboard.html" class="btn btn-outline btn-lg">View Leaderboard</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo" style="margin-bottom:12px;display:inline-flex">
+        <div class="logo-icon">⚔️</div>
+        <span>ArenaIQ</span>
+      </a>
+      <p>The competitive interview prep platform for Tech, Quant, and Finance. Battle. Rank. Get hired.</p>
+      <div class="footer-socials">
+        <a href="#" class="footer-social">𝕏</a>
+        <a href="#" class="footer-social">in</a>
+        <a href="#" class="footer-social">gh</a>
+        <a href="#" class="footer-social">dc</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="play.html">Play</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="#modes">Battle Modes</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#">Tournaments</a>
+    </div>
+    <div class="footer-col">
+      <h4>Arenas</h4>
+      <a href="#">Tech / Coding</a>
+      <a href="#">Quantitative</a>
+      <a href="#">Investment Banking</a>
+      <a href="#">Company Packs</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Blog</a>
+      <a href="#">Careers</a>
+      <a href="#">Recruiters</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 ArenaIQ Inc. All rights reserved.</span>
+    <span>Built for candidates who actually want the offer.</span>
+  </div>
+</footer>
+
+<script>
+// Animate live count
+function randomNear(n, delta) { return n + Math.floor(Math.random() * delta * 2) - delta; }
+setInterval(() => {
+  const el = document.getElementById('live-count');
+  if (el) el.textContent = randomNear(2847, 30).toLocaleString();
+}, 3000);
+
+// Animate preview timer countdown
+let previewSecs = 272;
+setInterval(() => {
+  previewSecs = Math.max(0, previewSecs - 1);
+  const m = Math.floor(previewSecs / 60).toString().padStart(2,'0');
+  const s = (previewSecs % 60).toString().padStart(2,'0');
+  const el = document.getElementById('preview-timer');
+  if (el) el.textContent = m + ':' + s;
+}, 1000);
+
+// Animate progress bars
+let yourPct = 68, oppPct = 54;
+setInterval(() => {
+  if (Math.random() > 0.6 && yourPct < 100) {
+    yourPct = Math.min(100, yourPct + Math.floor(Math.random()*5+1));
+    document.getElementById('your-prog').style.width = yourPct + '%';
+    document.getElementById('your-pct').textContent = yourPct + '%';
+  }
+  if (Math.random() > 0.65 && oppPct < 100) {
+    oppPct = Math.min(100, oppPct + Math.floor(Math.random()*4+1));
+    document.getElementById('opp-prog').style.width = oppPct + '%';
+    document.getElementById('opp-pct').textContent = oppPct + '%';
+  }
+}, 2000);
+
+// Intersection observer for fade-up
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// Leaderboard tab switch
+function switchTab(btn, tab) {
+  document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

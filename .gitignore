@@ -1,0 +1,4 @@
+server/node_modules
+server/arena.db
+node_modules
+.env
