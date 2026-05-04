@@ -497,10 +497,10 @@ function renderNumericGame(q) {
         </div>
         <div id="numeric-feedback" style="min-height:28px;margin-top:8px;font-size:0.88rem;text-align:center"></div>
         <div class="numeric-actions">
-          <button class="btn btn-outline" id="check-btn" onclick="checkNumeric()" style="flex:1">Check Answer</button>
-          <button class="btn btn-primary" id="num-submit-btn" onclick="submitNumeric()" style="flex:2" disabled>Submit →</button>
+          <button class="btn btn-outline" id="check-btn" onclick="checkNumeric()" style="flex:1">Check</button>
+          <button class="btn btn-primary" id="num-submit-btn" onclick="submitNumeric()" style="flex:2">Submit →</button>
         </div>
-        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Check first, then Submit to lock in your answer</div>
+        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Check your answer first, or submit directly to lock it in</div>
       </div>
       ${steps ? `
         <details class="steps-details">
@@ -526,26 +526,36 @@ function checkNumeric() {
   STATE.numericCheckCorrect = correct;
 
   feedback.innerHTML = correct
-    ? '<span style="color:var(--green)">✅ Correct! Click Submit to lock it in.</span>'
-    : `<span style="color:var(--red)">❌ Not quite. Expected ~${q.answer}${q.unit || ''}. Try again.</span>`;
+    ? '<span style="color:var(--green)">✅ Looking good — click Submit to lock it in.</span>'
+    : '<span style="color:var(--red)">❌ Not quite — try again or submit your best guess.</span>';
 
   const subBtn = document.getElementById('num-submit-btn');
-  if (subBtn) { subBtn.disabled = !correct; if (correct) subBtn.style.boxShadow = '0 0 20px rgba(16,185,129,0.4)'; }
+  if (subBtn && correct) subBtn.style.boxShadow = '0 0 20px rgba(16,185,129,0.4)';
 }
 
 function submitNumeric() {
-  if (!STATE.numericCheckCorrect) return;
+  const q = STATE.question;
+  const input = document.getElementById('numeric-input');
+  const val = parseFloat(input?.value);
+  if (isNaN(val)) {
+    const fb = document.getElementById('numeric-feedback');
+    if (fb) fb.innerHTML = '<span style="color:var(--red)">Enter a number first.</span>';
+    return;
+  }
+
+  const tol = q.tolerance ?? 0.01;
+  const correct = Math.abs(val - q.answer) <= tol;
+
   const subBtn = document.getElementById('num-submit-btn');
   const checkBtn = document.getElementById('check-btn');
-  const input = document.getElementById('numeric-input');
   if (subBtn) { subBtn.disabled = true; subBtn.style.opacity = '0.4'; }
   if (checkBtn) { checkBtn.disabled = true; checkBtn.style.opacity = '0.4'; }
   if (input) input.readOnly = true;
 
-  socket?.emit('submit_answer', { gameId: STATE.gameId, correct: true });
-  STATE.myAnswerCorrect = true;
+  socket?.emit('submit_answer', { gameId: STATE.gameId, correct });
+  STATE.myAnswerCorrect = correct;
   const feedback = document.getElementById('numeric-feedback');
-  if (feedback) feedback.innerHTML = '<span style="color:var(--t2)">✅ Submitted — waiting for result...</span>';
+  if (feedback) feedback.innerHTML = '<span style="color:var(--t2)">⏳ Submitted — waiting for result...</span>';
 }
 
 // ── TIMER ────────────────────────────────────────────────────────────────────
