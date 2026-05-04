@@ -1,3 +1,4 @@
+const Sentry = require('@sentry/node');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -7,6 +8,11 @@ const cors = require('cors');
 const path = require('path');
 const db = require('./db');
 const { getRandomQuestion } = require('./questions');
+
+// Sentry — only active when SENTRY_DSN env var is set
+if (process.env.SENTRY_DSN) {
+  Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.2 });
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -355,6 +361,32 @@ io.on('connection', (socket) => {
       }
     }
   });
+});
+
+// ── DATABASE BACKUP ──────────────────────────────────────────────────────────
+// Visit /api/admin/backup?key=YOUR_ADMIN_KEY to download the database file.
+// Set ADMIN_KEY as a Railway environment variable to protect this route.
+app.get('/api/admin/backup', (req, res) => {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey || req.query.key !== adminKey) {
+    return res.status(401).json({ error: 'Unauthorized — set ADMIN_KEY env var and pass ?key=' });
+  }
+  // Flush WAL to main db file before downloading
+  try { db.pragma('wal_checkpoint(FULL)'); } catch (_) {}
+  const dbPath = path.join(__dirname, 'arena.db');
+  const filename = `arena-backup-${new Date().toISOString().slice(0, 10)}.db`;
+  res.download(dbPath, filename);
+});
+
+// ── SENTRY ERROR HANDLER (must be last) ──────────────────────────────────────
+if (process.env.SENTRY_DSN) {
+  app.use(Sentry.expressErrorHandler());
+}
+
+// Generic error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 server.listen(PORT, () => {
