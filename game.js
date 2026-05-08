@@ -117,10 +117,14 @@ function updateNavUser() {
   const eloEl = document.getElementById('nav-elo');
   const nameEl = document.getElementById('nav-username');
   const loginEl = document.getElementById('nav-login');
+  const menuName = document.getElementById('profile-menu-name');
+  const menuElo = document.getElementById('profile-menu-elo');
   if (currentUser) {
     if (eloEl) eloEl.textContent = currentUser.elo.toLocaleString();
     if (nameEl) { nameEl.style.display = 'flex'; nameEl.textContent = currentUser.username.charAt(0).toUpperCase(); }
     if (loginEl) loginEl.style.display = 'none';
+    if (menuName) menuName.textContent = currentUser.username;
+    if (menuElo) menuElo.textContent = `${currentUser.elo.toLocaleString()} ELO`;
   } else {
     if (eloEl) eloEl.textContent = '—';
     if (nameEl) nameEl.style.display = 'none';
