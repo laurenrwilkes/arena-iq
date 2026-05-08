@@ -475,7 +475,8 @@ function lockEditor() {
 
 // ── NUMERIC GAME ──────────────────────────────────────────────────────────────
 function renderNumericGame(q) {
-  const steps = (q.steps || []).map(s =>
+  // Show all steps except the last — the last step typically reveals the final answer
+  const hintSteps = (q.steps || []).slice(0, -1).map(s =>
     `<div class="step-row"><span class="step-label">${s.label}</span><span class="step-value">${s.value}</span></div>`
   ).join('');
 
@@ -502,10 +503,10 @@ function renderNumericGame(q) {
         </div>
         <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Check your answer first, or submit directly to lock it in</div>
       </div>
-      ${steps ? `
+      ${hintSteps ? `
         <details class="steps-details">
-          <summary>💡 Show step-by-step hint</summary>
-          <div class="steps-body">${steps}</div>
+          <summary>💡 Show hint</summary>
+          <div class="steps-body">${hintSteps}</div>
         </details>` : ''}
     </div>
   </div>`;

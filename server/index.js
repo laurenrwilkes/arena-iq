@@ -146,6 +146,28 @@ app.post('/api/shop/use-shield', authMiddleware, (req, res) => {
   res.json({ ok: true, shields: user.shields - 1 });
 });
 
+// Buy a badge — grants ownership and equips it
+// TODO: add Stripe payment verification before granting in production
+app.post('/api/shop/buy-badge', authMiddleware, (req, res) => {
+  const { badgeId } = req.body;
+  const PAID_BADGES = ['shark', 'crown', 'diamond', 'lightning', 'alien'];
+  if (!PAID_BADGES.includes(badgeId)) return res.status(400).json({ error: 'Invalid badge' });
+
+  const user = db.getById.get(req.user.id);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  let owned = [];
+  try { owned = JSON.parse(user.owned_badges || '[]'); } catch (_) {}
+  if (!owned.includes(badgeId)) owned.push(badgeId);
+
+  db.setOwnedBadges.run(JSON.stringify(owned), req.user.id);
+  // Auto-equip on purchase
+  db.setCosmetic.run(user.color || 'default', badgeId, req.user.id);
+
+  const updated = db.getUserStats.get(req.user.id);
+  res.json({ ok: true, user: safeUser(updated) });
+});
+
 // Grant items (called after successful Stripe payment webhook)
 app.post('/api/shop/grant', (req, res) => {
   const adminKey = process.env.ADMIN_KEY;
@@ -156,11 +178,13 @@ app.post('/api/shop/grant', (req, res) => {
 });
 
 function safeUser(u) {
+  let ownedBadges = [];
+  try { ownedBadges = JSON.parse(u.owned_badges || '[]'); } catch (_) {}
   return {
     id: u.id, username: u.username, elo: u.elo,
     wins: u.wins, losses: u.losses, draws: u.draws, win_rate: u.win_rate,
     color: u.color || 'default', badge: u.badge || '',
-    shields: u.shields || 0,
+    shields: u.shields || 0, ownedBadges,
   };
 }
 

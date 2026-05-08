@@ -182,18 +182,22 @@ function renderColors(equipped, wins) {
 
 function renderBadges(equipped, wins) {
   const grid = document.getElementById('badges-grid');
+  const owned = currentUser?.ownedBadges || [];
   grid.innerHTML = BADGES.map(b => {
     const isEquipped = equipped === b.id;
+    const isOwned = owned.includes(b.id);
     const earnUnlocked = b.winsRequired ? wins >= b.winsRequired : true;
-    const isLocked = !b.free || (b.winsRequired && !earnUnlocked);
+    const isFreeUnlocked = b.free && earnUnlocked;
+    const canUse = isFreeUnlocked || isOwned;
     return `
-    <div class="shop-item ${isEquipped?'equipped':''} ${isLocked&&!b.price?'locked':''}"
-      onclick="${b.price ? `buyBadge('${b.id}','${b.price}')` : isLocked ? 'void(0)' : `equipBadge('${b.id}')`}">
-      ${isLocked && b.price ? '<div class="lock-icon">🔒</div>' : ''}
+    <div class="shop-item ${isEquipped?'equipped':''} ${!canUse&&!b.price?'locked':''}"
+      onclick="${canUse ? `equipBadge('${b.id}')` : b.price ? `buyBadge('${b.id}','${b.price}')` : 'void(0)'}">
+      ${!canUse && b.price ? '<div class="lock-icon">🔒</div>' : ''}
       <div class="item-preview">${b.icon}</div>
       <div class="item-name">${b.name}</div>
-      <div class="item-status ${b.free&&!isLocked?'free':''}">
+      <div class="item-status ${isFreeUnlocked&&!b.price?'free':''}">
         ${isEquipped ? '<span class="equipped-label">✓ Equipped</span>'
+          : isOwned ? '<span style="color:var(--cyan)">Owned — click to equip</span>'
           : b.price ? b.price
           : b.winsRequired ? (earnUnlocked ? 'Unlocked' : `${b.winsRequired} wins`)
           : 'Free'}
@@ -223,9 +227,30 @@ function buyColor(id, price) {
   showBuyModal(`Unlock ${COLORS.find(c=>c.id===id)?.name} color`, price, () => equipColor(id));
 }
 
-function buyBadge(id, price) {
+async function buyBadge(id, price) {
   if (!currentUser) { showAuthModal(u => { currentUser = u; buyBadge(id, price); }); return; }
-  showBuyModal(`Unlock ${BADGES.find(b=>b.id===id)?.name} badge`, price, () => equipBadge(id));
+
+  // Check if already owned
+  if (currentUser.ownedBadges?.includes(id)) { equipBadge(id); return; }
+
+  const badge = BADGES.find(b => b.id === id);
+  showBuyModal(`${badge?.icon} ${badge?.name} Badge`, price, async () => {
+    // TODO: add Stripe payment before this call in production
+    try {
+      const res = await fetch(`${API}/api/shop/buy-badge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+        body: JSON.stringify({ badgeId: id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      currentUser = data.user;
+      renderBadges(currentUser.badge, currentUser.wins);
+      updatePreview();
+    } catch (e) {
+      alert('Purchase failed: ' + e.message);
+    }
+  });
 }
 
 function buyShields(qty) {

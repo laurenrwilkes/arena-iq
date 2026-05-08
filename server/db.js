@@ -39,7 +39,7 @@ db.exec(`
 `);
 
 // Safe migrations for existing databases
-['color TEXT DEFAULT \'default\'', 'badge TEXT DEFAULT \'\'', 'shields INTEGER DEFAULT 0'].forEach(col => {
+['color TEXT DEFAULT \'default\'', 'badge TEXT DEFAULT \'\'', 'shields INTEGER DEFAULT 0', 'owned_badges TEXT DEFAULT \'[]\''].forEach(col => {
   try { db.exec(`ALTER TABLE users ADD COLUMN ${col}`); } catch (_) {}
 });
 
@@ -48,7 +48,8 @@ const getByEmail   = db.prepare('SELECT * FROM users WHERE email = ?');
 const getByUsername= db.prepare('SELECT * FROM users WHERE username = ?');
 const createUser   = db.prepare('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)');
 const setElo       = db.prepare('UPDATE users SET elo = ? WHERE id = ?');
-const setCosmetic  = db.prepare('UPDATE users SET color = ?, badge = ? WHERE id = ?');
+const setCosmetic    = db.prepare('UPDATE users SET color = ?, badge = ? WHERE id = ?');
+const setOwnedBadges = db.prepare('UPDATE users SET owned_badges = ? WHERE id = ?');
 const useShield    = db.prepare('UPDATE users SET shields = MAX(shields - 1, 0) WHERE id = ?');
 const addShields   = db.prepare('UPDATE users SET shields = shields + ? WHERE id = ?');
 
@@ -111,4 +112,4 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   };
 }
 
-module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult };
+module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult };

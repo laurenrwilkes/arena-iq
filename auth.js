@@ -83,7 +83,7 @@ function showAuthModal(onSuccess) {
             <input type="password" id="login-password" placeholder="••••••••" />
           </div>
           <div class="auth-error" id="login-error"></div>
-          <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitLogin()">Log In →</button>
+          <button id="login-btn" type="button" class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitLogin()">Log In →</button>
           <p style="text-align:center;margin-top:16px;font-size:0.82rem;color:var(--t3)">
             No account? <a href="#" onclick="switchAuthTab('register')" style="color:var(--purple-l)">Sign up free</a>
           </p>
@@ -103,7 +103,7 @@ function showAuthModal(onSuccess) {
             <input type="password" id="reg-password" placeholder="6+ characters" />
           </div>
           <div class="auth-error" id="reg-error"></div>
-          <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitRegister()">Create Free Account →</button>
+          <button id="reg-btn" type="button" class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitRegister()">Create Free Account →</button>
           <p style="text-align:center;margin-top:16px;font-size:0.82rem;color:var(--t3)">
             Already have an account? <a href="#" onclick="switchAuthTab('login')" style="color:var(--purple-l)">Log in</a>
           </p>
@@ -150,31 +150,51 @@ function switchAuthTab(tab) {
   document.getElementById('tab-register').classList.toggle('active', tab === 'register');
 }
 
+function setAuthError(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = msg;
+}
+
+function setAuthBtn(id, html, disabled) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = html;
+  el.disabled = disabled;
+}
+
 async function submitLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-error');
-  errEl.textContent = '';
+  const email = (document.getElementById('login-email')?.value || '').trim();
+  const password = document.getElementById('login-password')?.value || '';
+  setAuthError('login-error', '');
+  if (!email || !password) { setAuthError('login-error', 'Please enter your email and password.'); return; }
+  setAuthBtn('login-btn', 'Logging in...', true);
   try {
     await Auth.login(email, password);
-    document.getElementById('auth-modal').remove();
+    document.getElementById('auth-modal')?.remove();
     if (window._authSuccessCallback) window._authSuccessCallback(Auth.getUser());
   } catch (e) {
-    errEl.textContent = e.message;
+    const msg = e.message || 'Something went wrong';
+    const isNotFound = msg.toLowerCase().includes('invalid');
+    setAuthError('login-error', isNotFound
+      ? `${msg}. &nbsp;<a href="#" onclick="switchAuthTab('register')" style="color:var(--purple-l)">Create an account?</a>`
+      : msg);
+    setAuthBtn('login-btn', 'Log In →', false);
   }
 }
 
 async function submitRegister() {
-  const username = document.getElementById('reg-username').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const password = document.getElementById('reg-password').value;
-  const errEl = document.getElementById('reg-error');
-  errEl.textContent = '';
+  const username = (document.getElementById('reg-username')?.value || '').trim();
+  const email = (document.getElementById('reg-email')?.value || '').trim();
+  const password = document.getElementById('reg-password')?.value || '';
+  setAuthError('reg-error', '');
+  if (!username || !email || !password) { setAuthError('reg-error', 'All fields are required.'); return; }
+  setAuthBtn('reg-btn', 'Creating account...', true);
   try {
     await Auth.register(username, email, password);
-    document.getElementById('auth-modal').remove();
+    document.getElementById('auth-modal')?.remove();
     if (window._authSuccessCallback) window._authSuccessCallback(Auth.getUser());
   } catch (e) {
-    errEl.textContent = e.message;
+    setAuthError('reg-error', e.message || 'Something went wrong');
+    setAuthBtn('reg-btn', 'Create Free Account →', false);
   }
 }
