@@ -6,21 +6,45 @@ const Auth = (() => {
 
   function getToken() { return localStorage.getItem('aiq_token'); }
   function setToken(t) { localStorage.setItem('aiq_token', t); }
-  function clearToken() { localStorage.removeItem('aiq_token'); }
+
+  // Cache the user object so login persists across page loads even if server is briefly unreachable
+  function getCachedUser() {
+    try { return JSON.parse(localStorage.getItem('aiq_user')); } catch { return null; }
+  }
+  function setCachedUser(u) {
+    try { localStorage.setItem('aiq_user', JSON.stringify(u)); } catch {}
+  }
+
+  function clearAuth() {
+    localStorage.removeItem('aiq_token');
+    localStorage.removeItem('aiq_user');
+    _user = null;
+  }
 
   function getUser() { return _user; }
 
   async function fetchMe() {
     const token = getToken();
     if (!token) return null;
+
+    // Return cached user immediately while we verify with server
+    const cached = getCachedUser();
+    if (cached) _user = cached;
+
     try {
       const res = await fetch(`${API}/api/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) { clearToken(); return null; }
-      _user = await res.json();
-      return _user;
-    } catch { return null; }
+      if (res.status === 401) { clearAuth(); return null; } // Only log out on explicit "not authorized"
+      if (!res.ok) return cached; // Server error — stay logged in with cached data
+      const user = await res.json();
+      setCachedUser(user);
+      _user = user;
+      return user;
+    } catch {
+      // Network error (server down, etc) — stay logged in with cached data
+      return cached;
+    }
   }
 
   async function register(username, email, password) {
@@ -32,6 +56,7 @@ const Auth = (() => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
     setToken(data.token);
+    setCachedUser(data.user);
     _user = data.user;
     return data.user;
   }
@@ -45,13 +70,13 @@ const Auth = (() => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
     setToken(data.token);
+    setCachedUser(data.user);
     _user = data.user;
     return data.user;
   }
 
   function logout() {
-    clearToken();
-    _user = null;
+    clearAuth();
     window.location.href = 'index.html';
   }
 
