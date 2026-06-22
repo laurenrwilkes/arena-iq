@@ -260,6 +260,46 @@ const QUESTIONS = {
   quant: {
     easy: [
       {
+        id: 'qe4', type: 'numeric',
+        title: 'At Least One Head',
+        description: 'You flip a fair coin <strong>twice</strong>.\n\nWhat is the probability of getting <strong>at least one head</strong>?\n\nEnter as a decimal rounded to 2 decimal places (e.g. <code>0.75</code>).',
+        unit: '',
+        answer: 0.75,
+        tolerance: 0.005,
+        steps: [
+          { label: 'P(no heads at all)', value: 'P(TT) = (1/2)² = 0.25' },
+          { label: 'Complement rule', value: 'P(at least one head) = 1 − P(no heads)' },
+          { label: 'Result', value: '1 − 0.25 = 0.75' },
+        ],
+        explanation: 'Use the complement: P(≥1 head) = 1 − P(TT) = 1 − (1/2)² = 1 − 0.25 = 0.75. The complement approach avoids summing cases (HT, TH, HH).',
+      },
+      {
+        id: 'qe5', type: 'numeric',
+        title: 'Matching Dice',
+        description: 'You roll two fair 6-sided dice simultaneously.\n\nWhat is the probability that <strong>both dice show the same number</strong>?\n\nEnter as a decimal rounded to 4 places (e.g. <code>0.1667</code>).',
+        unit: '',
+        answer: 0.1667,
+        tolerance: 0.0005,
+        steps: [
+          { label: 'Condition on the first die', value: 'It shows any value — that\'s fine' },
+          { label: 'Second die must match', value: 'P(match) = 1/6 ≈ 0.1667' },
+        ],
+        explanation: 'Regardless of what the first die shows, the second must match it: P = 1/6 ≈ 0.1667. Equivalently: 6 matching pairs out of 36 total outcomes.',
+      },
+      {
+        id: 'qe6', type: 'numeric',
+        title: 'Simple Return',
+        description: 'A stock price rises from <strong>$80</strong> to <strong>$100</strong> over one year.\n\nWhat is the <strong>simple return</strong>?\n\nEnter as a percentage (e.g. <code>25.00</code> for 25%).',
+        unit: '%',
+        answer: 25,
+        tolerance: 0.05,
+        steps: [
+          { label: 'Price gain', value: '$100 − $80 = $20' },
+          { label: 'Return = gain / initial price', value: '$20 ÷ $80 × 100% = 25%' },
+        ],
+        explanation: 'Simple return = (P_T − P_0) / P_0 = (100 − 80) / 80 = 0.25 = 25%.',
+      },
+      {
         id: 'qe1', type: 'numeric',
         title: 'Expected Value of a Dice Game',
         description: 'You roll a single fair 6-sided die. You win <strong>$4</strong> if you roll a 6, and you lose <strong>$1</strong> for any other result.\n\nWhat is the <strong>expected value</strong> of this game in dollars?\n\nEnter your answer rounded to 2 decimal places (e.g. <code>-0.50</code>).',
@@ -304,6 +344,49 @@ const QUESTIONS = {
     ],
     medium: [
       {
+        id: 'qm4', type: 'numeric',
+        title: "Bayes' Theorem: Medical Test",
+        description: 'A disease affects <strong>10%</strong> of a population.\n\nA diagnostic test has:\n• <strong>90% sensitivity</strong> (correctly detects disease)\n• <strong>80% specificity</strong> (correctly identifies healthy people)\n\nA patient tests positive. What is the probability they actually have the disease?\n\nEnter as a decimal rounded to 3 places (e.g. <code>0.333</code>).',
+        unit: '',
+        answer: 0.333,
+        tolerance: 0.002,
+        steps: [
+          { label: 'P(positive | disease)', value: '90% sensitivity → 0.9' },
+          { label: 'P(positive | healthy)', value: '1 − 80% specificity = 20% false positive rate → 0.2' },
+          { label: 'P(positive overall)', value: '0.9×0.1 + 0.2×0.9 = 0.09 + 0.18 = 0.27' },
+          { label: 'P(disease | positive)', value: '0.09 ÷ 0.27 = 1/3 ≈ 0.333' },
+        ],
+        explanation: "Bayes': P(D|+) = P(+|D)×P(D) / P(+) = 0.9×0.1 / 0.27 = 1/3 ≈ 0.333. Even with a 90% sensitive test, only 1 in 3 positives actually has the disease when prevalence is just 10%. This is why screening rare diseases needs very high specificity.",
+      },
+      {
+        id: 'qm5', type: 'numeric',
+        title: 'CAPM Expected Return',
+        description: 'Using the <strong>Capital Asset Pricing Model (CAPM)</strong>:\n\n• Risk-free rate: <strong>3%</strong>\n• Expected market return: <strong>10%</strong>\n• Asset beta (β): <strong>1.5</strong>\n\nWhat is the <strong>expected return</strong> of the asset?\n\nEnter as a percentage (e.g. <code>13.50</code>).',
+        unit: '%',
+        answer: 13.5,
+        tolerance: 0.05,
+        steps: [
+          { label: 'Market risk premium', value: 'E[Rm] − rf = 10% − 3% = 7%' },
+          { label: 'Beta contribution', value: 'β × 7% = 1.5 × 7% = 10.5%' },
+          { label: 'E[R] = rf + β × (E[Rm] − rf)', value: '3% + 10.5% = 13.5%' },
+        ],
+        explanation: 'CAPM: E[R] = rf + β(E[Rm]−rf) = 3% + 1.5×7% = 13.5%. A beta of 1.5 means 50% more market exposure than the average asset. The extra return comes from bearing extra systematic risk.',
+      },
+      {
+        id: 'qm6', type: 'numeric',
+        title: 'Standard Deviation of Returns',
+        description: 'A stock has the following annual return distribution:\n• <strong>+20%</strong> with probability 0.5\n• <strong>−10%</strong> with probability 0.3\n• <strong>0%</strong> with probability 0.2\n\nWhat is the <strong>standard deviation</strong> of returns?\n\nEnter as a percentage rounded to 2 decimal places.',
+        unit: '%',
+        answer: 13.45,
+        tolerance: 0.05,
+        steps: [
+          { label: 'E[R]', value: '0.5×20 + 0.3×(−10) + 0.2×0 = 10 − 3 = 7%' },
+          { label: 'Variance = Σ pᵢ×(rᵢ−E[R])²', value: '0.5×(13)² + 0.3×(17)² + 0.2×(7)² = 84.5 + 86.7 + 9.8 = 181' },
+          { label: 'σ = √Variance', value: '√181 ≈ 13.45%' },
+        ],
+        explanation: 'E[R] = 7%. Variance = Σpᵢ(rᵢ−μ)² = 0.5×169 + 0.3×289 + 0.2×49 = 84.5 + 86.7 + 9.8 = 181. σ = √181 ≈ 13.45%.',
+      },
+      {
         id: 'qm1', type: 'numeric',
         title: 'Returns Are Not Symmetric',
         description: 'A stock rises <strong>50%</strong> in January, then falls <strong>50%</strong> in February.\n\nStarting from $100, what is the stock price at the end of February?\n\nEnter the price in dollars (e.g. <code>75.00</code>).',
@@ -325,8 +408,8 @@ const QUESTIONS = {
         tolerance: 0.001,
         steps: [
           { label: 'P(car behind Door 1) initially', value: '1/3' },
-          { label: 'P(car behind Door 2 or 3) initially', value: '2/3' },
-          { label: 'Host eliminates Door 3', value: 'All 2/3 probability shifts to Door 2' },
+          { label: 'P(car NOT behind Door 1)', value: '2/3 (split across Doors 2 and 3)' },
+          { label: 'Host reveals a goat behind Door 3', value: 'Your original pick stays at 1/3 — the remaining 2/3 consolidates onto Door 2' },
           { label: 'P(win by switching)', value: '2/3 ≈ 0.6667' },
         ],
         explanation: 'Switching gives you 2/3 probability of winning. Your initial pick had a 1/3 chance. The remaining 2/3 probability was split between doors 2 and 3 — when the host eliminates one, all 2/3 collapses onto the remaining door. Always switch.',
@@ -346,6 +429,46 @@ const QUESTIONS = {
       },
     ],
     hard: [
+      {
+        id: 'qh4', type: 'numeric',
+        title: 'Risk-Neutral Probability',
+        description: 'In a one-period <strong>binomial options model</strong>:\n• Current stock price: <strong>$100</strong>\n• Up move to: <strong>$110</strong>\n• Down move to: <strong>$90</strong>\n• Risk-free rate: <strong>5%</strong> per period\n\nWhat is the <strong>risk-neutral probability</strong> of an up move?\n\nEnter as a decimal rounded to 4 places (e.g. <code>0.7500</code>).',
+        unit: '',
+        answer: 0.75,
+        tolerance: 0.005,
+        steps: [
+          { label: 'Risk-neutral condition', value: 'p×S_u + (1−p)×S_d = S×(1+r)' },
+          { label: 'Substituting values', value: 'p×110 + (1−p)×90 = 100×1.05 = 105' },
+          { label: 'Simplify', value: '90 + 20p = 105 → 20p = 15 → p = 0.75' },
+        ],
+        explanation: 'The risk-neutral probability satisfies: p = (S(1+r) − S_d) / (S_u − S_d) = (105−90)/(110−90) = 15/20 = 0.75. Note: this is NOT the real probability of an up move — it\'s a mathematical construct used to price derivatives by discounting at the risk-free rate.',
+      },
+      {
+        id: 'qh5', type: 'numeric',
+        title: 'Continuously Compounded Return',
+        description: 'A stock price doubles from <strong>$50</strong> to <strong>$100</strong> in exactly one year.\n\nWhat is the <strong>continuously compounded (log) return</strong>?\n\nUse ln(2) ≈ 0.6931. Enter as a percentage rounded to 2 decimal places.',
+        unit: '%',
+        answer: 69.31,
+        tolerance: 0.1,
+        steps: [
+          { label: 'Log return formula', value: 'r_c = ln(P_T / P_0) = ln(100/50)' },
+          { label: 'Evaluate', value: '= ln(2) ≈ 0.6931 = 69.31%' },
+        ],
+        explanation: 'Continuously compounded return = ln(P_T/P_0) = ln(2) ≈ 69.31%. Compare to the simple return of 100%. Log returns are additive over time and normally distributed under GBM, making them essential in quantitative finance.',
+      },
+      {
+        id: 'qh6', type: 'numeric',
+        title: 'Sharpe Ratio Comparison',
+        description: 'Two portfolios, risk-free rate = 2%:\n\n• Portfolio A: expected return <strong>15%</strong>, volatility <strong>18%</strong>\n• Portfolio B: expected return <strong>9%</strong>, volatility <strong>6%</strong>\n\nWhat is <strong>Portfolio B\'s Sharpe ratio</strong>? Round to 2 decimal places.',
+        unit: '',
+        answer: 1.17,
+        tolerance: 0.01,
+        steps: [
+          { label: "Portfolio B excess return", value: '9% − 2% = 7%' },
+          { label: 'Sharpe(B) = excess return ÷ σ', value: '7% ÷ 6% ≈ 1.17' },
+        ],
+        explanation: 'Sharpe(B) = (9%−2%)/6% = 1.17. Sharpe(A) = (15%−2%)/18% = 0.72. Despite lower absolute return, B is more efficient per unit of risk — a critical insight for risk-adjusted portfolio evaluation.',
+      },
       {
         id: 'qh1', type: 'numeric',
         title: 'Portfolio Volatility',
@@ -518,15 +641,15 @@ const QUESTIONS = {
         title: 'Accretion/Dilution: EPS Impact',
         description: 'Acquirer details:\n• Net Income: <strong>$200M</strong>, shares outstanding: <strong>100M</strong>\n• Acquirer EPS: $2.00, stock price: $40 (P/E = 20x)\n\nTarget details:\n• Purchase price: <strong>$500M</strong>, all-stock deal\n• Target Net Income: <strong>$30M</strong>\n• Assume no synergies\n\nWhat is the acquirer\'s <strong>new EPS</strong> post-acquisition? Round to 2 decimal places.',
         unit: '$',
-        answer: 1.96,
+        answer: 2.04,
         tolerance: 0.02,
         steps: [
           { label: 'New shares issued', value: '$500M ÷ $40/share = 12.5M shares' },
           { label: 'Total shares post-deal', value: '100M + 12.5M = 112.5M shares' },
           { label: 'Combined Net Income', value: '$200M + $30M = $230M' },
-          { label: 'New EPS', value: '$230M ÷ 112.5M = $2.044... → wait, let me recalc: $230/112.5 = $2.044, hmm' },
+          { label: 'New EPS', value: '$230M ÷ 112.5M ≈ $2.04' },
         ],
-        explanation: 'New shares = $500M / $40 = 12.5M. Total shares = 112.5M. Combined NI = $230M. New EPS = $230M / 112.5M = $2.044. Wait — recalculate: $230/112.5 = 2.0444. Rounding: $2.04. This deal is slightly dilutive (was $2.00, but high P/E acquirer buys lower P/E target → should be accretive). Let me fix: Target NI $30M, purchase $500M. EPS_target = $30M / ($500M/$40) = $30M/12.5M = $2.40/share implied. Target P/E = $40×12.5M/$30M = 16.7x < 20x → accretive. New EPS = $230M/112.5M = $2.04. Accretive vs $2.00.',
+        explanation: 'New shares = $500M / $40 = 12.5M. Total = 112.5M. Combined NI = $230M. New EPS = $230/112.5 ≈ $2.04. The deal is accretive (+$0.04/share) because the acquirer P/E (20x) exceeds the implied acquisition P/E ($500M / $30M NI ≈ 16.7x). Accretion occurs when acquirer P/E > deal P/E.',
       },
     ],
   },
@@ -538,4 +661,14 @@ function getRandomQuestion(category, difficulty) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-module.exports = { QUESTIONS, getRandomQuestion };
+function getRandomQuestions(category, difficulty, n) {
+  const pool = (QUESTIONS[category]?.[difficulty] || []).slice();
+  const result = [];
+  while (result.length < n && pool.length > 0) {
+    const i = Math.floor(Math.random() * pool.length);
+    result.push(pool.splice(i, 1)[0]);
+  }
+  return result;
+}
+
+module.exports = { QUESTIONS, getRandomQuestion, getRandomQuestions };

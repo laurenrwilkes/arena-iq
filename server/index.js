@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const path = require('path');
 const db = require('./db');
-const { getRandomQuestion } = require('./questions');
+const { getRandomQuestion, getRandomQuestions } = require('./questions');
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.2 });
@@ -259,16 +259,64 @@ function queueKey(cat, diff) { return `${cat}-${diff}`; }
 function makeGameId() { return Math.random().toString(36).slice(2, 10); }
 function makeRoomCode() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
 
+const MULTI_Q_CATEGORIES = new Set(['quant', 'ib']);
+const QUESTIONS_PER_MATCH = 3;
+
 function startGame(p1, p2, category, difficulty) {
-  const question = getRandomQuestion(category, difficulty);
-  if (!question) return null;
   const timeLimits = { easy: 300, medium: 480, hard: 720 };
   const gameId = makeGameId();
-  games[gameId] = { p1, p2, question, category, difficulty, answers: {}, startTime: Date.now(), timeLimit: timeLimits[difficulty] || 300, timer: null, ended: false };
-  const payload = { gameId, question, timeLimit: timeLimits[difficulty] || 300 };
-  if (!p1.isBot) io.to(p1.id).emit('match_found', { ...payload, opponent: { username: p2.username, elo: p2.elo } });
-  if (!p2.isBot) io.to(p2.id).emit('match_found', { ...payload, opponent: { username: p1.username, elo: p1.elo } });
-  games[gameId].timer = setTimeout(() => { if (!games[gameId]?.ended) endGame(gameId, null); }, (timeLimits[difficulty] + 5) * 1000);
+  const multiQuestion = MULTI_Q_CATEGORIES.has(category);
+
+  let questions;
+  if (multiQuestion) {
+    questions = getRandomQuestions(category, difficulty, QUESTIONS_PER_MATCH);
+    if (questions.length < QUESTIONS_PER_MATCH) return null;
+  } else {
+    const q = getRandomQuestion(category, difficulty);
+    if (!q) return null;
+    questions = [q];
+  }
+
+  const playerProgress = {
+    [p1.id]: { submitted: 0, score: 0, finished: false, finishTime: null, hintUsed: false },
+    [p2.id]: { submitted: 0, score: 0, finished: false, finishTime: null, hintUsed: false },
+  };
+
+  games[gameId] = {
+    p1, p2,
+    question: questions[0],
+    questions,
+    multiQuestion,
+    category, difficulty,
+    answers: {},
+    playerProgress,
+    startTime: Date.now(),
+    timeLimit: timeLimits[difficulty] || 300,
+    timer: null,
+    ended: false,
+  };
+
+  const basePayload = { gameId, question: questions[0], timeLimit: timeLimits[difficulty] || 300, multiQuestion, totalQuestions: questions.length };
+  const multiPayload = multiQuestion ? { questions } : {};
+  if (!p1.isBot) io.to(p1.id).emit('match_found', { ...basePayload, ...multiPayload, opponent: { username: p2.username, elo: p2.elo } });
+  if (!p2.isBot) io.to(p2.id).emit('match_found', { ...basePayload, ...multiPayload, opponent: { username: p1.username, elo: p1.elo } });
+
+  games[gameId].timer = setTimeout(() => {
+    const g = games[gameId];
+    if (!g?.ended) {
+      if (g.multiQuestion) {
+        const pp1 = g.playerProgress[p1.id];
+        const pp2 = g.playerProgress[p2.id];
+        const s1 = pp1?.score || 0, s2 = pp2?.score || 0;
+        if (s1 > s2) endGame(gameId, p1.id);
+        else if (s2 > s1) endGame(gameId, p2.id);
+        else endGame(gameId, null);
+      } else {
+        endGame(gameId, null);
+      }
+    }
+  }, (timeLimits[difficulty] + 5) * 1000);
+
   return gameId;
 }
 
@@ -288,9 +336,15 @@ function endGame(gameId, winnerSocketId) {
   let eloResult = { p1: { eloChange: 0, newElo: game.p1.elo }, p2: { eloChange: 0, newElo: game.p2.elo } };
   if (game.p1.userId && game.p2.userId) {
     const dbWinnerId = p1Wins ? game.p1.userId : p2Wins ? game.p2.userId : null;
+    const winnerSocketId = p1Wins ? game.p1.id : p2Wins ? game.p2.id : null;
+    const winnerHintUsed = winnerSocketId
+      ? (game.multiQuestion
+          ? game.playerProgress[winnerSocketId]?.hintUsed
+          : game.hintUsed?.[winnerSocketId])
+      : false;
     eloResult = db.applyMatchResult(
       game.p1.userId, game.p2.userId, dbWinnerId,
-      { category: game.category, difficulty: game.difficulty, questionId: game.question.id }
+      { category: game.category, difficulty: game.difficulty, questionId: game.question.id, winnerHintUsed: !!winnerHintUsed }
     );
   }
 
@@ -317,27 +371,58 @@ function startBotMatch(playerSocket, category, difficulty) {
   if (!gameId) return;
   const game = games[gameId];
 
-  const [aMin, aMax] = BOT_ACTIVITY[difficulty];
-  setTimeout(() => {
-    if (games[gameId]?.ended) return;
-    const msg = game.question.type === 'code' ? 'running tests...' : 'checking answer...';
-    io.to(playerSocket.id).emit('opponent_activity', { message: msg });
-  }, (aMin + Math.random() * (aMax - aMin)) * 1000);
-
   const [sMin, sMax] = BOT_DELAY[difficulty];
-  setTimeout(() => {
-    const g = games[gameId];
-    if (!g || g.ended) return;
-    io.to(playerSocket.id).emit('opponent_answered');
-    const botCorrect = Math.random() < BOT_ACCURACY[difficulty];
-    g.answers[botProxy.id] = { correct: botCorrect, timestamp: Date.now() };
-    const playerAnswered = g.answers[playerSocket.id];
-    if (botCorrect && !playerAnswered?.correct) {
-      endGame(gameId, botProxy.id);
-    } else if (!botCorrect && playerAnswered && !playerAnswered.correct) {
-      endGame(gameId, null);
+  const totalDelay = (sMin + Math.random() * (sMax - sMin)) * 1000;
+
+  if (game.multiQuestion) {
+    const total = game.questions.length;
+    for (let i = 1; i <= total; i++) {
+      setTimeout(() => {
+        if (!games[gameId]?.ended) {
+          io.to(playerSocket.id).emit('opponent_progress', { submitted: i });
+        }
+      }, totalDelay * i / total);
     }
-  }, (sMin + Math.random() * (sMax - sMin)) * 1000);
+
+    setTimeout(() => {
+      const g = games[gameId];
+      if (!g || g.ended) return;
+      const botProgress = g.playerProgress[botProxy.id];
+      if (!botProgress) return;
+      botProgress.submitted = total;
+      botProgress.score = Array.from({ length: total }, () => Math.random() < BOT_ACCURACY[difficulty] ? 1 : 0).reduce((a, b) => a + b, 0);
+      botProgress.finished = true;
+      botProgress.finishTime = Date.now();
+
+      const playerProgress = g.playerProgress[playerSocket.id];
+      if (playerProgress?.finished) {
+        if (playerProgress.score > botProgress.score) endGame(gameId, playerSocket.id);
+        else if (botProgress.score > playerProgress.score) endGame(gameId, botProxy.id);
+        else endGame(gameId, null);
+      }
+    }, totalDelay);
+  } else {
+    const [aMin, aMax] = BOT_ACTIVITY[difficulty];
+    setTimeout(() => {
+      if (games[gameId]?.ended) return;
+      const msg = game.question.type === 'code' ? 'running tests...' : 'checking answer...';
+      io.to(playerSocket.id).emit('opponent_activity', { message: msg });
+    }, (aMin + Math.random() * (aMax - aMin)) * 1000);
+
+    setTimeout(() => {
+      const g = games[gameId];
+      if (!g || g.ended) return;
+      io.to(playerSocket.id).emit('opponent_answered');
+      const botCorrect = Math.random() < BOT_ACCURACY[difficulty];
+      g.answers[botProxy.id] = { correct: botCorrect, timestamp: Date.now() };
+      const playerAnswered = g.answers[playerSocket.id];
+      if (botCorrect && !playerAnswered?.correct) {
+        endGame(gameId, botProxy.id);
+      } else if (!botCorrect && playerAnswered && !playerAnswered.correct) {
+        endGame(gameId, null);
+      }
+    }, totalDelay);
+  }
 }
 
 // ── SOCKET AUTH ──────────────────────────────────────────────────────────────
@@ -386,24 +471,53 @@ io.on('connection', (socket) => {
     Object.keys(queues).forEach(k => { queues[k] = queues[k].filter(p => p.socketId !== socket.id); });
   });
 
-  // Client sends correct:true/false based on local test evaluation
-  socket.on('submit_answer', ({ gameId, correct }) => {
+  socket.on('submit_answer', ({ gameId, correct, questionIndex, hintUsed, isLast }) => {
     const game = games[gameId];
     if (!game || game.ended) return;
-    if (game.answers[socket.id] !== undefined) return; // already answered (use socket.id not userId)
-
-    game.answers[socket.id] = { correct, timestamp: Date.now() };
 
     const opponent = game.p1.id === socket.id ? game.p2 : game.p1;
-    if (!opponent.isBot) io.to(opponent.id).emit('opponent_answered');
 
-    if (correct) {
-      endGame(gameId, socket.id);
+    if (game.multiQuestion) {
+      const progress = game.playerProgress[socket.id];
+      if (!progress || progress.finished) return;
+      if (questionIndex !== undefined && questionIndex !== progress.submitted) return;
+
+      progress.submitted++;
+      if (correct) progress.score++;
+      if (hintUsed) progress.hintUsed = true;
+
+      if (!opponent.isBot) {
+        io.to(opponent.id).emit('opponent_progress', { submitted: progress.submitted });
+      }
+
+      if (progress.submitted >= game.questions.length) {
+        progress.finished = true;
+        progress.finishTime = Date.now();
+
+        if (progress.score === game.questions.length) {
+          endGame(gameId, socket.id);
+          return;
+        }
+
+        const oppProgress = game.playerProgress[opponent.id];
+        if (oppProgress?.finished) {
+          if (progress.score > oppProgress.score) endGame(gameId, socket.id);
+          else if (oppProgress.score > progress.score) endGame(gameId, opponent.id);
+          else endGame(gameId, null);
+        }
+      }
     } else {
-      // Check if bot or opponent also answered wrong
-      const opponentAnswered = game.answers[opponent.id];
-      if (opponentAnswered && !opponentAnswered.correct) {
-        endGame(gameId, null);
+      if (game.answers[socket.id] !== undefined) return;
+      if (hintUsed) { if (!game.hintUsed) game.hintUsed = {}; game.hintUsed[socket.id] = true; }
+
+      game.answers[socket.id] = { correct, timestamp: Date.now() };
+      if (!opponent.isBot) io.to(opponent.id).emit('opponent_answered');
+
+      if (correct) {
+        endGame(gameId, socket.id);
+      } else {
+        const opponentAnswered = game.answers[opponent.id];
+        if (opponentAnswered && !opponentAnswered.correct) endGame(gameId, null);
       }
     }
   });

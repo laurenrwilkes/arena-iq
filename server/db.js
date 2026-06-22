@@ -85,15 +85,17 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   const p2 = getById.get(player2Id);
   if (!p1 || !p2) return { p1: { eloChange: 0, newElo: 1200 }, p2: { eloChange: 0, newElo: 1200 } };
 
+  const K = matchData.winnerHintUsed ? 16 : 32;
+
   let p1EloAfter = p1.elo, p2EloAfter = p2.elo;
   let p1W = 0, p1L = 0, p1D = 0, p2W = 0, p2L = 0, p2D = 0;
 
   if (winnerId === player1Id) {
-    const { winnerGain, loserLoss } = calculateElo(p1.elo, p2.elo);
+    const { winnerGain, loserLoss } = calculateElo(p1.elo, p2.elo, K);
     p1EloAfter = p1.elo + winnerGain; p2EloAfter = p2.elo - loserLoss;
     p1W = 1; p2L = 1;
   } else if (winnerId === player2Id) {
-    const { winnerGain, loserLoss } = calculateElo(p2.elo, p1.elo);
+    const { winnerGain, loserLoss } = calculateElo(p2.elo, p1.elo, K);
     p2EloAfter = p2.elo + winnerGain; p1EloAfter = p1.elo - loserLoss;
     p2W = 1; p1L = 1;
   } else {

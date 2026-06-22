@@ -20,6 +20,12 @@ const STATE = {
   numericChecked: false,
   numericCheckCorrect: false,
   language: 'javascript',
+  multiQuestion: false,
+  questions: [],
+  questionIndex: 0,
+  myScore: 0,
+  oppSubmitted: 0,
+  hintUsed: false,
 };
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -42,16 +48,32 @@ function connectSocket() {
     clearInterval(queueTimer);
     STATE.phase = 'game';
     STATE.gameId = data.gameId;
-    STATE.question = data.question;
+    STATE.multiQuestion = data.multiQuestion || false;
+    STATE.questions = data.questions || [data.question];
+    STATE.questionIndex = 0;
+    STATE.question = STATE.questions[0];
     STATE.timeLimit = data.timeLimit;
     STATE.timeLeft = data.timeLimit;
     STATE.opponent = data.opponent;
     STATE.myAnswerCorrect = null;
+    STATE.myScore = 0;
+    STATE.oppSubmitted = 0;
+    STATE.hintUsed = false;
     STATE.testsRun = false;
     STATE.numericChecked = false;
     STATE.numericCheckCorrect = false;
     render();
     startTimer();
+  });
+
+  socket.on('opponent_progress', ({ submitted }) => {
+    STATE.oppSubmitted = submitted;
+    const total = STATE.questions.length;
+    const el = document.getElementById('opp-status');
+    if (el) {
+      el.textContent = `${STATE.opponent?.username || 'Opponent'}: ${submitted}/${total} submitted`;
+      el.style.color = 'var(--gold)';
+    }
   });
 
   socket.on('opponent_activity', ({ message }) => {
@@ -300,11 +322,16 @@ function gameHeader(q) {
   const oppName = STATE.opponent?.username || 'Opponent';
   const playerLabel = currentUser ? `${currentUser.username} · ${currentUser.elo} ELO` : 'You';
   const oppLabel = `${oppName} · ${STATE.opponent?.elo || 1200} ELO`;
+  const qProgress = STATE.multiQuestion
+    ? `<span class="info-pill" style="border-color:var(--t3);color:var(--t3)">Q ${STATE.questionIndex + 1}/${STATE.questions.length}</span>`
+    : '';
+
   return `
     <div class="game-topbar">
       <div class="game-info">
         <span class="info-pill" style="border-color:${catColors[STATE.category]};color:${catColors[STATE.category]}">${catLabels[STATE.category]}</span>
         <span class="info-pill">${STATE.difficulty}</span>
+        ${qProgress}
       </div>
       <div class="game-timer-wrap">
         <div class="game-timer" id="game-timer">${formatTime(STATE.timeLeft)}</div>
@@ -529,7 +556,7 @@ async function submitCode() {
     }
   }
 
-  socket?.emit('submit_answer', { gameId: STATE.gameId, correct: allPassed });
+  socket?.emit('submit_answer', { gameId: STATE.gameId, correct: allPassed, hintUsed: STATE.hintUsed, questionIndex: 0, isLast: true });
   STATE.myAnswerCorrect = allPassed;
 
   const feedback = document.getElementById('submit-feedback');
@@ -580,8 +607,8 @@ function renderNumericGame(q) {
         <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Check your answer first, or submit directly to lock it in</div>
       </div>
       ${hintSteps ? `
-        <details class="steps-details">
-          <summary>💡 Show hint</summary>
+        <details class="steps-details" ontoggle="if(this.open) STATE.hintUsed = true">
+          <summary>💡 Show hint <span style="font-size:0.72rem;color:var(--gold);margin-left:6px">(−50% ELO if you win)</span></summary>
           <div class="steps-body">${hintSteps}</div>
         </details>` : ''}
     </div>
@@ -629,10 +656,41 @@ function submitNumeric() {
   if (checkBtn) { checkBtn.disabled = true; checkBtn.style.opacity = '0.4'; }
   if (input) input.readOnly = true;
 
-  socket?.emit('submit_answer', { gameId: STATE.gameId, correct });
+  const isLast = STATE.questionIndex >= STATE.questions.length - 1;
+  if (correct && STATE.multiQuestion) STATE.myScore++;
+
+  socket?.emit('submit_answer', {
+    gameId: STATE.gameId, correct,
+    questionIndex: STATE.questionIndex,
+    hintUsed: STATE.hintUsed,
+    isLast,
+  });
   STATE.myAnswerCorrect = correct;
+
   const feedback = document.getElementById('numeric-feedback');
-  if (feedback) feedback.innerHTML = '<span style="color:var(--t2)">⏳ Submitted — waiting for result...</span>';
+  if (!STATE.multiQuestion || isLast) {
+    if (feedback) feedback.innerHTML = '<span style="color:var(--t2)">⏳ Submitted — waiting for result...</span>';
+  } else {
+    const scoreColor = correct ? 'var(--green)' : 'var(--red)';
+    const scoreText = correct ? '✅ Correct!' : '❌ Incorrect';
+    const nextIdx = STATE.questionIndex + 1;
+    if (feedback) feedback.innerHTML = `
+      <div style="text-align:center;padding:8px 0">
+        <div style="color:${scoreColor};font-weight:700;margin-bottom:12px">${scoreText}</div>
+        <div style="font-size:0.8rem;color:var(--t3);margin-bottom:10px">Your score: ${STATE.myScore}/${nextIdx}</div>
+        <button class="btn btn-primary" onclick="nextQuestion()" style="width:100%">Next Question →</button>
+      </div>`;
+  }
+}
+
+function nextQuestion() {
+  STATE.questionIndex++;
+  STATE.question = STATE.questions[STATE.questionIndex];
+  STATE.hintUsed = false;
+  STATE.numericChecked = false;
+  STATE.numericCheckCorrect = false;
+  const app = document.getElementById('app');
+  if (app) app.innerHTML = renderGame();
 }
 
 // ── TIMER ────────────────────────────────────────────────────────────────────
