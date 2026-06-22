@@ -177,6 +177,68 @@ app.post('/api/shop/grant', (req, res) => {
   res.json({ ok: true });
 });
 
+// ── CODE EXECUTION ───────────────────────────────────────────────────────────
+const PISTON_URL = 'https://emkc.org/api/v2/piston/execute';
+
+function buildPythonRunner(userCode, fnName, cases, comparator) {
+  const inputs = JSON.stringify(cases.map(tc => tc.input));
+  const expected = JSON.stringify(cases.map(tc => tc.expected));
+  return `import json
+
+_USER_CODE = ${JSON.stringify(userCode)}
+try:
+    exec(_USER_CODE, globals())
+except Exception as e:
+    print(json.dumps([{"passed": False, "error": str(e)}] * ${cases.length}))
+    exit()
+
+def _run():
+    cases = ${inputs}
+    expected = ${expected}
+    results = []
+    for args, exp in zip(cases, expected):
+        try:
+            result = ${fnName}(*args)
+            if "${comparator}" == "sorted":
+                ok = sorted(list(result)) == sorted(list(exp))
+            else:
+                ok = result == exp
+            results.append({"passed": ok, "result": repr(result)})
+        except Exception as e:
+            results.append({"passed": False, "error": str(e)})
+    print(json.dumps(results))
+
+_run()
+`;
+}
+
+app.post('/api/execute', async (req, res) => {
+  const { code, language, testCases, comparator, functionName, hiddenCases, includeHidden } = req.body;
+  if (language !== 'python') return res.status(400).json({ error: 'Unsupported language' });
+
+  const allCases = includeHidden ? [...(testCases || []), ...(hiddenCases || [])] : (testCases || []);
+  const source = buildPythonRunner(code, functionName, allCases, comparator || 'exact');
+
+  try {
+    const resp = await fetch(PISTON_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language: 'python', version: '3.10.0', files: [{ content: source }] }),
+    });
+    const data = await resp.json();
+    const stdout = data.run?.stdout?.trim() || '';
+    const stderr = data.run?.stderr?.trim() || '';
+    if (!stdout) return res.json({ error: stderr || 'No output', results: [] });
+    try {
+      res.json({ results: JSON.parse(stdout) });
+    } catch {
+      res.json({ error: 'Could not parse output: ' + stdout.slice(0, 200), results: [] });
+    }
+  } catch {
+    res.status(500).json({ error: 'Execution service unavailable' });
+  }
+});
+
 function safeUser(u) {
   let ownedBadges = [];
   try { ownedBadges = JSON.parse(u.owned_badges || '[]'); } catch (_) {}

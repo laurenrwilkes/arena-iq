@@ -17,7 +17,9 @@ const QUESTIONS = {
         ],
         constraints: ['2 ≤ nums.length ≤ 10⁴', '-10⁹ ≤ nums[i] ≤ 10⁹', 'Only one valid answer exists'],
         starter: 'function twoSum(nums, target) {\n  \n}',
+        pythonStarter: 'def two_sum(nums, target):\n    pass',
         functionName: 'twoSum',
+        pythonFunctionName: 'two_sum',
         comparator: 'sorted',
         testCases: [
           { input: [[2,7,11,15], 9], expected: [0,1], label: 'nums=[2,7,11,15], target=9' },
@@ -41,7 +43,9 @@ const QUESTIONS = {
         ],
         constraints: ['1 ≤ nums.length ≤ 10⁵', '-10⁹ ≤ nums[i] ≤ 10⁹'],
         starter: 'function containsDuplicate(nums) {\n  \n}',
+        pythonStarter: 'def contains_duplicate(nums):\n    pass',
         functionName: 'containsDuplicate',
+        pythonFunctionName: 'contains_duplicate',
         comparator: 'exact',
         testCases: [
           { input: [[1,2,3,1]], expected: true, label: '[1,2,3,1]' },
@@ -66,7 +70,9 @@ const QUESTIONS = {
         ],
         constraints: ['-2³¹ ≤ x ≤ 2³¹ - 1'],
         starter: 'function isPalindrome(x) {\n  \n}',
+        pythonStarter: 'def is_palindrome(x):\n    pass',
         functionName: 'isPalindrome',
+        pythonFunctionName: 'is_palindrome',
         comparator: 'exact',
         testCases: [
           { input: [121], expected: true, label: 'x = 121' },
@@ -95,7 +101,9 @@ const QUESTIONS = {
         ],
         constraints: ['1 ≤ s.length ≤ 10⁴', 's consists of parentheses only ()[]{}'],
         starter: 'function isValid(s) {\n  \n}',
+        pythonStarter: 'def is_valid(s):\n    pass',
         functionName: 'isValid',
+        pythonFunctionName: 'is_valid',
         comparator: 'exact',
         testCases: [
           { input: ['()'], expected: true, label: '"()"' },
@@ -122,7 +130,9 @@ const QUESTIONS = {
         ],
         constraints: ['1 ≤ nums.length ≤ 10⁵', '-10⁴ ≤ nums[i] ≤ 10⁴'],
         starter: 'function maxSubArray(nums) {\n  \n}',
+        pythonStarter: 'def max_sub_array(nums):\n    pass',
         functionName: 'maxSubArray',
+        pythonFunctionName: 'max_sub_array',
         comparator: 'exact',
         testCases: [
           { input: [[-2,1,-3,4,-1,2,1,-5,4]], expected: 6, label: '[-2,1,-3,4,-1,2,1,-5,4]' },
@@ -146,7 +156,9 @@ const QUESTIONS = {
         ],
         constraints: ['1 ≤ n ≤ 45'],
         starter: 'function climbStairs(n) {\n  \n}',
+        pythonStarter: 'def climb_stairs(n):\n    pass',
         functionName: 'climbStairs',
+        pythonFunctionName: 'climb_stairs',
         comparator: 'exact',
         testCases: [
           { input: [2], expected: 2, label: 'n = 2' },
@@ -172,7 +184,9 @@ const QUESTIONS = {
         ],
         constraints: ['1 ≤ nums.length ≤ 10⁴', '0 ≤ nums[i] ≤ 10⁵'],
         starter: 'function canJump(nums) {\n  \n}',
+        pythonStarter: 'def can_jump(nums):\n    pass',
         functionName: 'canJump',
+        pythonFunctionName: 'can_jump',
         comparator: 'exact',
         testCases: [
           { input: [[2,3,1,1,4]], expected: true, label: '[2,3,1,1,4]' },
@@ -198,7 +212,9 @@ const QUESTIONS = {
         ],
         constraints: ['1 ≤ coins.length ≤ 12', '1 ≤ coins[i] ≤ 2³¹ - 1', '0 ≤ amount ≤ 10⁴'],
         starter: 'function coinChange(coins, amount) {\n  \n}',
+        pythonStarter: 'def coin_change(coins, amount):\n    pass',
         functionName: 'coinChange',
+        pythonFunctionName: 'coin_change',
         comparator: 'exact',
         testCases: [
           { input: [[1,5,10,25], 36], expected: 3, label: 'coins=[1,5,10,25], amount=36' },
@@ -222,7 +238,9 @@ const QUESTIONS = {
         ],
         constraints: ['1 ≤ m, n ≤ 100'],
         starter: 'function uniquePaths(m, n) {\n  \n}',
+        pythonStarter: 'def unique_paths(m, n):\n    pass',
         functionName: 'uniquePaths',
+        pythonFunctionName: 'unique_paths',
         comparator: 'exact',
         testCases: [
           { input: [3, 7], expected: 28, label: 'm=3, n=7' },

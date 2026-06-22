@@ -19,6 +19,7 @@ const STATE = {
   testsRun: false,
   numericChecked: false,
   numericCheckCorrect: false,
+  language: 'javascript',
 };
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -347,12 +348,15 @@ function renderCodeGame(q) {
       </div>
       <div class="game-right">
         <div class="editor-topbar">
-          <div style="font-size:0.78rem;color:var(--t3);font-weight:600">JavaScript</div>
+          <div class="lang-picker">
+            <button class="lang-btn ${STATE.language === 'javascript' ? 'active' : ''}" data-lang="javascript" onclick="setLanguage('javascript')">JavaScript</button>
+            <button class="lang-btn ${STATE.language === 'python' ? 'active' : ''}" data-lang="python" onclick="setLanguage('python')">Python</button>
+          </div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-ghost" style="padding:6px 14px;font-size:0.8rem" onclick="resetCode()">Reset</button>
           </div>
         </div>
-        <textarea id="code-editor" class="code-editor" spellcheck="false">${q.starter || ''}</textarea>
+        <textarea id="code-editor" class="code-editor" spellcheck="false">${STATE.language === 'python' ? (q.pythonStarter || '') : (q.starter || '')}</textarea>
         <div id="test-output" class="test-output" style="display:none"></div>
         <div class="editor-actions">
           <button class="btn btn-outline" id="run-btn" onclick="runTests()" style="flex:1">▶ Run Tests</button>
@@ -377,9 +381,33 @@ document.addEventListener('keydown', function(e) {
 
 function resetCode() {
   const ta = document.getElementById('code-editor');
-  if (ta && STATE.question?.starter) ta.value = STATE.question.starter;
+  if (ta && STATE.question) {
+    ta.value = STATE.language === 'python' ? (STATE.question.pythonStarter || '') : (STATE.question.starter || '');
+  }
   const out = document.getElementById('test-output');
   if (out) { out.style.display = 'none'; out.innerHTML = ''; }
+}
+
+function setLanguage(lang) {
+  if (STATE.language === lang) return;
+  STATE.language = lang;
+  const q = STATE.question;
+  const ta = document.getElementById('code-editor');
+  if (ta && q) ta.value = lang === 'python' ? (q.pythonStarter || '') : (q.starter || '');
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  const out = document.getElementById('test-output');
+  if (out) { out.style.display = 'none'; out.innerHTML = ''; }
+  STATE.testsRun = false;
+}
+
+async function executeRemote(code, language, cases, comparator, fnName, includeHidden, hiddenCases) {
+  const res = await fetch('/api/execute', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, language, testCases: cases, comparator, functionName: fnName, includeHidden, hiddenCases }),
+  });
+  if (!res.ok) throw new Error('Execution service error');
+  return res.json();
 }
 
 function compareResult(got, expected, comparator) {
@@ -402,7 +430,7 @@ function runUserCode(code, fnName, args) {
   }
 }
 
-function runTests() {
+async function runTests() {
   const q = STATE.question;
   const code = document.getElementById('code-editor')?.value || '';
   const output = document.getElementById('test-output');
@@ -410,6 +438,38 @@ function runTests() {
   output.style.display = 'block';
 
   const cases = q.testCases || [];
+
+  if (STATE.language !== 'javascript') {
+    output.innerHTML = '<div class="tc-row" style="color:var(--t3)">⏳ Running tests...</div>';
+    let results, error;
+    try {
+      ({ results, error } = await executeRemote(code, STATE.language, cases, q.comparator, q.pythonFunctionName || q.functionName));
+    } catch { error = 'Execution service unavailable'; }
+    if (error && !results?.length) {
+      output.innerHTML = `<div class="tc-row tc-error">❌ ${error}</div>`;
+      return;
+    }
+    let passedCount = 0;
+    const rows = (results || []).map((r, i) => {
+      const tc = cases[i];
+      if (r.error) return `<div class="tc-row tc-error">❌ Test ${i+1}: <span class="tc-label">${tc?.label || ''}</span> → Error: ${r.error}</div>`;
+      if (r.passed) passedCount++;
+      return `<div class="tc-row ${r.passed ? 'tc-pass' : 'tc-fail'}">
+        ${r.passed ? '✅' : '❌'} Test ${i+1}: <span class="tc-label">${tc?.label || ''}</span>
+        ${r.passed ? '' : `<span class="tc-detail">Expected <code>${JSON.stringify(tc?.expected)}</code>${r.result !== undefined ? `, got <code>${r.result}</code>` : ''}</span>`}
+      </div>`;
+    });
+    const allPassed = passedCount === cases.length && cases.length > 0;
+    output.innerHTML = rows.join('') +
+      `<div class="tc-summary ${allPassed ? 'tc-all-pass' : ''}">
+        ${allPassed ? `✅ All ${cases.length} tests passed — ready to submit!` : `${passedCount} / ${cases.length} tests passed`}
+      </div>`;
+    STATE.testsRun = allPassed;
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn && allPassed) submitBtn.style.boxShadow = '0 0 20px rgba(16,185,129,0.4)';
+    return;
+  }
+
   let passedCount = 0;
   const rows = cases.map((tc, i) => {
     const { ok, result, error } = runUserCode(code, q.functionName, tc.input);
@@ -435,21 +495,33 @@ function runTests() {
   if (submitBtn && allPassed) submitBtn.style.boxShadow = '0 0 20px rgba(16,185,129,0.4)';
 }
 
-function submitCode() {
+async function submitCode() {
   const q = STATE.question;
   const code = document.getElementById('code-editor')?.value || '';
 
-  // Run all visible + hidden cases
-  const allCases = [...(q.testCases || []), ...(q.hiddenCases || [])];
-  let allPassed = true;
-  for (const tc of allCases) {
-    const { ok, result } = runUserCode(code, q.functionName, tc.input);
-    if (!ok || !compareResult(result, tc.expected, q.comparator)) { allPassed = false; break; }
+  lockEditor();
+
+  let allPassed;
+  if (STATE.language !== 'javascript') {
+    const output = document.getElementById('test-output');
+    if (output) { output.style.display = 'block'; output.innerHTML = '<div class="tc-row" style="color:var(--t3)">⏳ Submitting...</div>'; }
+    try {
+      const { results, error } = await executeRemote(
+        code, STATE.language, q.testCases, q.comparator,
+        q.pythonFunctionName || q.functionName, true, q.hiddenCases
+      );
+      allPassed = !error && results?.length > 0 && results.every(r => r.passed);
+    } catch { allPassed = false; }
+  } else {
+    const allCases = [...(q.testCases || []), ...(q.hiddenCases || [])];
+    allPassed = true;
+    for (const tc of allCases) {
+      const { ok, result } = runUserCode(code, q.functionName, tc.input);
+      if (!ok || !compareResult(result, tc.expected, q.comparator)) { allPassed = false; break; }
+    }
   }
 
-  lockEditor();
   if (!allPassed) {
-    // Show hidden test failure
     const output = document.getElementById('test-output');
     if (output) {
       output.style.display = 'block';
