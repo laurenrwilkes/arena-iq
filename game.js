@@ -173,9 +173,6 @@ function renderSetup() {
         <div class="option-card" onclick="selectOption('category','quant',this)">
           <div class="opt-icon">📊</div><div class="opt-name">Quant Finance</div><div class="opt-sub">Calculate the exact answer</div>
         </div>
-        <div class="option-card" onclick="selectOption('category','ib',this)">
-          <div class="opt-icon">🏦</div><div class="opt-name">Investment Banking</div><div class="opt-sub">Work through the model</div>
-        </div>
       </div>
     </div>
     <div class="setup-step">
@@ -250,13 +247,13 @@ function checkSetupReady() {
   const btn = document.getElementById('find-btn');
   if (btn) { btn.disabled = !ready; btn.style.opacity = ready ? '1' : '0.4'; btn.style.cursor = ready ? 'pointer' : 'not-allowed'; }
   const status = document.getElementById('setup-status');
-  const labels = { tech:'Tech', quant:'Quant Finance', ib:'IB' };
+  const labels = { tech:'Tech', quant:'Quant Finance' };
   if (status && ready) status.textContent = `${labels[STATE.category]} · ${STATE.difficulty} · ${STATE.mode}`;
 }
 
 // ── MATCHMAKING ───────────────────────────────────────────────────────────────
 function renderMatchmaking() {
-  const labels = { tech:'Tech / Coding', quant:'Quant Finance', ib:'Investment Banking' };
+  const labels = { tech:'Tech / Coding', quant:'Quant Finance' };
   return `
   <div class="matchmaking-container">
     <div class="mm-spinner"></div>
@@ -317,8 +314,8 @@ function renderGame() {
 }
 
 function gameHeader(q) {
-  const catColors = { tech:'var(--green)', quant:'var(--cyan)', ib:'var(--gold)' };
-  const catLabels = { tech:'💻 Tech', quant:'📊 Quant Finance', ib:'🏦 IB' };
+  const catColors = { tech:'var(--green)', quant:'var(--cyan)' };
+  const catLabels = { tech:'💻 Tech', quant:'📊 Quant Finance' };
   const oppName = STATE.opponent?.username || 'Opponent';
   const playerLabel = currentUser ? `${currentUser.username} · ${currentUser.elo} ELO` : 'You';
   const oppLabel = `${oppName} · ${STATE.opponent?.elo || 1200} ELO`;
@@ -332,6 +329,7 @@ function gameHeader(q) {
         <span class="info-pill" style="border-color:${catColors[STATE.category]};color:${catColors[STATE.category]}">${catLabels[STATE.category]}</span>
         <span class="info-pill">${STATE.difficulty}</span>
         ${qProgress}
+        <button id="flag-game-btn" onclick="flagGameQuestion()" title="Flag this question as broken" style="padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--t3);font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.15s" onmouseover="this.style.borderColor='rgba(239,68,68,0.4)';this.style.color='var(--red)'" onmouseout="if(!this.dataset.flagged){this.style.borderColor='var(--border)';this.style.color='var(--t3)'}">🚩 Flag</button>
       </div>
       <div class="game-timer-wrap">
         <div class="game-timer" id="game-timer">${formatTime(STATE.timeLeft)}</div>
@@ -740,11 +738,6 @@ function renderResult() {
     </div>
 
     ${guestCTA}
-    ${win && currentUser && currentUser.wins > 0 && currentUser.wins % 5 === 0 ? `
-    <div style="margin:0 0 20px;padding:14px 20px;background:rgba(124,58,237,0.07);border:1px solid rgba(124,58,237,0.2);border-radius:var(--r);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
-      <div style="font-size:0.88rem;color:var(--t2)">🎨 <strong style="color:var(--t1)">${currentUser.wins} wins</strong> — customize how you look on the leaderboard</div>
-      <a href="shop.html" class="btn btn-ghost" style="font-size:0.82rem;padding:7px 14px;flex-shrink:0">Visit Shop →</a>
-    </div>` : ''}
 
     <div class="result-grid">
       <div class="result-card">
@@ -769,7 +762,7 @@ function renderResult() {
     <div class="result-actions">
       <button class="btn btn-primary btn-lg" onclick="rematch()">⚔️ Play Again</button>
       <button class="btn btn-outline btn-lg" onclick="backToSetup()">🔄 New Battle</button>
-      <a href="leaderboard.html" class="btn btn-ghost btn-lg">🏆 Leaderboard</a>
+      <a href="problems.html" class="btn btn-ghost btn-lg">📖 Practice</a>
     </div>
   </div>`;
 }
@@ -797,6 +790,26 @@ function backToSetup() {
   STATE.phase = 'setup';
   STATE.myAnswerCorrect = null;
   render();
+}
+
+// ── FLAG QUESTION ─────────────────────────────────────────────────────────────
+async function flagGameQuestion() {
+  const btn = document.getElementById('flag-game-btn');
+  if (!btn || btn.dataset.flagged) return;
+  btn.dataset.flagged = 'true';
+  btn.textContent = '🚩 Flagged';
+  btn.style.borderColor = 'rgba(239,68,68,0.3)';
+  btn.style.color = 'var(--red)';
+  try {
+    await fetch('/api/flag', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(Auth.getToken() ? { Authorization: `Bearer ${Auth.getToken()}` } : {}),
+      },
+      body: JSON.stringify({ questionId: STATE.question?.id, reason: 'Flagged during battle' }),
+    });
+  } catch (_) {}
 }
 
 document.addEventListener('DOMContentLoaded', init);

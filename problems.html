@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Practice — ArenaIQ</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  body { background: var(--bg); overflow: hidden; }
+
+  /* ── LAYOUT ── */
+  .problems-layout {
+    display: grid;
+    grid-template-columns: 280px 380px 1fr;
+    height: calc(100vh - 64px);
+    margin-top: 64px;
+  }
+
+  /* ── LEFT SIDEBAR ── */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    background: var(--bg2);
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-inner { padding: 20px; flex: 1; }
+  .cat-tabs {
+    display: flex;
+    background: var(--card);
+    border-radius: var(--r);
+    padding: 3px;
+    margin-bottom: 18px;
+    border: 1px solid var(--border);
+  }
+  .cat-tab {
+    flex: 1; padding: 8px 0; border-radius: 6px; border: none;
+    background: transparent; color: var(--t3); font-size: 0.85rem;
+    font-weight: 700; cursor: pointer; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .cat-tab.active {
+    background: var(--grad); color: #fff;
+    box-shadow: 0 1px 4px rgba(124,58,237,0.3);
+  }
+
+  .search-wrap { position: relative; margin-bottom: 18px; }
+  .search-wrap input {
+    width: 100%; padding: 9px 12px 9px 34px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r); color: var(--t1); font-size: 0.85rem;
+    outline: none; font-family: inherit; transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+  .search-wrap input:focus { border-color: var(--purple); }
+  .search-wrap::before {
+    content: '🔍'; position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); font-size: 0.8rem; pointer-events: none;
+  }
+
+  .filter-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--t3); margin-bottom: 8px;
+  }
+  .diff-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .diff-pill {
+    padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border);
+    font-size: 0.76rem; font-weight: 700; cursor: pointer; background: transparent;
+    color: var(--t3); transition: all 0.15s; font-family: inherit;
+  }
+  .diff-pill:hover { border-color: var(--purple); color: var(--t2); }
+  .diff-pill.active { background: rgba(124,58,237,0.15); border-color: var(--purple); color: var(--purple-l); }
+  .diff-pill.easy.active { background: rgba(16,185,129,0.12); border-color: var(--green); color: var(--green); }
+  .diff-pill.medium.active { background: rgba(245,158,11,0.12); border-color: var(--gold); color: var(--gold); }
+  .diff-pill.hard.active { background: rgba(239,68,68,0.12); border-color: var(--red); color: var(--red); }
+
+  .sidebar-stats {
+    padding: 10px 12px; background: var(--card);
+    border: 1px solid var(--border); border-radius: var(--r);
+    font-size: 0.8rem; color: var(--t3); margin-bottom: 4px;
+  }
+  .sidebar-stats strong { color: var(--t1); }
+
+  /* ── PROBLEM LIST ── */
+  .problems-list-panel {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    background: var(--bg);
+  }
+  .list-header {
+    position: sticky; top: 0; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 10;
+  }
+  .list-count { font-size: 0.8rem; color: var(--t3); }
+  .problem-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer; transition: background 0.12s; user-select: none;
+  }
+  .problem-row:hover { background: var(--card2); }
+  .problem-row.active { background: rgba(124,58,237,0.08); border-left: 2px solid var(--purple); }
+  .problem-num { font-size: 0.72rem; color: var(--t3); min-width: 28px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  .problem-title-text { flex: 1; font-size: 0.87rem; font-weight: 600; color: var(--t1); }
+  .diff-badge {
+    font-size: 0.68rem; font-weight: 800; padding: 2px 8px;
+    border-radius: 100px; letter-spacing: 0.3px; flex-shrink: 0;
+  }
+  .diff-badge.easy { background: rgba(16,185,129,0.15); color: var(--green); }
+  .diff-badge.medium { background: rgba(245,158,11,0.15); color: var(--gold); }
+  .diff-badge.hard { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  .empty-list {
+    padding: 60px 24px; text-align: center; color: var(--t3);
+    font-size: 0.88rem;
+  }
+
+  /* ── PROBLEM DETAIL ── */
+  .problem-detail-panel {
+    overflow-y: auto;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+  .detail-empty {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--t3); gap: 12px; padding: 40px;
+  }
+  .detail-empty-icon { font-size: 3rem; }
+  .detail-empty-text { font-size: 0.9rem; }
+
+  .detail-content { padding: 28px 32px; max-width: 720px; }
+  .detail-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 16px; margin-bottom: 20px;
+  }
+  .detail-title { font-size: 1.25rem; font-weight: 800; line-height: 1.3; }
+  .detail-meta { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  .detail-badge {
+    font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+    border-radius: 100px; border: 1px solid;
+  }
+  .detail-badge.quant { border-color: rgba(6,182,212,0.4); color: var(--cyan); background: rgba(6,182,212,0.08); }
+  .detail-badge.tech { border-color: rgba(16,185,129,0.4); color: var(--green); background: rgba(16,185,129,0.08); }
+
+  .detail-desc { font-size: 0.9rem; color: var(--t2); line-height: 1.85; margin-bottom: 24px; }
+  .detail-desc code { background: rgba(124,58,237,0.15); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; color: var(--purple-l); }
+
+  .detail-section-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--t3); margin: 20px 0 10px;
+  }
+  .example-block { background: var(--card2); border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; font-size: 0.83rem; }
+  .ex-row { display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start; }
+  .ex-row:last-child { margin-bottom: 0; }
+  .ex-label { color: var(--t3); font-weight: 600; flex-shrink: 0; min-width: 90px; }
+  .ex-row code { background: rgba(124,58,237,0.15); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--purple-l); }
+  .constraints-list { padding-left: 18px; font-size: 0.82rem; color: var(--t2); line-height: 1.9; }
+
+  /* Hints accordion */
+  .hints-accordion {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r); overflow: hidden; margin-bottom: 20px;
+  }
+  .hint-row {
+    border-bottom: 1px solid var(--border); last-child:border-none;
+  }
+  .hint-row:last-child { border-bottom: none; }
+  .hint-toggle {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; background: transparent; border: none;
+    color: var(--t2); font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    font-family: inherit; text-align: left; transition: background 0.12s;
+  }
+  .hint-toggle:hover { background: var(--card2); }
+  .hint-body { padding: 10px 16px 14px; font-size: 0.85rem; color: var(--t1); line-height: 1.7; display: none; }
+  .hint-body.open { display: block; }
+  .hint-value {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    color: var(--purple-l); font-weight: 600; margin-top: 4px;
+  }
+
+  /* Answer area */
+  .answer-area {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 24px; margin-bottom: 16px;
+  }
+  .answer-label-row {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--t3); margin-bottom: 14px;
+  }
+  .answer-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .answer-prefix { font-size: 1.4rem; font-weight: 700; color: var(--green); }
+  .answer-suffix { font-size: 1rem; font-weight: 600; color: var(--t2); }
+  .answer-input {
+    flex: 1; padding: 12px 16px; font-size: 1.3rem; font-weight: 700;
+    background: var(--bg); border: 2px solid var(--border); border-radius: var(--r);
+    color: var(--t1); outline: none; text-align: center;
+    font-family: 'JetBrains Mono', monospace; transition: border-color 0.2s;
+  }
+  .answer-input:focus { border-color: var(--purple); }
+  .answer-input:disabled { opacity: 0.5; }
+  .answer-feedback { min-height: 24px; font-size: 0.88rem; text-align: center; margin-bottom: 12px; }
+  .answer-actions { display: flex; gap: 8px; }
+
+  /* Solution reveal */
+  .solution-box {
+    background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2);
+    border-radius: var(--r); padding: 16px; margin-bottom: 16px; display: none;
+  }
+  .solution-box.show { display: block; }
+  .solution-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--green); margin-bottom: 10px; }
+  .solution-step { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.84rem; gap: 12px; }
+  .solution-step:last-child { border-bottom: none; }
+  .sol-label { color: var(--t3); }
+  .sol-value { color: var(--t1); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; text-align: right; }
+  .solution-explanation { margin-top: 12px; font-size: 0.86rem; color: var(--t2); line-height: 1.8; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+  /* Code editor (practice mode) */
+  .editor-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px; background: var(--card2); border-radius: var(--r) var(--r) 0 0;
+    border: 1px solid var(--border); border-bottom: none;
+  }
+  .lang-picker { display: flex; gap: 4px; }
+  .lang-btn {
+    padding: 3px 10px; border-radius: 4px; font-size: 0.72rem; font-weight: 700;
+    border: 1px solid var(--border); background: transparent; color: var(--t3);
+    cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; font-family: inherit;
+  }
+  .lang-btn:hover { color: var(--t1); border-color: var(--border2); }
+  .lang-btn.active { background: rgba(124,58,237,0.2); border-color: var(--purple); color: var(--purple-l); }
+  .code-editor {
+    width: 100%; min-height: 220px; resize: vertical;
+    background: #080814; border: 1px solid var(--border); border-top: none;
+    outline: none; color: #c9d1d9; font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px; line-height: 1.65; padding: 14px 16px; tab-size: 2;
+    display: block; box-sizing: border-box; border-radius: 0;
+  }
+  .code-editor:focus { background: #06060f; }
+  .test-output {
+    background: #080814; border: 1px solid var(--border); border-top: none;
+    padding: 10px 14px; font-size: 0.8rem; font-family: monospace;
+    max-height: 180px; overflow-y: auto; border-radius: 0;
+  }
+  .tc-row { padding: 4px 0; line-height: 1.6; }
+  .tc-pass { color: var(--green); }
+  .tc-fail { color: var(--red); }
+  .tc-error { color: #f97316; }
+  .tc-detail { display: block; padding-left: 20px; color: var(--t3); font-size: 0.75rem; }
+  .tc-detail code { color: var(--purple-l); }
+  .tc-summary { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); font-weight: 600; color: var(--t2); }
+  .tc-all-pass { color: var(--green); }
+  .code-actions {
+    display: flex; gap: 8px; padding: 10px 0; margin-bottom: 8px;
+  }
+
+  /* Flag button */
+  .flag-row {
+    display: flex; justify-content: flex-end; margin-top: 8px;
+    padding-top: 16px; border-top: 1px solid var(--border);
+  }
+  .flag-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: var(--r); border: 1px solid var(--border);
+    background: transparent; color: var(--t3); font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; font-family: inherit;
+  }
+  .flag-btn:hover { border-color: rgba(239,68,68,0.4); color: var(--red); background: rgba(239,68,68,0.06); }
+  .flag-btn.flagged { border-color: rgba(239,68,68,0.3); color: var(--red); background: rgba(239,68,68,0.08); }
+
+  /* Scrollbar styling */
+  .sidebar::-webkit-scrollbar,
+  .problems-list-panel::-webkit-scrollbar,
+  .problem-detail-panel::-webkit-scrollbar { width: 5px; }
+  .sidebar::-webkit-scrollbar-track,
+  .problems-list-panel::-webkit-scrollbar-track,
+  .problem-detail-panel::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb,
+  .problems-list-panel::-webkit-scrollbar-thumb,
+  .problem-detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 900px) {
+    body { overflow: auto; }
+    .problems-layout { grid-template-columns: 1fr; height: auto; }
+    .problems-list-panel, .problem-detail-panel { border-right: none; }
+    .problem-detail-panel { border-top: 1px solid var(--border); }
+    .detail-content { padding: 20px; }
+  }
+</style>
+<script>window.__SENTRY_DSN__ = 'https://7759a09b911029a3b03db100273fa56f@o4511330884714496.ingest.us.sentry.io/4511330890809344';</script>
+<script src="sentry.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">⚔️</div>
+    <span>ArenaIQ</span>
+  </a>
+  <div class="nav-links">
+    <a href="problems.html" style="color:var(--t1);font-weight:700">Practice</a>
+    <a href="play.html">Battle</a>
+  </div>
+  <div class="nav-actions">
+    <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
+      onclick="showAuthModal(u => { currentUser = u; updateNav(); })">Log In / Sign Up</button>
+    <div style="position:relative" id="nav-profile-wrap">
+      <div id="nav-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--grad);display:none;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;cursor:pointer" onclick="toggleNav()">?</div>
+      <div id="nav-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);min-width:180px;box-shadow:var(--shadow);z-index:200;overflow:hidden">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.85rem">
+          <div style="font-weight:700" id="nav-menu-name">—</div>
+        </div>
+        <a href="#" onclick="Auth.logout()" style="display:block;padding:10px 16px;color:var(--red);text-decoration:none;font-size:0.88rem" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">Log Out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="problems-layout">
+  <!-- Left sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+      <div class="cat-tabs">
+        <button class="cat-tab active" onclick="selectCat('quant',this)">📊 Quant</button>
+        <button class="cat-tab" onclick="selectCat('tech',this)">💻 Tech</button>
+      </div>
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="Search problems..." oninput="applyFilters()" />
+      </div>
+      <div class="filter-label">Difficulty</div>
+      <div class="diff-pills">
+        <button class="diff-pill active" data-diff="all" onclick="selectDiff('all',this)">All</button>
+        <button class="diff-pill easy" data-diff="easy" onclick="selectDiff('easy',this)">Easy</button>
+        <button class="diff-pill medium" data-diff="medium" onclick="selectDiff('medium',this)">Medium</button>
+        <button class="diff-pill hard" data-diff="hard" onclick="selectDiff('hard',this)">Hard</button>
+      </div>
+      <div class="sidebar-stats" id="sidebar-stats">Loading questions...</div>
+    </div>
+  </aside>
+
+  <!-- Problem list -->
+  <div class="problems-list-panel" id="problems-list-panel">
+    <div class="list-header">
+      <span class="list-count" id="list-count">—</span>
+    </div>
+    <div id="problems-list">
+      <div class="empty-list">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Problem detail -->
+  <div class="problem-detail-panel" id="problem-detail-panel">
+    <div class="detail-empty">
+      <div class="detail-empty-icon">📖</div>
+      <div class="detail-empty-text">Select a problem to start solving</div>
+    </div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+let currentUser = null;
+let allQuestions = { quant: {}, tech: {} };
+let currentCat = 'quant';
+let currentDiff = 'all';
+let currentLang = 'javascript';
+let selectedId = null;
+let flatList = [];
+let flaggedSet = new Set();
+
+// ── AUTH ─────────────────────────────────────────────────────────────────────
+async function initAuth() {
+  currentUser = await Auth.fetchMe();
+  updateNav();
+}
+function updateNav() {
+  const login = document.getElementById('nav-login');
+  const avatar = document.getElementById('nav-avatar');
+  const menuName = document.getElementById('nav-menu-name');
+  if (currentUser) {
+    if (login) login.style.display = 'none';
+    if (avatar) { avatar.style.display = 'flex'; avatar.textContent = currentUser.username[0].toUpperCase(); }
+    if (menuName) menuName.textContent = currentUser.username;
+  } else {
+    if (login) login.style.display = '';
+    if (avatar) avatar.style.display = 'none';
+  }
+}
+function toggleNav() {
+  const m = document.getElementById('nav-menu');
+  if (m) m.style.display = m.style.display === 'block' ? 'none' : 'block';
+}
+document.addEventListener('click', e => {
+  const w = document.getElementById('nav-profile-wrap');
+  if (w && !w.contains(e.target)) {
+    const m = document.getElementById('nav-menu');
+    if (m) m.style.display = 'none';
+  }
+});
+
+// ── LOAD QUESTIONS ────────────────────────────────────────────────────────────
+async function loadQuestions() {
+  try {
+    const res = await fetch('/api/questions');
+    allQuestions = await res.json();
+  } catch {
+    document.getElementById('problems-list').innerHTML =
+      '<div class="empty-list">Could not load questions — is the server running?</div>';
+    return;
+  }
+  applyFilters();
+}
+
+// ── FILTERING ─────────────────────────────────────────────────────────────────
+function selectCat(cat, btn) {
+  currentCat = cat;
+  selectedId = null;
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+  showEmpty();
+}
+function selectDiff(diff, btn) {
+  currentDiff = diff;
+  document.querySelectorAll('.diff-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const catData = allQuestions[currentCat] || {};
+
+  flatList = [];
+  for (const diff of ['easy', 'medium', 'hard']) {
+    for (const q of (catData[diff] || [])) {
+      flatList.push({ ...q, diff });
+    }
+  }
+
+  let filtered = flatList;
+  if (currentDiff !== 'all') filtered = filtered.filter(q => q.diff === currentDiff);
+  if (search) filtered = filtered.filter(q => q.title.toLowerCase().includes(search) || (q.description && q.description.toLowerCase().includes(search)));
+
+  renderList(filtered);
+
+  // Stats
+  const easy = (catData.easy || []).length;
+  const med  = (catData.medium || []).length;
+  const hard = (catData.hard || []).length;
+  const total = easy + med + hard;
+  document.getElementById('sidebar-stats').innerHTML =
+    `<strong>${total}</strong> problems &nbsp;·&nbsp; <span style="color:var(--green)">${easy}E</span> <span style="color:var(--gold)">${med}M</span> <span style="color:var(--red)">${hard}H</span>`;
+}
+
+function renderList(questions) {
+  const container = document.getElementById('problems-list');
+  const countEl = document.getElementById('list-count');
+  if (!questions.length) {
+    container.innerHTML = '<div class="empty-list">No problems match your filters.</div>';
+    if (countEl) countEl.textContent = '0 problems';
+    return;
+  }
+  if (countEl) countEl.textContent = `${questions.length} problem${questions.length !== 1 ? 's' : ''}`;
+
+  container.innerHTML = questions.map((q, i) => `
+    <div class="problem-row${selectedId === q.id ? ' active' : ''}" onclick="selectProblem('${q.id}')" data-id="${q.id}">
+      <span class="problem-num">#${i + 1}</span>
+      <span class="problem-title-text">${q.title}</span>
+      <span class="diff-badge ${q.diff}">${q.diff.charAt(0).toUpperCase() + q.diff.slice(1)}</span>
+    </div>`).join('');
+}
+
+// ── PROBLEM DETAIL ────────────────────────────────────────────────────────────
+function selectProblem(id) {
+  selectedId = id;
+  // Highlight active row
+  document.querySelectorAll('.problem-row').forEach(r => {
+    r.classList.toggle('active', r.dataset.id === id);
+  });
+
+  const q = flatList.find(x => x.id === id);
+  if (!q) return;
+
+  const panel = document.getElementById('problem-detail-panel');
+  if (q.type === 'code') {
+    panel.innerHTML = renderCodeDetail(q);
+  } else {
+    panel.innerHTML = renderNumericDetail(q);
+  }
+}
+
+function showEmpty() {
+  const panel = document.getElementById('problem-detail-panel');
+  panel.innerHTML = `<div class="detail-empty">
+    <div class="detail-empty-icon">📖</div>
+    <div class="detail-empty-text">Select a problem to start solving</div>
+  </div>`;
+}
+
+// ── NUMERIC DETAIL ────────────────────────────────────────────────────────────
+function renderNumericDetail(q) {
+  const diffClass = q.diff;
+  const diffLabel = q.diff.charAt(0).toUpperCase() + q.diff.slice(1);
+  const isFlagged = flaggedSet.has(q.id);
+
+  const hasPrefix = q.unit && !['%','days','rolls','x','years','bps','contracts'].includes(q.unit);
+  const hasSuffix = q.unit && ['%','days','rolls','x','years','bps','contracts'].includes(q.unit);
+
+  const hints = (q.steps || []).slice(0, -1);
+  const hintsHTML = hints.length ? `
+    <div class="detail-section-label">Hints</div>
+    <div class="hints-accordion" id="hints-acc">
+      ${hints.map((s, i) => `
+        <div class="hint-row">
+          <button class="hint-toggle" onclick="toggleHint(${i})">
+            <span>💡 Hint ${i + 1}: ${s.label}</span>
+            <span id="hint-arrow-${i}" style="color:var(--t3);font-size:0.8rem">▼</span>
+          </button>
+          <div class="hint-body" id="hint-body-${i}">
+            <div class="hint-value">${s.value}</div>
+          </div>
+        </div>`).join('')}
+    </div>` : '';
+
+  return `
+  <div class="detail-content">
+    <div class="detail-header">
+      <div>
+        <div class="detail-title">${q.title}</div>
+        <div class="detail-meta">
+          <span class="diff-badge ${diffClass}">${diffLabel}</span>
+          <span class="detail-badge quant">Quant</span>
+        </div>
+      </div>
+    </div>
+    <div class="detail-desc">${(q.description || '').replace(/\n/g,'<br/>')}</div>
+
+    ${hintsHTML}
+
+    <div class="answer-area">
+      <div class="answer-label-row">Your Answer</div>
+      <div class="answer-input-row">
+        ${hasPrefix ? `<span class="answer-prefix">${q.unit}</span>` : ''}
+        <input type="number" id="num-input" class="answer-input" placeholder="0.00" step="any"
+          onkeydown="if(event.key==='Enter') checkAnswer('${q.id}')" />
+        ${hasSuffix ? `<span class="answer-suffix">${q.unit}</span>` : ''}
+      </div>
+      <div class="answer-feedback" id="num-feedback"></div>
+      <div class="answer-actions">
+        <button class="btn btn-outline" onclick="checkAnswer('${q.id}')" style="flex:1">Check</button>
+        <button class="btn btn-primary" onclick="revealSolution('${q.id}')" style="flex:1">Show Solution</button>
+      </div>
+    </div>
+
+    <div class="solution-box" id="solution-box">
+      <div class="solution-label">Solution</div>
+      ${(q.steps || []).map(s => `
+        <div class="solution-step">
+          <span class="sol-label">${s.label}</span>
+          <span class="sol-value">${s.value}</span>
+        </div>`).join('')}
+      ${q.explanation ? `<div class="solution-explanation">${q.explanation}</div>` : ''}
+    </div>
+
+    <div class="flag-row">
+      <button class="flag-btn${isFlagged ? ' flagged' : ''}" id="flag-btn-${q.id}" onclick="flagQuestion('${q.id}')">
+        🚩 ${isFlagged ? 'Flagged' : 'Flag as broken'}
+      </button>
+    </div>
+  </div>`;
+}
+
+// ── CODE DETAIL ───────────────────────────────────────────────────────────────
+function renderCodeDetail(q) {
+  const diffClass = q.diff;
+  const diffLabel = q.diff.charAt(0).toUpperCase() + q.diff.slice(1);
+  const isFlagged = flaggedSet.has(q.id);
+
+  const examples = (q.examples || []).map(ex => `
+    <div class="example-block">
+      <div class="ex-row"><span class="ex-label">Input:</span><code>${ex.input}</code></div>
+      <div class="ex-row"><span class="ex-label">Output:</span><code>${ex.output}</code></div>
+      ${ex.explanation ? `<div class="ex-row"><span class="ex-label">Explanation:</span><span style="color:var(--t2)">${ex.explanation}</span></div>` : ''}
+    </div>`).join('');
+
+  const constraints = (q.constraints || []).map(c => `<li>${c}</li>`).join('');
+
+  const starter = currentLang === 'python' ? (q.pythonStarter || '') : (q.starter || '');
+
+  return `
+  <div class="detail-content">
+    <div class="detail-header">
+      <div>
+        <div class="detail-title">${q.title}</div>
+        <div class="detail-meta">
+          <span class="diff-badge ${diffClass}">${diffLabel}</span>
+          <span class="detail-badge tech">Tech</span>
+        </div>
+      </div>
+    </div>
+    <div class="detail-desc">${q.description || ''}</div>
+    ${examples ? `<div class="detail-section-label">Examples</div>${examples}` : ''}
+    ${constraints ? `<div class="detail-section-label">Constraints</div><ul class="constraints-list">${constraints}</ul>` : ''}
+
+    <div class="detail-section-label" style="margin-top:24px">Solution</div>
+    <div class="editor-topbar">
+      <div class="lang-picker">
+        <button class="lang-btn ${currentLang === 'javascript' ? 'active' : ''}" onclick="practiceSetLang('javascript','${q.id}')">JavaScript</button>
+        <button class="lang-btn ${currentLang === 'python' ? 'active' : ''}" onclick="practiceSetLang('python','${q.id}')">Python</button>
+      </div>
+      <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem" onclick="practiceResetCode('${q.id}')">Reset</button>
+    </div>
+    <textarea id="practice-editor" class="code-editor" spellcheck="false">${escapeHtml(starter)}</textarea>
+    <div id="practice-output" class="test-output" style="display:none"></div>
+    <div class="code-actions">
+      <button class="btn btn-outline" id="practice-run-btn" onclick="practiceRunTests('${q.id}')" style="flex:1">▶ Run Tests</button>
+      <button class="btn btn-primary" id="practice-submit-btn" onclick="practiceSubmit('${q.id}')" style="flex:2">Submit →</button>
+    </div>
+    <div id="practice-result" style="min-height:20px;font-size:0.85rem;margin-bottom:16px"></div>
+
+    ${q.explanation ? `
+    <div class="solution-box" id="solution-box" style="display:none">
+      <div class="solution-label">Explanation</div>
+      <div style="font-size:0.86rem;color:var(--t2);line-height:1.8;margin-top:4px">${q.explanation}</div>
+    </div>` : ''}
+
+    <div class="flag-row">
+      <button class="flag-btn${isFlagged ? ' flagged' : ''}" id="flag-btn-${q.id}" onclick="flagQuestion('${q.id}')">
+        🚩 ${isFlagged ? 'Flagged' : 'Flag as broken'}
+      </button>
+    </div>
+  </div>`;
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── HINT TOGGLE ───────────────────────────────────────────────────────────────
+function toggleHint(i) {
+  const body = document.getElementById(`hint-body-${i}`);
+  const arrow = document.getElementById(`hint-arrow-${i}`);
+  if (!body) return;
+  const open = body.classList.toggle('open');
+  if (arrow) arrow.textContent = open ? '▲' : '▼';
+}
+
+// ── NUMERIC ANSWER CHECK ──────────────────────────────────────────────────────
+function checkAnswer(qId) {
+  const q = flatList.find(x => x.id === qId);
+  const input = document.getElementById('num-input');
+  const feedback = document.getElementById('num-feedback');
+  if (!q || !input || !feedback) return;
+
+  const val = parseFloat(input.value);
+  if (isNaN(val)) { feedback.innerHTML = '<span style="color:var(--red)">Enter a number first.</span>'; return; }
+
+  const tol = q.tolerance ?? 0.01;
+  const correct = Math.abs(val - q.answer) <= tol;
+  feedback.innerHTML = correct
+    ? '<span style="color:var(--green)">✅ Correct!</span>'
+    : `<span style="color:var(--red)">❌ Not quite. Try again or click Show Solution.</span>`;
+}
+
+function revealSolution(qId) {
+  const box = document.getElementById('solution-box');
+  if (box) { box.classList.add('show'); box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+// ── CODE EXECUTION ────────────────────────────────────────────────────────────
+function practiceSetLang(lang, qId) {
+  currentLang = lang;
+  const q = flatList.find(x => x.id === qId);
+  if (!q) return;
+  const ta = document.getElementById('practice-editor');
+  if (ta) ta.value = lang === 'python' ? (q.pythonStarter || '') : (q.starter || '');
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.toLowerCase().includes(lang === 'javascript' ? 'javascript' : 'python'));
+  });
+  const out = document.getElementById('practice-output');
+  if (out) { out.style.display = 'none'; out.innerHTML = ''; }
+}
+
+function practiceResetCode(qId) {
+  const q = flatList.find(x => x.id === qId);
+  const ta = document.getElementById('practice-editor');
+  if (ta && q) ta.value = currentLang === 'python' ? (q.pythonStarter || '') : (q.starter || '');
+  const out = document.getElementById('practice-output');
+  if (out) { out.style.display = 'none'; out.innerHTML = ''; }
+}
+
+function practiceRunCode(code, fnName, args) {
+  try {
+    const fn = new Function(`${code}\nreturn ${fnName};`)();
+    const result = fn(...JSON.parse(JSON.stringify(args)));
+    return { ok: true, result };
+  } catch(e) { return { ok: false, error: e.message }; }
+}
+
+function practiceCompare(got, expected, comparator) {
+  if (comparator === 'sorted') {
+    const s = a => Array.isArray(a) ? [...a].sort((x,y) => x-y) : a;
+    return JSON.stringify(s(got)) === JSON.stringify(s(expected));
+  }
+  return JSON.stringify(got) === JSON.stringify(expected);
+}
+
+async function practiceRunTests(qId) {
+  const q = flatList.find(x => x.id === qId);
+  const code = document.getElementById('practice-editor')?.value || '';
+  const out = document.getElementById('practice-output');
+  if (!q || !out) return;
+  out.style.display = 'block';
+
+  const cases = q.testCases || [];
+
+  if (currentLang !== 'javascript') {
+    out.innerHTML = '<div class="tc-row" style="color:var(--t3)">⏳ Running tests...</div>';
+    let results, error;
+    try {
+      const res = await fetch('/api/execute', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language: currentLang, testCases: cases, comparator: q.comparator, functionName: q.pythonFunctionName || q.functionName }),
+      });
+      ({ results, error } = await res.json());
+    } catch { error = 'Execution service unavailable'; }
+    if (error && !results?.length) { out.innerHTML = `<div class="tc-row tc-error">❌ ${error}</div>`; return; }
+    let pass = 0;
+    const rows = (results || []).map((r, i) => {
+      const tc = cases[i];
+      if (r.error) return `<div class="tc-row tc-error">❌ Test ${i+1}: ${tc?.label || ''} → Error: ${r.error}</div>`;
+      if (r.passed) pass++;
+      return `<div class="tc-row ${r.passed ? 'tc-pass' : 'tc-fail'}">${r.passed ? '✅' : '❌'} Test ${i+1}: ${tc?.label || ''}
+        ${r.passed ? '' : `<span class="tc-detail">Expected <code>${JSON.stringify(tc?.expected)}</code>${r.result !== undefined ? `, got <code>${r.result}</code>` : ''}</span>`}</div>`;
+    });
+    const all = pass === cases.length && cases.length > 0;
+    out.innerHTML = rows.join('') + `<div class="tc-summary ${all ? 'tc-all-pass' : ''}">${all ? `✅ All ${cases.length} passed!` : `${pass}/${cases.length} passed`}</div>`;
+    return;
+  }
+
+  let pass = 0;
+  const rows = cases.map((tc, i) => {
+    const { ok, result, error } = practiceRunCode(code, q.functionName, tc.input);
+    if (!ok) return `<div class="tc-row tc-error">❌ Test ${i+1}: ${tc.label || ''} → ${error}</div>`;
+    const passed = practiceCompare(result, tc.expected, q.comparator);
+    if (passed) pass++;
+    return `<div class="tc-row ${passed ? 'tc-pass' : 'tc-fail'}">${passed ? '✅' : '❌'} Test ${i+1}: ${tc.label || ''}
+      ${passed ? '' : `<span class="tc-detail">Expected <code>${JSON.stringify(tc.expected)}</code>, got <code>${JSON.stringify(result)}</code></span>`}</div>`;
+  });
+  const all = pass === cases.length;
+  out.innerHTML = rows.join('') + `<div class="tc-summary ${all ? 'tc-all-pass' : ''}">${all ? `✅ All ${cases.length} passed!` : `${pass}/${cases.length} passed`}</div>`;
+}
+
+async function practiceSubmit(qId) {
+  const q = flatList.find(x => x.id === qId);
+  const code = document.getElementById('practice-editor')?.value || '';
+  const resultEl = document.getElementById('practice-result');
+  if (!q) return;
+
+  const runBtn = document.getElementById('practice-run-btn');
+  const subBtn = document.getElementById('practice-submit-btn');
+  if (runBtn) { runBtn.disabled = true; runBtn.style.opacity = '0.4'; }
+  if (subBtn) { subBtn.disabled = true; subBtn.style.opacity = '0.4'; subBtn.textContent = 'Checking...'; }
+
+  const allCases = [...(q.testCases || []), ...(q.hiddenCases || [])];
+  let allPassed;
+
+  if (currentLang !== 'javascript') {
+    const out = document.getElementById('practice-output');
+    if (out) { out.style.display = 'block'; out.innerHTML = '<div class="tc-row" style="color:var(--t3)">⏳ Submitting...</div>'; }
+    try {
+      const res = await fetch('/api/execute', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language: currentLang, testCases: q.testCases, comparator: q.comparator, functionName: q.pythonFunctionName || q.functionName, includeHidden: true, hiddenCases: q.hiddenCases }),
+      });
+      const { results, error } = await res.json();
+      allPassed = !error && results?.length > 0 && results.every(r => r.passed);
+    } catch { allPassed = false; }
+  } else {
+    allPassed = allCases.every(tc => {
+      const { ok, result } = practiceRunCode(code, q.functionName, tc.input);
+      return ok && practiceCompare(result, tc.expected, q.comparator);
+    });
+  }
+
+  if (resultEl) {
+    if (allPassed) {
+      resultEl.innerHTML = '<div style="color:var(--green);font-weight:700;padding:10px 0">🎉 All tests passed! Great work.</div>';
+      // Show explanation if available
+      const solBox = document.getElementById('solution-box');
+      if (solBox) { solBox.style.display = 'block'; }
+    } else {
+      resultEl.innerHTML = '<div style="color:var(--red);padding:10px 0">❌ Some hidden tests failed. Review your solution and try again.</div>';
+      if (runBtn) { runBtn.disabled = false; runBtn.style.opacity = '1'; }
+      if (subBtn) { subBtn.disabled = false; subBtn.style.opacity = '1'; subBtn.textContent = 'Submit →'; }
+    }
+  }
+}
+
+// Tab key in practice editor
+document.addEventListener('keydown', e => {
+  if (e.key === 'Tab' && document.activeElement?.id === 'practice-editor') {
+    e.preventDefault();
+    const ta = document.activeElement;
+    const start = ta.selectionStart;
+    ta.value = ta.value.slice(0, start) + '  ' + ta.value.slice(ta.selectionEnd);
+    ta.selectionStart = ta.selectionEnd = start + 2;
+  }
+});
+
+// ── FLAG QUESTION ─────────────────────────────────────────────────────────────
+async function flagQuestion(qId) {
+  if (flaggedSet.has(qId)) return;
+  flaggedSet.add(qId);
+  const btn = document.getElementById(`flag-btn-${qId}`);
+  if (btn) { btn.classList.add('flagged'); btn.textContent = '🚩 Flagged'; }
+  try {
+    await fetch('/api/flag', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(Auth.getToken() ? { Authorization: `Bearer ${Auth.getToken()}` } : {}),
+      },
+      body: JSON.stringify({ questionId: qId, reason: 'User flagged via practice page' }),
+    });
+  } catch (_) {}
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+initAuth();
+loadQuestions();
+</script>
+</body>
+</html>

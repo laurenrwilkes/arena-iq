@@ -174,10 +174,10 @@
     <span>ArenaIQ</span>
   </a>
   <div class="nav-links">
-    <a href="leaderboard.html">Leaderboard</a>
+    <a href="problems.html">Practice</a>
+    <a href="play.html" style="color:var(--t1);font-weight:700">Battle</a>
   </div>
   <div class="nav-actions">
-    <div style="font-size:0.82rem;color:var(--t2)" id="nav-elo-wrap">ELO: <strong style="color:var(--purple-l)" id="nav-elo">—</strong></div>
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
       onclick="showAuthModal(user => { currentUser = user; updateNavUser(); })">Log In / Sign Up</button>
     <div style="position:relative" id="nav-profile-wrap">
@@ -187,8 +187,6 @@
           <div style="font-weight:700" id="profile-menu-name">—</div>
           <div style="color:var(--t3);font-size:0.75rem" id="profile-menu-elo">— ELO</div>
         </div>
-        <a href="shop.html" style="display:block;padding:10px 16px;color:var(--t2);text-decoration:none;font-size:0.88rem" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">🎨 Shop</a>
-        <a href="leaderboard.html" style="display:block;padding:10px 16px;color:var(--t2);text-decoration:none;font-size:0.88rem" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">🏆 Leaderboard</a>
         <div style="border-top:1px solid var(--border)">
           <a href="#" onclick="Auth.logout()" style="display:block;padding:10px 16px;color:var(--red);text-decoration:none;font-size:0.88rem" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">Log Out</a>
         </div>

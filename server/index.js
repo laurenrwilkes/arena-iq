@@ -115,6 +115,29 @@ app.get('/api/question', (req, res) => {
   res.json(q);
 });
 
+app.get('/api/questions', (req, res) => {
+  const { QUESTIONS } = require('./questions');
+  const result = {};
+  for (const cat of ['tech', 'quant']) {
+    if (!QUESTIONS[cat]) continue;
+    result[cat] = {};
+    for (const diff of ['easy', 'medium', 'hard']) {
+      result[cat][diff] = QUESTIONS[cat][diff] || [];
+    }
+  }
+  res.json(result);
+});
+
+app.post('/api/flag', (req, res) => {
+  const { questionId, reason } = req.body;
+  if (!questionId) return res.status(400).json({ error: 'questionId required' });
+  const token = req.headers.authorization?.split(' ')[1];
+  let username = 'anonymous';
+  try { const d = jwt.verify(token, JWT_SECRET); username = d.username || 'user'; } catch (_) {}
+  console.log(`[FLAG] ${new Date().toISOString()} | question=${questionId} | user=${username} | reason=${reason || 'none'}`);
+  res.json({ ok: true });
+});
+
 // ── SHOP ROUTES ──────────────────────────────────────────────────────────────
 app.post('/api/shop/equip', authMiddleware, (req, res) => {
   const { type, value } = req.body;
