@@ -762,7 +762,7 @@ function renderResult() {
     <div class="result-actions">
       <button class="btn btn-primary btn-lg" onclick="rematch()">⚔️ Play Again</button>
       <button class="btn btn-outline btn-lg" onclick="backToSetup()">🔄 New Battle</button>
-      <a href="problems.html" class="btn btn-ghost btn-lg">📖 Practice</a>
+      <a href="index.html" class="btn btn-ghost btn-lg">📖 Practice</a>
     </div>
   </div>`;
 }
