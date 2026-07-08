@@ -75,9 +75,9 @@
     box-sizing: border-box;
   }
   .search-wrap input:focus { border-color: var(--purple); }
-  .search-wrap::before {
-    content: '🔍'; position: absolute; left: 10px; top: 50%;
-    transform: translateY(-50%); font-size: 0.8rem; pointer-events: none;
+  .search-wrap .icon {
+    position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); color: var(--t3); pointer-events: none;
   }
 
   .filter-label {
@@ -122,7 +122,7 @@
     padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,0.04);
     cursor: pointer; transition: background 0.12s; user-select: none;
   }
-  .problem-row:hover { background: var(--card2); }
+  .problem-row:hover, .problem-row:focus-visible { background: var(--card2); }
   .problem-row.active { background: rgba(124,58,237,0.08); border-left: 2px solid var(--purple); }
   .problem-num { font-size: 0.72rem; color: var(--t3); min-width: 28px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
   .problem-title-text { flex: 1; font-size: 0.87rem; font-weight: 600; color: var(--t1); }
@@ -327,7 +327,7 @@
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
       onclick="showAuthModal(u => { currentUser = u; updateNav(); })">Log In / Sign Up</button>
     <div style="position:relative" id="nav-profile-wrap">
-      <div id="nav-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--grad);display:none;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;cursor:pointer" onclick="toggleNav()">?</div>
+      <button id="nav-avatar" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" style="width:34px;height:34px;border-radius:50%;background:var(--grad);border:none;display:none;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#fff;cursor:pointer" onclick="toggleNav()">?</button>
       <div id="nav-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);min-width:180px;box-shadow:var(--shadow);z-index:200;overflow:hidden">
         <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.85rem">
           <div style="font-weight:700" id="nav-menu-name">—</div>
@@ -348,7 +348,8 @@
         <button class="cat-tab" onclick="selectCat('tech',this)">💻 Tech</button>
       </div>
       <div class="search-wrap">
-        <input type="text" id="search-input" placeholder="Search problems..." oninput="applyFilters()" />
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" aria-label="Search problems" placeholder="Search problems..." oninput="applyFilters()" />
       </div>
       <div class="filter-label">Difficulty</div>
       <div class="diff-pills">
@@ -408,13 +409,17 @@ function updateNav() {
 }
 function toggleNav() {
   const m = document.getElementById('nav-menu');
-  if (m) m.style.display = m.style.display === 'block' ? 'none' : 'block';
+  const btn = document.getElementById('nav-avatar');
+  const open = m && m.style.display !== 'block';
+  if (m) m.style.display = open ? 'block' : 'none';
+  if (btn) btn.setAttribute('aria-expanded', String(!!open));
 }
 document.addEventListener('click', e => {
   const w = document.getElementById('nav-profile-wrap');
   if (w && !w.contains(e.target)) {
     const m = document.getElementById('nav-menu');
     if (m) m.style.display = 'none';
+    document.getElementById('nav-avatar')?.setAttribute('aria-expanded', 'false');
   }
 });
 
@@ -483,7 +488,9 @@ function renderList(questions) {
   }
   if (countEl) countEl.textContent = `${questions.length} problem${questions.length !== 1 ? 's' : ''}`;
   container.innerHTML = questions.map((q, i) => `
-    <div class="problem-row${selectedId === q.id ? ' active' : ''}" onclick="selectProblem('${q.id}')" data-id="${q.id}">
+    <div class="problem-row${selectedId === q.id ? ' active' : ''}" role="button" tabindex="0"
+      onclick="selectProblem('${q.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectProblem('${q.id}')}"
+      data-id="${q.id}" aria-label="${q.title}, ${q.diff}">
       <span class="problem-num">#${i + 1}</span>
       <span class="problem-title-text">${q.title}</span>
       <span class="diff-badge ${q.diff}">${q.diff.charAt(0).toUpperCase() + q.diff.slice(1)}</span>

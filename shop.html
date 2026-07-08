@@ -29,7 +29,7 @@
     border-radius: var(--r); padding: 20px 16px; text-align: center;
     cursor: pointer; transition: all 0.2s; position: relative;
   }
-  .shop-item:hover { transform: translateY(-2px); border-color: rgba(124,58,237,0.4); }
+  .shop-item:hover, .shop-item:focus-visible { transform: translateY(-2px); border-color: rgba(124,58,237,0.4); }
   .shop-item.equipped { border-color: var(--green); background: rgba(16,185,129,0.06); }
   .shop-item.locked { opacity: 0.6; cursor: default; }
   .shop-item.locked:hover { transform: none; border-color: var(--border); }
@@ -139,8 +139,6 @@
 
 <script src="auth.js"></script>
 <script>
-const API = window.location.origin;
-
 const COLORS = [
   { id: 'default', name: 'Default',    css: '#f1f5f9',                           free: true  },
   { id: 'cyan',    name: 'Ice Blue',   css: '#06b6d4',                           free: true  },
@@ -165,6 +163,10 @@ const BADGES = [
 
 let currentUser = null;
 
+function handleItemKey(event, el) {
+  if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); el.click(); }
+}
+
 function colorStyle(css) {
   if (css.startsWith('linear-gradient')) return `background:${css};-webkit-background-clip:text;-webkit-text-fill-color:transparent`;
   return `color:${css}`;
@@ -178,9 +180,11 @@ function renderColors(equipped, wins) {
     const previewStyle = c.css.startsWith('linear-gradient')
       ? `background:${c.css};-webkit-background-clip:text;-webkit-text-fill-color:transparent`
       : `color:${c.css}`;
+    const action = isLocked ? `buyColor('${c.id}','${c.price}')` : `equipColor('${c.id}')`;
     return `
     <div class="shop-item ${isEquipped?'equipped':''} ${isLocked?'locked':''}"
-      onclick="${isLocked ? `buyColor('${c.id}','${c.price}')` : `equipColor('${c.id}')`}">
+      role="button" tabindex="0" aria-label="${c.name} color${isEquipped?', equipped':isLocked?`, ${c.price}`:', free'}"
+      onclick="${action}" onkeydown="handleItemKey(event,this)">
       ${isLocked ? '<div class="lock-icon">🔒</div>' : ''}
       <div class="item-preview" style="${previewStyle}">Aa</div>
       <div class="item-name">${c.name}</div>
@@ -200,9 +204,11 @@ function renderBadges(equipped, wins) {
     const earnUnlocked = b.winsRequired ? wins >= b.winsRequired : true;
     const isFreeUnlocked = b.free && earnUnlocked;
     const canUse = isFreeUnlocked || isOwned;
+    const action = canUse ? `equipBadge('${b.id}')` : b.price ? `buyBadge('${b.id}','${b.price}')` : 'void(0)';
     return `
     <div class="shop-item ${isEquipped?'equipped':''} ${!canUse&&!b.price?'locked':''}"
-      onclick="${canUse ? `equipBadge('${b.id}')` : b.price ? `buyBadge('${b.id}','${b.price}')` : 'void(0)'}">
+      role="button" tabindex="0" aria-label="${b.name} badge${isEquipped?', equipped':''}"
+      onclick="${action}" onkeydown="handleItemKey(event,this)">
       ${!canUse && b.price ? '<div class="lock-icon">🔒</div>' : ''}
       <div class="item-preview">${b.icon}</div>
       <div class="item-name">${b.name}</div>

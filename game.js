@@ -167,10 +167,10 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">1 — Arena</div>
       <div class="option-grid" id="cat-grid">
-        <div class="option-card" onclick="selectOption('category','tech',this)">
+        <div class="option-card" role="button" tabindex="0" aria-label="Tech / Coding — Write a JavaScript function" onclick="selectOption('category','tech',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">💻</div><div class="opt-name">Tech / Coding</div><div class="opt-sub">Write a JavaScript function</div>
         </div>
-        <div class="option-card" onclick="selectOption('category','quant',this)">
+        <div class="option-card" role="button" tabindex="0" aria-label="Quant Finance — Calculate the exact answer" onclick="selectOption('category','quant',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">📊</div><div class="opt-name">Quant Finance</div><div class="opt-sub">Calculate the exact answer</div>
         </div>
       </div>
@@ -178,13 +178,13 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">2 — Difficulty</div>
       <div class="option-grid" id="diff-grid">
-        <div class="option-card" onclick="selectOption('difficulty','easy',this)">
+        <div class="option-card" role="button" tabindex="0" aria-label="Easy — 5 minute limit" onclick="selectOption('difficulty','easy',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🟢</div><div class="opt-name" style="color:var(--green)">Easy</div><div class="opt-sub">5 min limit</div>
         </div>
-        <div class="option-card" onclick="selectOption('difficulty','medium',this)">
+        <div class="option-card" role="button" tabindex="0" aria-label="Medium — 8 minute limit" onclick="selectOption('difficulty','medium',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🟡</div><div class="opt-name" style="color:var(--gold)">Medium</div><div class="opt-sub">8 min limit</div>
         </div>
-        <div class="option-card" onclick="selectOption('difficulty','hard',this)">
+        <div class="option-card" role="button" tabindex="0" aria-label="Hard — 12 minute limit" onclick="selectOption('difficulty','hard',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🔴</div><div class="opt-name" style="color:var(--red)">Hard</div><div class="opt-sub">12 min limit</div>
         </div>
       </div>
@@ -192,10 +192,10 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">3 — Mode</div>
       <div class="option-grid" id="mode-grid">
-        <div class="option-card" onclick="selectOption('mode','ranked',this)">
+        <div class="option-card" role="button" tabindex="0" aria-label="1v1 Ranked — ELO matchmaking" onclick="selectOption('mode','ranked',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">⚔️</div><div class="opt-name">1v1 Ranked</div><div class="opt-sub">ELO matchmaking</div>
         </div>
-        <div class="option-card" onclick="selectOption('mode','private',this)">
+        <div class="option-card" role="button" tabindex="0" aria-label="Challenge a Friend — private room with link" onclick="selectOption('mode','private',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">🔗</div><div class="opt-name">Challenge a Friend</div><div class="opt-sub">Private room with link</div>
         </div>
       </div>
@@ -204,7 +204,7 @@ function renderSetup() {
       <div class="setup-step" style="margin-bottom:0">
         <div class="step-label">Private Room</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer" onclick="createPrivateRoom()">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer" role="button" tabindex="0" aria-label="Create Room — get a code to share" onclick="createPrivateRoom()" onkeydown="handleOptionKey(event,this)">
             <div style="font-size:1.8rem;margin-bottom:8px">🏠</div>
             <div style="font-weight:700;margin-bottom:4px">Create Room</div>
             <div style="font-size:0.78rem;color:var(--t3)">Get a code to share</div>
@@ -226,6 +226,10 @@ function renderSetup() {
       <div style="margin-top:12px;font-size:0.8rem;color:var(--t3)" id="setup-status">Select arena, difficulty, and mode to continue</div>
     </div>
   </div>`;
+}
+
+function handleOptionKey(event, el) {
+  if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); el.click(); }
 }
 
 function selectOption(field, val, el) {
