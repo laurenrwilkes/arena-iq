@@ -727,9 +727,9 @@ function renderResult() {
   const eloColor = eloChange >= 0 ? 'var(--green)' : 'var(--red)';
 
   const guestCTA = !currentUser ? `
-    <div style="margin:20px 0;padding:20px 24px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:var(--r);text-align:center">
+    <div style="margin:20px 0;padding:20px 24px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.25);border-radius:var(--r);text-align:center">
       <div style="font-weight:700;margin-bottom:6px">Want to save your ELO rating?</div>
-      <div style="font-size:0.85rem;color:var(--t2);margin-bottom:14px">Create a free account to track your ELO, appear on the leaderboard, and challenge friends.</div>
+      <div style="font-size:0.85rem;color:var(--t2);margin-bottom:14px">Create a free account to track your ELO and challenge friends.</div>
       <button class="btn btn-primary" onclick="showAuthModal(user => { currentUser = user; updateNavUser(); })">Create Free Account →</button>
     </div>` : '';
 
