@@ -50,6 +50,25 @@
   .podium-card.first .p-elo { font-size: 1.8rem; }
   .p-wins { font-size: 0.75rem; color: var(--t3); }
   .empty-state { text-align: center; padding: 60px 20px; color: var(--t3); border-radius: 0 0 var(--r2) var(--r2); }
+
+  /* RESPONSIVE — table collapses to a compact card row below 640px so nothing overflows the viewport */
+  @media (max-width: 640px) {
+    .lb-page { padding: 88px 16px 40px; }
+    .top-podium { grid-template-columns: 1fr; gap: 10px; }
+    .podium-card.first { order: -1; padding: 22px 20px; }
+    .search-input { width: 160px; }
+    .lb-full-row {
+      grid-template-columns: 32px 1fr auto;
+      grid-template-areas: "rank player elo";
+      padding: 12px 16px;
+    }
+    .lb-full-row > div:nth-child(1) { grid-area: rank; }
+    .lb-full-row > div:nth-child(2) { grid-area: player; min-width: 0; }
+    .lb-full-row > div:nth-child(3) { grid-area: elo; }
+    .lb-full-row > div:nth-child(4), .lb-full-row > div:nth-child(5), .lb-full-row > div:nth-child(6) { display: none; }
+    .lb-head > div:nth-child(4), .lb-head > div:nth-child(5), .lb-head > div:nth-child(6) { display: none; }
+    .lb-name-sm { max-width: 46vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  }
 </style>
 <script>window.__SENTRY_DSN__ = 'https://7759a09b911029a3b03db100273fa56f@o4511330884714496.ingest.us.sentry.io/4511330890809344';</script>
 <script src="sentry.js"></script>
@@ -57,17 +76,33 @@
 <body>
 <nav>
   <a href="index.html" class="nav-logo">
-    <div class="logo-icon">⚔️</div>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4l16 16M20 4L4 20"/>
+        <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
+      </svg>
+    </div>
     <span>ArenaIQ</span>
   </a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="play.html">Play</a>
-    <a href="leaderboard.html" style="color:var(--t1)">Leaderboard</a>
+    <a href="index.html">Practice</a>
+    <a href="play.html">Battle</a>
+    <a href="leaderboard.html" class="active">Leaderboard</a>
     <a href="shop.html">Shop</a>
   </div>
   <div class="nav-actions">
-    <a href="play.html" class="btn btn-primary">⚔️ Play Now</a>
+    <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
+      onclick="showAuthModal(u => { currentUser = u; updateNav(); })">Log In / Sign Up</button>
+    <div style="position:relative" id="nav-profile-wrap">
+      <button id="nav-avatar" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleNav()">?</button>
+      <div id="nav-menu" class="nav-menu">
+        <div class="nav-menu-header">
+          <div class="nav-menu-name" id="nav-menu-name">—</div>
+        </div>
+        <a href="#" class="nav-menu-logout" onclick="event.preventDefault();Auth.logout()">Log Out</a>
+      </div>
+    </div>
+    <a href="play.html" class="btn btn-primary nav-cta" style="font-size:0.85rem;padding:8px 18px">Play Now</a>
   </div>
 </nav>
 
@@ -94,14 +129,55 @@
     <div class="lb-full-row lb-head">
       <div>#</div><div>Player</div><div>ELO</div><div style="text-align:center">Wins</div><div style="text-align:center">Win %</div><div style="text-align:right">Matches</div>
     </div>
-    <div class="empty-state">Loading leaderboard...</div>
+    <div style="padding:8px 0">
+      <div class="skeleton-row"></div><div class="skeleton-row"></div><div class="skeleton-row"></div>
+      <div class="skeleton-row"></div><div class="skeleton-row"></div>
+    </div>
   </div>
 </div>
 
+<script src="auth.js"></script>
 <script>
-const API = window.location.origin;
 let allPlayers = [];
 let filtered = [];
+let currentUser = null;
+
+async function initAuth() {
+  try {
+    currentUser = await Auth.fetchMe();
+  } catch {
+    currentUser = null;
+  }
+  updateNav();
+}
+function updateNav() {
+  const login = document.getElementById('nav-login');
+  const avatar = document.getElementById('nav-avatar');
+  const menuName = document.getElementById('nav-menu-name');
+  if (currentUser) {
+    if (login) login.style.display = 'none';
+    if (avatar) { avatar.style.display = 'flex'; avatar.textContent = (currentUser.username?.[0] || '?').toUpperCase(); }
+    if (menuName) menuName.textContent = currentUser.username;
+  } else {
+    if (login) login.style.display = '';
+    if (avatar) avatar.style.display = 'none';
+  }
+}
+function toggleNav() {
+  const m = document.getElementById('nav-menu');
+  const btn = document.getElementById('nav-avatar');
+  const open = m && m.style.display !== 'block';
+  if (m) m.style.display = open ? 'block' : 'none';
+  if (btn) btn.setAttribute('aria-expanded', String(!!open));
+}
+document.addEventListener('click', e => {
+  const w = document.getElementById('nav-profile-wrap');
+  if (w && !w.contains(e.target)) {
+    const m = document.getElementById('nav-menu');
+    if (m) m.style.display = 'none';
+    document.getElementById('nav-avatar')?.setAttribute('aria-expanded', 'false');
+  }
+});
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg,#f59e0b,#ef4444)',
@@ -169,9 +245,9 @@ function renderPodium() {
   }
 
   podium.innerHTML = `
-    ${card(second, 1, '')}
-    ${card(first, 0, 'first')}
-    ${card(third, 2, '')}`;
+    ${card(second, 1, 'lift-hover')}
+    ${card(first, 0, 'first lift-hover')}
+    ${card(third, 2, 'lift-hover')}`;
 }
 
 function renderTable() {
@@ -199,7 +275,7 @@ function renderTable() {
             <span style="${usernameStyle(p.color)}">${p.username}</span>
             ${p.badge && BADGE_MAP[p.badge] ? `<span style="margin-left:4px">${BADGE_MAP[p.badge]}</span>` : ''}
           </div>
-          <div class="lb-sub-sm">${total} matches</div>
+          <div class="lb-sub-sm">${p.wins}W · ${p.win_rate ?? 0}% WR · ${total} matches</div>
         </div>
       </div>
       <div style="font-size:1rem;font-weight:800;color:${eloColor}">${p.elo.toLocaleString()}</div>
@@ -220,6 +296,7 @@ function filterSearch(val) {
 }
 
 loadLeaderboard();
+initAuth();
 </script>
 </body>
 </html>

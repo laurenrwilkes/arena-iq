@@ -2,6 +2,7 @@ const SERVER = window.location.origin;
 let socket = null;
 let currentUser = null;
 let queueTimer = null;
+const FLAG_ICON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
 
 const STATE = {
   phase: 'setup',   // setup | matchmaking | game | result
@@ -167,10 +168,10 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">1 — Arena</div>
       <div class="option-grid" id="cat-grid">
-        <div class="option-card" role="button" tabindex="0" aria-label="Tech / Coding — Write a JavaScript function" onclick="selectOption('category','tech',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Tech / Coding — Write a JavaScript function" onclick="selectOption('category','tech',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">💻</div><div class="opt-name">Tech / Coding</div><div class="opt-sub">Write a JavaScript function</div>
         </div>
-        <div class="option-card" role="button" tabindex="0" aria-label="Quant Finance — Calculate the exact answer" onclick="selectOption('category','quant',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Quant Finance — Calculate the exact answer" onclick="selectOption('category','quant',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">📊</div><div class="opt-name">Quant Finance</div><div class="opt-sub">Calculate the exact answer</div>
         </div>
       </div>
@@ -178,13 +179,13 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">2 — Difficulty</div>
       <div class="option-grid" id="diff-grid">
-        <div class="option-card" role="button" tabindex="0" aria-label="Easy — 5 minute limit" onclick="selectOption('difficulty','easy',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Easy — 5 minute limit" onclick="selectOption('difficulty','easy',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🟢</div><div class="opt-name" style="color:var(--green)">Easy</div><div class="opt-sub">5 min limit</div>
         </div>
-        <div class="option-card" role="button" tabindex="0" aria-label="Medium — 8 minute limit" onclick="selectOption('difficulty','medium',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Medium — 8 minute limit" onclick="selectOption('difficulty','medium',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🟡</div><div class="opt-name" style="color:var(--gold)">Medium</div><div class="opt-sub">8 min limit</div>
         </div>
-        <div class="option-card" role="button" tabindex="0" aria-label="Hard — 12 minute limit" onclick="selectOption('difficulty','hard',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Hard — 12 minute limit" onclick="selectOption('difficulty','hard',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🔴</div><div class="opt-name" style="color:var(--red)">Hard</div><div class="opt-sub">12 min limit</div>
         </div>
       </div>
@@ -192,10 +193,10 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">3 — Mode</div>
       <div class="option-grid" id="mode-grid">
-        <div class="option-card" role="button" tabindex="0" aria-label="1v1 Ranked — ELO matchmaking" onclick="selectOption('mode','ranked',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="1v1 Ranked — ELO matchmaking" onclick="selectOption('mode','ranked',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">⚔️</div><div class="opt-name">1v1 Ranked</div><div class="opt-sub">ELO matchmaking</div>
         </div>
-        <div class="option-card" role="button" tabindex="0" aria-label="Challenge a Friend — private room with link" onclick="selectOption('mode','private',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Challenge a Friend — private room with link" onclick="selectOption('mode','private',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">🔗</div><div class="opt-name">Challenge a Friend</div><div class="opt-sub">Private room with link</div>
         </div>
       </div>
@@ -333,7 +334,7 @@ function gameHeader(q) {
         <span class="info-pill" style="border-color:${catColors[STATE.category]};color:${catColors[STATE.category]}">${catLabels[STATE.category]}</span>
         <span class="info-pill">${STATE.difficulty}</span>
         ${qProgress}
-        <button id="flag-game-btn" onclick="flagGameQuestion()" title="Flag this question as broken" style="padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--t3);font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.15s" onmouseover="this.style.borderColor='rgba(239,68,68,0.4)';this.style.color='var(--red)'" onmouseout="if(!this.dataset.flagged){this.style.borderColor='var(--border)';this.style.color='var(--t3)'}">🚩 Flag</button>
+        <button id="flag-game-btn" onclick="flagGameQuestion()" title="Flag this question as broken" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--t3);font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.15s" onmouseover="this.style.borderColor='rgba(239,68,68,0.4)';this.style.color='var(--red)'" onmouseout="if(!this.dataset.flagged){this.style.borderColor='var(--border)';this.style.color='var(--t3)'}">${FLAG_ICON} Flag</button>
       </div>
       <div class="game-timer-wrap">
         <div class="game-timer" id="game-timer">${formatTime(STATE.timeLeft)}</div>
@@ -801,7 +802,7 @@ async function flagGameQuestion() {
   const btn = document.getElementById('flag-game-btn');
   if (!btn || btn.dataset.flagged) return;
   btn.dataset.flagged = 'true';
-  btn.textContent = '🚩 Flagged';
+  btn.innerHTML = `${FLAG_ICON} Flagged`;
   btn.style.borderColor = 'rgba(239,68,68,0.3)';
   btn.style.color = 'var(--red)';
   try {

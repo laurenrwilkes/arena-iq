@@ -66,14 +66,34 @@
 <body>
 
 <nav>
-  <a href="index.html" class="nav-logo"><div class="logo-icon">⚔️</div><span>ArenaIQ</span></a>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4l16 16M20 4L4 20"/>
+        <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
+      </svg>
+    </div>
+    <span>ArenaIQ</span>
+  </a>
   <div class="nav-links">
-    <a href="play.html">Play</a>
+    <a href="index.html">Practice</a>
+    <a href="play.html">Battle</a>
     <a href="leaderboard.html">Leaderboard</a>
-    <a href="shop.html" style="color:var(--t1)">Shop</a>
+    <a href="shop.html" class="active">Shop</a>
   </div>
   <div class="nav-actions">
-    <a href="play.html" class="btn btn-primary" style="font-size:0.85rem;padding:8px 18px">⚔️ Play</a>
+    <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
+      onclick="showAuthModal(u => { currentUser = u; updateNav(); init(); })">Log In / Sign Up</button>
+    <div style="position:relative" id="nav-profile-wrap">
+      <button id="nav-avatar" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleNav()">?</button>
+      <div id="nav-menu" class="nav-menu">
+        <div class="nav-menu-header">
+          <div class="nav-menu-name" id="nav-menu-name">—</div>
+        </div>
+        <a href="#" class="nav-menu-logout" onclick="event.preventDefault();Auth.logout()">Log Out</a>
+      </div>
+    </div>
+    <a href="play.html" class="btn btn-primary nav-cta" style="font-size:0.85rem;padding:8px 18px">Play</a>
   </div>
 </nav>
 
@@ -163,6 +183,35 @@ const BADGES = [
 
 let currentUser = null;
 
+function updateNav() {
+  const login = document.getElementById('nav-login');
+  const avatar = document.getElementById('nav-avatar');
+  const menuName = document.getElementById('nav-menu-name');
+  if (currentUser) {
+    if (login) login.style.display = 'none';
+    if (avatar) { avatar.style.display = 'flex'; avatar.textContent = (currentUser.username?.[0] || '?').toUpperCase(); }
+    if (menuName) menuName.textContent = currentUser.username;
+  } else {
+    if (login) login.style.display = '';
+    if (avatar) avatar.style.display = 'none';
+  }
+}
+function toggleNav() {
+  const m = document.getElementById('nav-menu');
+  const btn = document.getElementById('nav-avatar');
+  const open = m && m.style.display !== 'block';
+  if (m) m.style.display = open ? 'block' : 'none';
+  if (btn) btn.setAttribute('aria-expanded', String(!!open));
+}
+document.addEventListener('click', e => {
+  const w = document.getElementById('nav-profile-wrap');
+  if (w && !w.contains(e.target)) {
+    const m = document.getElementById('nav-menu');
+    if (m) m.style.display = 'none';
+    document.getElementById('nav-avatar')?.setAttribute('aria-expanded', 'false');
+  }
+});
+
 function handleItemKey(event, el) {
   if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); el.click(); }
 }
@@ -182,7 +231,7 @@ function renderColors(equipped, wins) {
       : `color:${c.css}`;
     const action = isLocked ? `buyColor('${c.id}','${c.price}')` : `equipColor('${c.id}')`;
     return `
-    <div class="shop-item ${isEquipped?'equipped':''} ${isLocked?'locked':''}"
+    <div class="shop-item lift-hover ${isEquipped?'equipped':''} ${isLocked?'locked':''}"
       role="button" tabindex="0" aria-label="${c.name} color${isEquipped?', equipped':isLocked?`, ${c.price}`:', free'}"
       onclick="${action}" onkeydown="handleItemKey(event,this)">
       ${isLocked ? '<div class="lock-icon">🔒</div>' : ''}
@@ -206,7 +255,7 @@ function renderBadges(equipped, wins) {
     const canUse = isFreeUnlocked || isOwned;
     const action = canUse ? `equipBadge('${b.id}')` : b.price ? `buyBadge('${b.id}','${b.price}')` : 'void(0)';
     return `
-    <div class="shop-item ${isEquipped?'equipped':''} ${!canUse&&!b.price?'locked':''}"
+    <div class="shop-item lift-hover ${isEquipped?'equipped':''} ${!canUse&&!b.price?'locked':''}"
       role="button" tabindex="0" aria-label="${b.name} badge${isEquipped?', equipped':''}"
       onclick="${action}" onkeydown="handleItemKey(event,this)">
       ${!canUse && b.price ? '<div class="lock-icon">🔒</div>' : ''}
@@ -282,7 +331,7 @@ function showBuyModal(item, price, onComplete) {
   m.innerHTML = `
     <div style="position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:36px;max-width:380px;width:100%;text-align:center;box-shadow:var(--shadow),var(--glow)">
-        <div style="font-size:2rem;margin-bottom:12px">🛒</div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple-l)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;margin-bottom:12px" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <h3 style="margin-bottom:8px">${item}</h3>
         <div style="font-size:2rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px">${price}</div>
         <p style="color:var(--t2);font-size:0.85rem;margin-bottom:24px">One-time purchase. No subscription.</p>
@@ -320,6 +369,7 @@ function updatePreview() {
 
 async function init() {
   currentUser = await Auth.fetchMe();
+  updateNav();
   if (currentUser) {
     renderColors(currentUser.color || 'default', currentUser.wins);
     renderBadges(currentUser.badge || '', currentUser.wins);

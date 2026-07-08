@@ -151,7 +151,6 @@
     align-items: center; justify-content: center;
     color: var(--t3); gap: 12px; padding: 40px;
   }
-  .detail-empty-icon { font-size: 3rem; }
   .detail-empty-text { font-size: 0.9rem; }
 
   .detail-content { padding: 28px 32px; max-width: 720px; }
@@ -316,23 +315,30 @@
 
 <nav>
   <a href="index.html" class="nav-logo">
-    <div class="logo-icon">⚔️</div>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4l16 16M20 4L4 20"/>
+        <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
+      </svg>
+    </div>
     <span>ArenaIQ</span>
   </a>
   <div class="nav-links">
-    <a href="index.html" style="color:var(--t1);font-weight:700">Practice</a>
+    <a href="index.html" class="active">Practice</a>
     <a href="play.html">Battle</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="shop.html">Shop</a>
   </div>
   <div class="nav-actions">
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
       onclick="showAuthModal(u => { currentUser = u; updateNav(); })">Log In / Sign Up</button>
     <div style="position:relative" id="nav-profile-wrap">
-      <button id="nav-avatar" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" style="width:34px;height:34px;border-radius:50%;background:var(--grad);border:none;display:none;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#fff;cursor:pointer" onclick="toggleNav()">?</button>
-      <div id="nav-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);min-width:180px;box-shadow:var(--shadow);z-index:200;overflow:hidden">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.85rem">
-          <div style="font-weight:700" id="nav-menu-name">—</div>
+      <button id="nav-avatar" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleNav()">?</button>
+      <div id="nav-menu" class="nav-menu">
+        <div class="nav-menu-header">
+          <div class="nav-menu-name" id="nav-menu-name">—</div>
         </div>
-        <a href="#" onclick="Auth.logout()" style="display:block;padding:10px 16px;color:var(--red);text-decoration:none;font-size:0.88rem" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">Log Out</a>
+        <a href="#" class="nav-menu-logout" onclick="event.preventDefault();Auth.logout()">Log Out</a>
       </div>
     </div>
   </div>
@@ -367,13 +373,14 @@
       <span class="list-count" id="list-count">—</span>
     </div>
     <div id="problems-list">
-      <div class="empty-list">Loading...</div>
+      <div class="skeleton-row"></div><div class="skeleton-row"></div><div class="skeleton-row"></div>
+      <div class="skeleton-row"></div><div class="skeleton-row"></div><div class="skeleton-row"></div>
     </div>
   </div>
 
   <div class="problem-detail-panel" id="problem-detail-panel">
     <div class="detail-empty">
-      <div class="detail-empty-icon">📖</div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:44px;height:44px" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <div class="detail-empty-text">Select a problem to start solving</div>
     </div>
   </div>
@@ -389,6 +396,7 @@ let currentLang = 'javascript';
 let selectedId = null;
 let flatList = [];
 let flaggedSet = new Set();
+const FLAG_ICON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
 
 async function initAuth() {
   currentUser = await Auth.fetchMe();
@@ -511,7 +519,7 @@ function selectProblem(id) {
 function showEmpty() {
   document.getElementById('problem-detail-panel').innerHTML = `
     <div class="detail-empty">
-      <div class="detail-empty-icon">📖</div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:44px;height:44px" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <div class="detail-empty-text">Select a problem to start solving</div>
     </div>`;
 }
@@ -573,7 +581,7 @@ function renderNumericDetail(q) {
     </div>
     <div class="flag-row">
       <button class="flag-btn${isFlagged ? ' flagged' : ''}" id="flag-btn-${q.id}" onclick="flagQuestion('${q.id}')">
-        🚩 ${isFlagged ? 'Flagged' : 'Flag as broken'}
+        ${FLAG_ICON} ${isFlagged ? 'Flagged' : 'Flag as broken'}
       </button>
     </div>
   </div>`;
@@ -625,7 +633,7 @@ function renderCodeDetail(q) {
     </div>` : ''}
     <div class="flag-row">
       <button class="flag-btn${isFlagged ? ' flagged' : ''}" id="flag-btn-${q.id}" onclick="flagQuestion('${q.id}')">
-        🚩 ${isFlagged ? 'Flagged' : 'Flag as broken'}
+        ${FLAG_ICON} ${isFlagged ? 'Flagged' : 'Flag as broken'}
       </button>
     </div>
   </div>`;
@@ -800,7 +808,7 @@ async function flagQuestion(qId) {
   if (flaggedSet.has(qId)) return;
   flaggedSet.add(qId);
   const btn = document.getElementById(`flag-btn-${qId}`);
-  if (btn) { btn.classList.add('flagged'); btn.textContent = '🚩 Flagged'; }
+  if (btn) { btn.classList.add('flagged'); btn.innerHTML = `${FLAG_ICON} Flagged`; }
   try {
     await fetch('/api/flag', {
       method: 'POST',
