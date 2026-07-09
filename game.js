@@ -168,11 +168,11 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">1 — Arena</div>
       <div class="option-grid" id="cat-grid">
-        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Tech / Coding — Write a JavaScript function" onclick="selectOption('category','tech',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon">💻</div><div class="opt-name">Tech / Coding</div><div class="opt-sub">Write a JavaScript function</div>
-        </div>
         <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Quant Finance — Calculate the exact answer" onclick="selectOption('category','quant',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">📊</div><div class="opt-name">Quant Finance</div><div class="opt-sub">Calculate the exact answer</div>
+        </div>
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Tech / Coding — Write a JavaScript function" onclick="selectOption('category','tech',this)" onkeydown="handleOptionKey(event,this)">
+          <div class="opt-icon">💻</div><div class="opt-name">Tech / Coding</div><div class="opt-sub">Write a JavaScript function</div>
         </div>
       </div>
     </div>
