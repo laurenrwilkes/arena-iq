@@ -1,4 +1,4 @@
-// ArenaIQ — Sentry error tracking
+// QuantBattle — Sentry error tracking
 // Replace SENTRY_DSN with your DSN from sentry.io:
 //   1. Go to sentry.io → create free account
 //   2. New Project → Browser JavaScript

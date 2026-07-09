@@ -120,10 +120,10 @@ const QUESTIONS = {
           },
           {
             "input": [
-              "ArenaIQ"
+              "QuantBattle"
             ],
-            "expected": "QIanerA",
-            "label": "s = \"ArenaIQ\""
+            "expected": "elttaBtnauQ",
+            "label": "s = \"QuantBattle\""
           },
           {
             "input": [
@@ -1356,7 +1356,7 @@ const QUESTIONS = {
           },
           {
             "input": [
-              "ArenaIQ"
+              "QuantBattle"
             ],
             "expected": 4
           }

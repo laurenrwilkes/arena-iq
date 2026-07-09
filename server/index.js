@@ -585,4 +585,4 @@ app.get('/api/admin/backup', (req, res) => {
 if (process.env.SENTRY_DSN) app.use(Sentry.expressErrorHandler());
 app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Internal server error' }); });
 
-server.listen(PORT, () => { console.log(`\n⚔️  ArenaIQ running at http://localhost:${PORT}\n`); });
+server.listen(PORT, () => { console.log(`\n⚔️  QuantBattle running at http://localhost:${PORT}\n`); });

@@ -3,39 +3,44 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Practice Quant &amp; Coding Interview Questions — ArenaIQ</title>
-<meta name="description" content="Practice quant and technical interview questions for free, then battle other candidates head-to-head in real time. Filter by topic and difficulty, get instant feedback, and climb the ELO rankings." />
+<title>QuantBattle | Practice Quant & Coding Interview Questions</title>
+<meta name="description" content="QuantBattle lets you practice quant and coding interview questions, then battle other candidates head-to-head in real time." />
 <link rel="canonical" href="https://www.quantbattle.net/" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta property="og:type" content="website" />
-<meta property="og:site_name" content="ArenaIQ" />
-<meta property="og:title" content="Practice Quant & Coding Interview Questions — ArenaIQ" />
+<meta property="og:site_name" content="QuantBattle" />
+<meta property="og:title" content="QuantBattle | Practice Quant & Coding Interview Questions" />
 <meta property="og:description" content="Practice quant and technical interview questions for free, then battle other candidates head-to-head in real time." />
 <meta property="og:url" content="https://www.quantbattle.net/" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Practice Quant & Coding Interview Questions — ArenaIQ" />
+<meta name="twitter:title" content="QuantBattle | Practice Quant & Coding Interview Questions" />
 <meta name="twitter:description" content="Practice quant and technical interview questions for free, then battle other candidates head-to-head in real time." />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "ArenaIQ",
+  "name": "QuantBattle",
+  "alternateName": "ArenaIQ",
   "url": "https://www.quantbattle.net/",
-  "description": "Practice quant and technical interview questions, then battle other candidates head-to-head in real time."
+  "description": "Practice quant and coding interview questions, then battle other candidates head-to-head in real time."
 }
 </script>
 <link rel="stylesheet" href="style.css" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
-  body { background: var(--bg); overflow: hidden; }
+  body { background: var(--bg); }
+
+  /* ── SEO INTRO — real crawlable content above the app shell, not just an sr-only fallback ── */
+  .seo-intro { max-width: 860px; margin: 0 auto; padding: 96px 40px 28px; }
+  .seo-intro h1 { font-size: clamp(1.75rem, 3vw, 2.5rem); margin-bottom: 14px; }
+  .seo-intro p { color: var(--t2); font-size: 0.95rem; line-height: 1.8; max-width: 720px; margin-bottom: 10px; }
 
   /* ── LAYOUT ── */
   .problems-layout {
     display: grid;
     grid-template-columns: 280px 380px 1fr;
-    height: calc(100vh - 64px);
-    margin-top: 64px;
+    min-height: calc(100vh - 64px);
   }
 
   /* ── LEFT SIDEBAR ── */
@@ -302,8 +307,9 @@
   .problem-detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
   @media (max-width: 900px) {
+    .seo-intro { padding: 88px 20px 20px; }
     body { overflow: auto; }
-    .problems-layout { grid-template-columns: 1fr; height: auto; }
+    .problems-layout { grid-template-columns: 1fr; height: auto; min-height: 0; }
     .problems-list-panel, .problem-detail-panel { border-right: none; }
     .problem-detail-panel { border-top: 1px solid var(--border); }
     .detail-content { padding: 20px; }
@@ -322,7 +328,7 @@
         <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
       </svg>
     </div>
-    <span>ArenaIQ</span>
+    <span>QuantBattle</span>
   </a>
   <div class="nav-links">
     <a href="index.html" class="active">Practice</a>
@@ -343,7 +349,18 @@
   </div>
 </nav>
 
-<h1 class="sr-only">Practice Quant &amp; Coding Interview Questions</h1>
+<section class="seo-intro">
+  <h1>QuantBattle</h1>
+  <p>
+    QuantBattle is a free platform for practicing quant and coding interview questions.
+    Solve probability, statistics, market-making, brainteaser, and technical problems,
+    then battle other candidates head-to-head in real time.
+  </p>
+  <p>
+    Prepare for quant trading, hedge fund, market maker, and software engineering interviews
+    with instant feedback and ranked competitive practice.
+  </p>
+</section>
 
 <div class="problems-layout">
   <aside class="sidebar">
