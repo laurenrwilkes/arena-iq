@@ -168,10 +168,10 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">1 — Arena</div>
       <div class="option-grid" id="cat-grid">
-        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Tech / Coding — Write a JavaScript function" onclick="selectOption('category','tech',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Tech / Coding — Write a JavaScript function" onclick="selectOption('category','tech',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">💻</div><div class="opt-name">Tech / Coding</div><div class="opt-sub">Write a JavaScript function</div>
         </div>
-        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Quant Finance — Calculate the exact answer" onclick="selectOption('category','quant',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Quant Finance — Calculate the exact answer" onclick="selectOption('category','quant',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">📊</div><div class="opt-name">Quant Finance</div><div class="opt-sub">Calculate the exact answer</div>
         </div>
       </div>
@@ -179,13 +179,13 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">2 — Difficulty</div>
       <div class="option-grid" id="diff-grid">
-        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Easy — 5 minute limit" onclick="selectOption('difficulty','easy',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Easy — 5 minute limit" onclick="selectOption('difficulty','easy',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🟢</div><div class="opt-name" style="color:var(--green)">Easy</div><div class="opt-sub">5 min limit</div>
         </div>
-        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Medium — 8 minute limit" onclick="selectOption('difficulty','medium',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Medium — 8 minute limit" onclick="selectOption('difficulty','medium',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🟡</div><div class="opt-name" style="color:var(--gold)">Medium</div><div class="opt-sub">8 min limit</div>
         </div>
-        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Hard — 12 minute limit" onclick="selectOption('difficulty','hard',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Hard — 12 minute limit" onclick="selectOption('difficulty','hard',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon" style="font-size:1.5rem">🔴</div><div class="opt-name" style="color:var(--red)">Hard</div><div class="opt-sub">12 min limit</div>
         </div>
       </div>
@@ -193,10 +193,10 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">3 — Mode</div>
       <div class="option-grid" id="mode-grid">
-        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="1v1 Ranked — ELO matchmaking" onclick="selectOption('mode','ranked',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="1v1 Ranked — ELO matchmaking" onclick="selectOption('mode','ranked',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">⚔️</div><div class="opt-name">1v1 Ranked</div><div class="opt-sub">ELO matchmaking</div>
         </div>
-        <div class="option-card lift-hover" role="button" tabindex="0" aria-label="Challenge a Friend — private room with link" onclick="selectOption('mode','private',this)" onkeydown="handleOptionKey(event,this)">
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Challenge a Friend — private room with link" onclick="selectOption('mode','private',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">🔗</div><div class="opt-name">Challenge a Friend</div><div class="opt-sub">Private room with link</div>
         </div>
       </div>
