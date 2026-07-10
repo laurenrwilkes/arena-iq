@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Play — ArenaIQ</title>
+<title>QuantBattle | Battle Mode — Live 1v1 Quant &amp; Coding Practice</title>
+<meta name="description" content="Challenge other candidates to real-time quant and coding interview battles. Pick your topic, difficulty, and language, then compete for ELO." />
+<link rel="canonical" href="https://www.quantbattle.net/play.html" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="QuantBattle" />
+<meta property="og:title" content="QuantBattle | Battle Mode — Live 1v1 Quant & Coding Practice" />
+<meta property="og:description" content="Challenge other candidates to real-time quant and coding interview battles and compete for ELO." />
+<meta property="og:url" content="https://www.quantbattle.net/play.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="QuantBattle | Battle Mode — Live 1v1 Quant & Coding Practice" />
+<meta name="twitter:description" content="Challenge other candidates to real-time quant and coding interview battles and compete for ELO." />
 <link rel="stylesheet" href="style.css" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -18,15 +29,16 @@
   .step-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--t3); margin-bottom: 12px; }
   .option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
   .option-card {
-    background: var(--card); border: 1px solid var(--border);
+    background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
     border-radius: var(--r); padding: 18px; cursor: pointer;
     transition: all 0.2s; text-align: center;
   }
-  .option-card:hover { border-color: rgba(124,58,237,0.4); background: var(--card2); }
+  .option-card:hover, .option-card:focus-visible { border-color: rgba(139,92,246,0.4); background: var(--glass-bg-strong); }
   .option-card.selected {
     border-color: var(--purple);
-    background: rgba(124,58,237,0.1);
-    box-shadow: 0 0 0 1px var(--purple), 0 0 20px rgba(124,58,237,0.12);
+    background: rgba(139,92,246,0.16);
+    box-shadow: 0 0 0 1px var(--purple), 0 0 20px rgba(139,92,246,0.12);
   }
   .opt-icon { font-size: 1.8rem; margin-bottom: 8px; }
   .opt-name { font-weight: 700; font-size: 0.92rem; margin-bottom: 4px; }
@@ -74,13 +86,13 @@
   .ex-row { display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start; }
   .ex-row:last-child { margin-bottom: 0; }
   .ex-label { color: var(--t3); font-weight: 600; flex-shrink: 0; min-width: 80px; }
-  .ex-row code { background: rgba(124,58,237,0.15); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--purple-l); }
+  .ex-row code { background: rgba(139,92,246,0.15); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--purple-l); }
   .constraints-list { padding-left: 18px; font-size: 0.82rem; color: var(--t2); line-height: 1.8; }
   .editor-topbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: var(--card2); border-bottom: 1px solid var(--border); }
   .lang-picker { display: flex; gap: 4px; }
   .lang-btn { padding: 3px 10px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; border: 1px solid var(--border); background: transparent; color: var(--t3); cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
   .lang-btn:hover { color: var(--t1); border-color: var(--border2); }
-  .lang-btn.active { background: rgba(124,58,237,0.2); border-color: var(--purple); color: var(--purple-l); }
+  .lang-btn.active { background: rgba(139,92,246,0.2); border-color: var(--purple); color: var(--purple-l); }
   .code-editor {
     width: 100%; height: 320px; resize: vertical;
     background: #080814; border: none; outline: none;
@@ -115,7 +127,8 @@
   .numeric-desc { font-size: 0.95rem; color: var(--t2); line-height: 1.9; white-space: pre-line; }
   .numeric-answer-box {
     max-width: 480px; width: 100%;
-    background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); padding: 28px;
+    background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border); border-radius: var(--r2); padding: 28px;
   }
   .answer-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--t3); margin-bottom: 12px; }
   .answer-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
@@ -153,7 +166,7 @@
   .elo-change.pos { background: rgba(16,185,129,0.15); color: var(--green); }
   .elo-change.neg { background: rgba(239,68,68,0.15); color: var(--red); }
   .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
-  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); padding: 24px; }
+  .result-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--r2); padding: 24px; }
   .summary-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; color: var(--t2); }
   .summary-row:last-child { border-bottom: none; }
   .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
@@ -161,6 +174,20 @@
   @media (max-width: 640px) {
     .result-grid { grid-template-columns: 1fr; }
     .game-players-bar { flex-direction: column; gap: 8px; }
+  }
+
+  /* RESPONSIVE — stack the split coding layout instead of squeezing two columns on a phone/tablet */
+  @media (max-width: 900px) {
+    .setup-container { padding: 40px 18px; }
+    .option-grid { grid-template-columns: repeat(2, 1fr); }
+    .game-body { grid-template-columns: 1fr; }
+    .game-left { border-right: none; border-bottom: 1px solid var(--border); max-height: none; }
+    .code-editor { height: 260px; }
+    .game-topbar { flex-wrap: wrap; gap: 10px; padding: 10px 16px; }
+    .numeric-answer-box { padding: 20px; }
+  }
+  @media (max-width: 480px) {
+    .option-grid { grid-template-columns: 1fr; }
   }
 </style>
 <script>window.__SENTRY_DSN__ = 'https://7759a09b911029a3b03db100273fa56f@o4511330884714496.ingest.us.sentry.io/4511330890809344';</script>
@@ -170,43 +197,50 @@
 
 <nav>
   <a href="index.html" class="nav-logo">
-    <div class="logo-icon">⚔️</div>
-    <span>ArenaIQ</span>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4l16 16M20 4L4 20"/>
+        <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
+      </svg>
+    </div>
+    <span>QuantBattle</span>
   </a>
   <div class="nav-links">
     <a href="index.html">Practice</a>
-    <a href="play.html" style="color:var(--t1);font-weight:700">Battle</a>
+    <a href="play.html" class="active">Battle</a>
   </div>
   <div class="nav-actions">
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
       onclick="showAuthModal(user => { currentUser = user; updateNavUser(); })">Log In / Sign Up</button>
     <div style="position:relative" id="nav-profile-wrap">
-      <div id="nav-username" style="width:34px;height:34px;border-radius:50%;background:var(--grad);display:none;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;cursor:pointer" onclick="toggleProfileMenu()">?</div>
-      <div id="profile-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);min-width:180px;box-shadow:var(--shadow);z-index:200;overflow:hidden">
-        <div id="profile-menu-user" style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.85rem">
-          <div style="font-weight:700" id="profile-menu-name">—</div>
-          <div style="color:var(--t3);font-size:0.75rem" id="profile-menu-elo">— ELO</div>
+      <button id="nav-username" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleProfileMenu()">?</button>
+      <div id="profile-menu" class="nav-menu">
+        <div class="nav-menu-header" id="profile-menu-user">
+          <div class="nav-menu-name" id="profile-menu-name">—</div>
+          <div class="nav-menu-elo" id="profile-menu-elo">— ELO</div>
         </div>
-        <div style="border-top:1px solid var(--border)">
-          <a href="#" onclick="Auth.logout()" style="display:block;padding:10px 16px;color:var(--red);text-decoration:none;font-size:0.88rem" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">Log Out</a>
-        </div>
+        <a href="#" class="nav-menu-logout" onclick="event.preventDefault();Auth.logout()">Log Out</a>
       </div>
     </div>
   </div>
 </nav>
 
+<h1 class="sr-only">Battle Mode — Live 1v1 Quant &amp; Coding Interview Practice</h1>
+
 <script>
 function toggleProfileMenu() {
   const menu = document.getElementById('profile-menu');
   if (!menu) return;
-  const open = menu.style.display === 'block';
-  menu.style.display = open ? 'none' : 'block';
+  const open = menu.style.display !== 'block';
+  menu.style.display = open ? 'block' : 'none';
+  document.getElementById('nav-username')?.setAttribute('aria-expanded', String(open));
 }
 document.addEventListener('click', e => {
   const wrap = document.getElementById('nav-profile-wrap');
   if (wrap && !wrap.contains(e.target)) {
     const menu = document.getElementById('profile-menu');
     if (menu) menu.style.display = 'none';
+    document.getElementById('nav-username')?.setAttribute('aria-expanded', 'false');
   }
 });
 </script>

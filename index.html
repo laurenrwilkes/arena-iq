@@ -3,19 +3,83 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ArenaIQ — Practice &amp; Battle</title>
+<title>QuantBattle | Practice Quant & Coding Interview Questions</title>
+<meta name="description" content="QuantBattle lets you practice quant and coding interview questions, then battle other candidates head-to-head in real time." />
+<link rel="canonical" href="https://www.quantbattle.net/" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="QuantBattle" />
+<meta property="og:title" content="QuantBattle | Practice Quant & Coding Interview Questions" />
+<meta property="og:description" content="Practice quant and technical interview questions for free, then battle other candidates head-to-head in real time." />
+<meta property="og:url" content="https://www.quantbattle.net/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="QuantBattle | Practice Quant & Coding Interview Questions" />
+<meta name="twitter:description" content="Practice quant and technical interview questions for free, then battle other candidates head-to-head in real time." />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "QuantBattle",
+  "alternateName": "ArenaIQ",
+  "url": "https://www.quantbattle.net/",
+  "description": "Practice quant and coding interview questions, then battle other candidates head-to-head in real time."
+}
+</script>
 <link rel="stylesheet" href="style.css" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
-  body { background: var(--bg); overflow: hidden; }
+  /* ── LIGHT THEME — Practice page only; Battle (play.html) keeps the dark theme from style.css.
+     Redeclaring :root here overrides the shared dark tokens for every var()-driven element on
+     this page only, since this block loads after style.css in the cascade. ── */
+  :root {
+    --bg: #f8fafc;
+    --bg2: #f1f5f9;
+    --bg3: #e9eef4;
+    --card: #ffffff;
+    --card2: #f1f5f9;
+    --border: rgba(15,23,42,0.09);
+    --border2: rgba(180,83,9,0.35);
+
+    --purple: #7c3aed;
+    --purple-l: #6d28d9;
+    --purple-d: #ede9fe;
+    --cyan: #0891b2;
+    --cyan-l: #0e7490;
+    --green: #059669;
+    --green-l: #047857;
+    --gold: #b45309;
+    --gold-l: #92400e;
+    --red: #dc2626;
+    --orange: #ea580c;
+
+    --t1: #0f172a;
+    --t2: #475569;
+    --t3: #64748b;
+
+    --shadow: 0 8px 24px rgba(15,23,42,0.08);
+    --glow: 0 0 40px rgba(245,158,11,0.12);
+
+    --glass-bg: rgba(255,255,255,0.6);
+    --glass-bg-strong: rgba(255,255,255,0.8);
+    --glass-border: rgba(15,23,42,0.08);
+  }
+  body { background: var(--bg); }
+  /* A few shared style.css rules hardcode dark-mode colors instead of using variables — override them here */
+  nav { background: rgba(255,255,255,0.75); border-bottom: 1px solid rgba(15,23,42,0.06); }
+  body::before, body::after { display: none; }
+  .btn-outline { border-color: rgba(15,23,42,0.16); }
+  .btn-outline:hover { background: rgba(15,23,42,0.04); }
+
+  /* ── SEO INTRO — real crawlable content above the app shell, not just an sr-only fallback ── */
+  .seo-intro { max-width: 860px; margin: 0 auto; padding: 80px 40px 8px; }
+  .seo-intro h1 { font-size: 0.92rem; font-weight: 600; color: var(--t2); line-height: 1.6; letter-spacing: 0; margin-bottom: 0; }
 
   /* ── LAYOUT ── */
   .problems-layout {
     display: grid;
     grid-template-columns: 280px 380px 1fr;
-    height: calc(100vh - 64px);
-    margin-top: 64px;
+    min-height: calc(100vh - 64px);
   }
 
   /* ── LEFT SIDEBAR ── */
@@ -43,7 +107,7 @@
   }
   .cat-tab.active {
     background: var(--grad); color: #fff;
-    box-shadow: 0 1px 4px rgba(124,58,237,0.3);
+    box-shadow: 0 1px 4px rgba(139,92,246,0.3);
   }
 
   .search-wrap { position: relative; margin-bottom: 18px; }
@@ -55,9 +119,9 @@
     box-sizing: border-box;
   }
   .search-wrap input:focus { border-color: var(--purple); }
-  .search-wrap::before {
-    content: '🔍'; position: absolute; left: 10px; top: 50%;
-    transform: translateY(-50%); font-size: 0.8rem; pointer-events: none;
+  .search-wrap .icon {
+    position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); color: var(--t3); pointer-events: none;
   }
 
   .filter-label {
@@ -71,7 +135,7 @@
     color: var(--t3); transition: all 0.15s; font-family: inherit;
   }
   .diff-pill:hover { border-color: var(--purple); color: var(--t2); }
-  .diff-pill.active { background: rgba(124,58,237,0.15); border-color: var(--purple); color: var(--purple-l); }
+  .diff-pill.active { background: rgba(139,92,246,0.15); border-color: var(--purple); color: var(--purple-l); }
   .diff-pill.easy.active { background: rgba(16,185,129,0.12); border-color: var(--green); color: var(--green); }
   .diff-pill.medium.active { background: rgba(245,158,11,0.12); border-color: var(--gold); color: var(--gold); }
   .diff-pill.hard.active { background: rgba(239,68,68,0.12); border-color: var(--red); color: var(--red); }
@@ -99,11 +163,11 @@
   .list-count { font-size: 0.8rem; color: var(--t3); }
   .problem-row {
     display: flex; align-items: center; gap: 12px;
-    padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 13px 18px; border-bottom: 1px solid rgba(15,23,42,0.06);
     cursor: pointer; transition: background 0.12s; user-select: none;
   }
-  .problem-row:hover { background: var(--card2); }
-  .problem-row.active { background: rgba(124,58,237,0.08); border-left: 2px solid var(--purple); }
+  .problem-row:hover, .problem-row:focus-visible { background: var(--card2); }
+  .problem-row.active { background: rgba(139,92,246,0.08); border-left: 2px solid var(--purple); }
   .problem-num { font-size: 0.72rem; color: var(--t3); min-width: 28px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
   .problem-title-text { flex: 1; font-size: 0.87rem; font-weight: 600; color: var(--t1); }
   .diff-badge {
@@ -131,7 +195,6 @@
     align-items: center; justify-content: center;
     color: var(--t3); gap: 12px; padding: 40px;
   }
-  .detail-empty-icon { font-size: 3rem; }
   .detail-empty-text { font-size: 0.9rem; }
 
   .detail-content { padding: 28px 32px; max-width: 720px; }
@@ -149,7 +212,7 @@
   .detail-badge.tech { border-color: rgba(16,185,129,0.4); color: var(--green); background: rgba(16,185,129,0.08); }
 
   .detail-desc { font-size: 0.9rem; color: var(--t2); line-height: 1.85; margin-bottom: 24px; }
-  .detail-desc code { background: rgba(124,58,237,0.15); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; color: var(--purple-l); }
+  .detail-desc code { background: rgba(139,92,246,0.15); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; color: var(--purple-l); }
 
   .detail-section-label {
     font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
@@ -159,7 +222,7 @@
   .ex-row { display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start; }
   .ex-row:last-child { margin-bottom: 0; }
   .ex-label { color: var(--t3); font-weight: 600; flex-shrink: 0; min-width: 90px; }
-  .ex-row code { background: rgba(124,58,237,0.15); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--purple-l); }
+  .ex-row code { background: rgba(139,92,246,0.15); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--purple-l); }
   .constraints-list { padding-left: 18px; font-size: 0.82rem; color: var(--t2); line-height: 1.9; }
 
   /* Hints accordion */
@@ -185,7 +248,8 @@
 
   /* Answer area */
   .answer-area {
-    background: var(--card); border: 1px solid var(--border);
+    background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
     border-radius: var(--r2); padding: 24px; margin-bottom: 16px;
   }
   .answer-label-row {
@@ -213,47 +277,50 @@
   }
   .solution-box.show { display: block; }
   .solution-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--green); margin-bottom: 10px; }
-  .solution-step { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.84rem; gap: 12px; }
+  .solution-step { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(15,23,42,0.06); font-size: 0.84rem; gap: 12px; }
   .solution-step:last-child { border-bottom: none; }
   .sol-label { color: var(--t3); }
   .sol-value { color: var(--t1); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; text-align: right; }
-  .solution-explanation { margin-top: 12px; font-size: 0.86rem; color: var(--t2); line-height: 1.8; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+  .solution-explanation { margin-top: 12px; font-size: 0.86rem; color: var(--t2); line-height: 1.8; padding-top: 10px; border-top: 1px solid rgba(15,23,42,0.06); }
 
   /* Code editor */
+  /* The editor block (topbar + code editor + test output) stays a self-contained dark component
+     regardless of page theme, so it reads as one cohesive "code panel" rather than a light bar
+     glued to a dark editor. */
   .editor-topbar {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 14px; background: var(--card2); border-radius: var(--r) var(--r) 0 0;
-    border: 1px solid var(--border); border-bottom: none;
+    padding: 8px 14px; background: #14162b; border-radius: var(--r) var(--r) 0 0;
+    border: 1px solid #262841; border-bottom: none;
   }
   .lang-picker { display: flex; gap: 4px; }
   .lang-btn {
     padding: 3px 10px; border-radius: 4px; font-size: 0.72rem; font-weight: 700;
-    border: 1px solid var(--border); background: transparent; color: var(--t3);
+    border: 1px solid #262841; background: transparent; color: #7c8199;
     cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; font-family: inherit;
   }
-  .lang-btn:hover { color: var(--t1); border-color: var(--border2); }
-  .lang-btn.active { background: rgba(124,58,237,0.2); border-color: var(--purple); color: var(--purple-l); }
+  .lang-btn:hover { color: #e2e4f0; border-color: #6d28d9; }
+  .lang-btn.active { background: rgba(139,92,246,0.25); border-color: #8b5cf6; color: #c4b5fd; }
   .code-editor {
     width: 100%; min-height: 220px; resize: vertical;
-    background: #080814; border: 1px solid var(--border); border-top: none;
+    background: #080814; border: 1px solid #262841; border-top: none;
     outline: none; color: #c9d1d9; font-family: 'JetBrains Mono', 'Fira Code', monospace;
     font-size: 13px; line-height: 1.65; padding: 14px 16px; tab-size: 2;
     display: block; box-sizing: border-box; border-radius: 0;
   }
   .code-editor:focus { background: #06060f; }
   .test-output {
-    background: #080814; border: 1px solid var(--border); border-top: none;
+    background: #080814; border: 1px solid #262841; border-top: none;
     padding: 10px 14px; font-size: 0.8rem; font-family: monospace;
     max-height: 180px; overflow-y: auto; border-radius: 0;
   }
-  .tc-row { padding: 4px 0; line-height: 1.6; }
-  .tc-pass { color: var(--green); }
-  .tc-fail { color: var(--red); }
-  .tc-error { color: #f97316; }
-  .tc-detail { display: block; padding-left: 20px; color: var(--t3); font-size: 0.75rem; }
-  .tc-detail code { color: var(--purple-l); }
-  .tc-summary { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); font-weight: 600; color: var(--t2); }
-  .tc-all-pass { color: var(--green); }
+  .tc-row { padding: 4px 0; line-height: 1.6; color: #c9d1d9; }
+  .tc-pass { color: #6ee7b7; }
+  .tc-fail { color: #fca5a5; }
+  .tc-error { color: #fdba74; }
+  .tc-detail { display: block; padding-left: 20px; color: #7c8199; font-size: 0.75rem; }
+  .tc-detail code { color: #c4b5fd; }
+  .tc-summary { margin-top: 8px; padding-top: 8px; border-top: 1px solid #262841; font-weight: 600; color: #a8adc4; }
+  .tc-all-pass { color: #6ee7b7; }
   .code-actions { display: flex; gap: 8px; padding: 10px 0; margin-bottom: 8px; }
 
   /* Flag button */
@@ -282,8 +349,9 @@
   .problem-detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
   @media (max-width: 900px) {
+    .seo-intro { padding: 88px 20px 20px; }
     body { overflow: auto; }
-    .problems-layout { grid-template-columns: 1fr; height: auto; }
+    .problems-layout { grid-template-columns: 1fr; height: auto; min-height: 0; }
     .problems-list-panel, .problem-detail-panel { border-right: none; }
     .problem-detail-panel { border-top: 1px solid var(--border); }
     .detail-content { padding: 20px; }
@@ -296,27 +364,36 @@
 
 <nav>
   <a href="index.html" class="nav-logo">
-    <div class="logo-icon">⚔️</div>
-    <span>ArenaIQ</span>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4l16 16M20 4L4 20"/>
+        <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
+      </svg>
+    </div>
+    <span>QuantBattle</span>
   </a>
   <div class="nav-links">
-    <a href="index.html" style="color:var(--t1);font-weight:700">Practice</a>
+    <a href="index.html" class="active">Practice</a>
     <a href="play.html">Battle</a>
   </div>
   <div class="nav-actions">
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
       onclick="showAuthModal(u => { currentUser = u; updateNav(); })">Log In / Sign Up</button>
     <div style="position:relative" id="nav-profile-wrap">
-      <div id="nav-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--grad);display:none;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;cursor:pointer" onclick="toggleNav()">?</div>
-      <div id="nav-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);min-width:180px;box-shadow:var(--shadow);z-index:200;overflow:hidden">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.85rem">
-          <div style="font-weight:700" id="nav-menu-name">—</div>
+      <button id="nav-avatar" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleNav()">?</button>
+      <div id="nav-menu" class="nav-menu">
+        <div class="nav-menu-header">
+          <div class="nav-menu-name" id="nav-menu-name">—</div>
         </div>
-        <a href="#" onclick="Auth.logout()" style="display:block;padding:10px 16px;color:var(--red);text-decoration:none;font-size:0.88rem" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">Log Out</a>
+        <a href="#" class="nav-menu-logout" onclick="event.preventDefault();Auth.logout()">Log Out</a>
       </div>
     </div>
   </div>
 </nav>
+
+<section class="seo-intro">
+  <h1>QuantBattle — practice quant &amp; coding interview questions, then battle head-to-head in real time.</h1>
+</section>
 
 <div class="problems-layout">
   <aside class="sidebar">
@@ -326,7 +403,8 @@
         <button class="cat-tab" onclick="selectCat('tech',this)">💻 Tech</button>
       </div>
       <div class="search-wrap">
-        <input type="text" id="search-input" placeholder="Search problems..." oninput="applyFilters()" />
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" aria-label="Search problems" placeholder="Search problems..." oninput="applyFilters()" />
       </div>
       <div class="filter-label">Difficulty</div>
       <div class="diff-pills">
@@ -344,13 +422,14 @@
       <span class="list-count" id="list-count">—</span>
     </div>
     <div id="problems-list">
-      <div class="empty-list">Loading...</div>
+      <div class="skeleton-row"></div><div class="skeleton-row"></div><div class="skeleton-row"></div>
+      <div class="skeleton-row"></div><div class="skeleton-row"></div><div class="skeleton-row"></div>
     </div>
   </div>
 
   <div class="problem-detail-panel" id="problem-detail-panel">
     <div class="detail-empty">
-      <div class="detail-empty-icon">📖</div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:44px;height:44px" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <div class="detail-empty-text">Select a problem to start solving</div>
     </div>
   </div>
@@ -366,6 +445,7 @@ let currentLang = 'javascript';
 let selectedId = null;
 let flatList = [];
 let flaggedSet = new Set();
+const FLAG_ICON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
 
 async function initAuth() {
   currentUser = await Auth.fetchMe();
@@ -386,13 +466,17 @@ function updateNav() {
 }
 function toggleNav() {
   const m = document.getElementById('nav-menu');
-  if (m) m.style.display = m.style.display === 'block' ? 'none' : 'block';
+  const btn = document.getElementById('nav-avatar');
+  const open = m && m.style.display !== 'block';
+  if (m) m.style.display = open ? 'block' : 'none';
+  if (btn) btn.setAttribute('aria-expanded', String(!!open));
 }
 document.addEventListener('click', e => {
   const w = document.getElementById('nav-profile-wrap');
   if (w && !w.contains(e.target)) {
     const m = document.getElementById('nav-menu');
     if (m) m.style.display = 'none';
+    document.getElementById('nav-avatar')?.setAttribute('aria-expanded', 'false');
   }
 });
 
@@ -461,7 +545,9 @@ function renderList(questions) {
   }
   if (countEl) countEl.textContent = `${questions.length} problem${questions.length !== 1 ? 's' : ''}`;
   container.innerHTML = questions.map((q, i) => `
-    <div class="problem-row${selectedId === q.id ? ' active' : ''}" onclick="selectProblem('${q.id}')" data-id="${q.id}">
+    <div class="problem-row${selectedId === q.id ? ' active' : ''}" role="button" tabindex="0"
+      onclick="selectProblem('${q.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectProblem('${q.id}')}"
+      data-id="${q.id}" aria-label="${q.title}, ${q.diff}">
       <span class="problem-num">#${i + 1}</span>
       <span class="problem-title-text">${q.title}</span>
       <span class="diff-badge ${q.diff}">${q.diff.charAt(0).toUpperCase() + q.diff.slice(1)}</span>
@@ -482,7 +568,7 @@ function selectProblem(id) {
 function showEmpty() {
   document.getElementById('problem-detail-panel').innerHTML = `
     <div class="detail-empty">
-      <div class="detail-empty-icon">📖</div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:44px;height:44px" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <div class="detail-empty-text">Select a problem to start solving</div>
     </div>`;
 }
@@ -544,7 +630,7 @@ function renderNumericDetail(q) {
     </div>
     <div class="flag-row">
       <button class="flag-btn${isFlagged ? ' flagged' : ''}" id="flag-btn-${q.id}" onclick="flagQuestion('${q.id}')">
-        🚩 ${isFlagged ? 'Flagged' : 'Flag as broken'}
+        ${FLAG_ICON} ${isFlagged ? 'Flagged' : 'Flag as broken'}
       </button>
     </div>
   </div>`;
@@ -596,7 +682,7 @@ function renderCodeDetail(q) {
     </div>` : ''}
     <div class="flag-row">
       <button class="flag-btn${isFlagged ? ' flagged' : ''}" id="flag-btn-${q.id}" onclick="flagQuestion('${q.id}')">
-        🚩 ${isFlagged ? 'Flagged' : 'Flag as broken'}
+        ${FLAG_ICON} ${isFlagged ? 'Flagged' : 'Flag as broken'}
       </button>
     </div>
   </div>`;
@@ -771,7 +857,7 @@ async function flagQuestion(qId) {
   if (flaggedSet.has(qId)) return;
   flaggedSet.add(qId);
   const btn = document.getElementById(`flag-btn-${qId}`);
-  if (btn) { btn.classList.add('flagged'); btn.textContent = '🚩 Flagged'; }
+  if (btn) { btn.classList.add('flagged'); btn.innerHTML = `${FLAG_ICON} Flagged`; }
   try {
     await fetch('/api/flag', {
       method: 'POST',

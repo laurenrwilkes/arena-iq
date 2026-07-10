@@ -139,7 +139,7 @@ function showAuthModal(onSuccess) {
   const style = document.createElement('style');
   style.textContent = `
     .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px; }
-    .modal-box { background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:36px;width:100%;max-width:420px;box-shadow:var(--shadow),var(--glow); }
+    .modal-box { background:var(--glass-bg-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:var(--r2);padding:36px;width:100%;max-width:420px;box-shadow:var(--shadow),var(--glow); }
     .modal-tabs { display:flex;gap:8px;margin-bottom:28px; }
     .modal-tab { flex:1;padding:10px;border-radius:var(--r);border:1px solid var(--border);background:transparent;color:var(--t2);font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s; }
     .modal-tab.active { background:var(--grad);border-color:transparent;color:#fff; }

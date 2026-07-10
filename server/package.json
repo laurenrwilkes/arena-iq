@@ -1,7 +1,7 @@
 {
   "name": "arena-iq-server",
   "version": "1.0.0",
-  "description": "ArenaIQ real-time multiplayer backend",
+  "description": "QuantBattle real-time multiplayer backend",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
