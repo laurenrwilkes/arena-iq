@@ -598,7 +598,7 @@ function renderNumericGame(q) {
         <div class="answer-label">Your Answer</div>
         <div class="answer-input-row">
           ${q.unit && q.unit !== '' && !['%','days','rolls','x'].includes(q.unit) ? `<span class="answer-prefix">${q.unit}</span>` : ''}
-          <input type="number" id="numeric-input" class="answer-input" placeholder="0.00" step="any"
+          <input type="text" inputmode="decimal" id="numeric-input" class="answer-input" placeholder="0.00 or 3/4"
             onkeydown="if(event.key==='Enter') checkNumeric()" />
           ${q.unit && ['%','days','rolls','x'].includes(q.unit) ? `<span class="answer-suffix">${q.unit}</span>` : ''}
         </div>
@@ -618,13 +618,41 @@ function renderNumericGame(q) {
   </div>`;
 }
 
+function parseAnswerValue(str) {
+  if (str == null) return NaN;
+  str = String(str).trim();
+  if (str === '') return NaN;
+
+  // mixed number, e.g. "1 1/2" or "-1 1/2"
+  const mixed = str.match(/^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+  if (mixed) {
+    const whole = parseFloat(mixed[1]);
+    const num = parseFloat(mixed[2]);
+    const den = parseFloat(mixed[3]);
+    if (!den) return NaN;
+    const sign = whole < 0 ? -1 : 1;
+    return whole + sign * (num / den);
+  }
+
+  // simple fraction, e.g. "3/4" or "-3/4"
+  const frac = str.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+  if (frac) {
+    const num = parseFloat(frac[1]);
+    const den = parseFloat(frac[2]);
+    if (!den) return NaN;
+    return num / den;
+  }
+
+  return parseFloat(str);
+}
+
 function checkNumeric() {
   const q = STATE.question;
   const input = document.getElementById('numeric-input');
   const feedback = document.getElementById('numeric-feedback');
   if (!input || !feedback) return;
 
-  const val = parseFloat(input.value);
+  const val = parseAnswerValue(input.value);
   if (isNaN(val)) { feedback.innerHTML = '<span style="color:var(--red)">Enter a number first.</span>'; return; }
 
   const tol = q.tolerance ?? 0.01;
@@ -643,7 +671,7 @@ function checkNumeric() {
 function submitNumeric() {
   const q = STATE.question;
   const input = document.getElementById('numeric-input');
-  const val = parseFloat(input?.value);
+  const val = parseAnswerValue(input?.value);
   if (isNaN(val)) {
     const fb = document.getElementById('numeric-feedback');
     if (fb) fb.innerHTML = '<span style="color:var(--red)">Enter a number first.</span>';
