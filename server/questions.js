@@ -5,86 +5,288 @@
 // comparator options: 'exact' | 'sorted' (sort arrays before comparing) | 'any-palindrome'
 
 const QUESTIONS = {
-  tech: {
-    easy: [
+  "tech": {
+    "easy": [
       {
-        id: 'te1', type: 'code',
-        title: 'Two Sum',
-        description: 'Given an array of integers <code>nums</code> and an integer <code>target</code>, return the indices of the two numbers that add up to <code>target</code>.\n\nYou may assume each input has exactly one solution. You may not use the same element twice.',
-        examples: [
-          { input: 'nums = [2, 7, 11, 15], target = 9', output: '[0, 1]', explanation: 'nums[0] + nums[1] = 9' },
-          { input: 'nums = [3, 2, 4], target = 6', output: '[1, 2]' },
+        "id": "te1",
+        "type": "code",
+        "title": "Two Sum",
+        "description": "Given an array of integers <code>nums</code> and an integer <code>target</code>, return the indices of the two numbers that add up to <code>target</code>.\n\nYou may assume each input has exactly one solution. You may not use the same element twice.",
+        "examples": [
+          {
+            "input": "nums = [2, 7, 11, 15], target = 9",
+            "output": "[0, 1]",
+            "explanation": "nums[0] + nums[1] = 9"
+          },
+          {
+            "input": "nums = [3, 2, 4], target = 6",
+            "output": "[1, 2]"
+          }
         ],
-        constraints: ['2 ≤ nums.length ≤ 10⁴', '-10⁹ ≤ nums[i] ≤ 10⁹', 'Only one valid answer exists'],
-        starter: 'function twoSum(nums, target) {\n  \n}',
-        pythonStarter: 'def two_sum(nums, target):\n    pass',
-        functionName: 'twoSum',
-        pythonFunctionName: 'two_sum',
-        comparator: 'sorted',
-        testCases: [
-          { input: [[2,7,11,15], 9], expected: [0,1], label: 'nums=[2,7,11,15], target=9' },
-          { input: [[3,2,4], 6], expected: [1,2], label: 'nums=[3,2,4], target=6' },
-          { input: [[3,3], 6], expected: [0,1], label: 'nums=[3,3], target=6' },
+        "constraints": [
+          "2 ≤ nums.length ≤ 10⁴",
+          "-10⁹ ≤ nums[i] ≤ 10⁹",
+          "Only one valid answer exists"
         ],
-        hiddenCases: [
-          { input: [[-1,-2,-3,-4,-5], -8], expected: [2,4] },
-          { input: [[1,5,3,2], 4], expected: [2,3] },
+        "starter": "function twoSum(nums, target) {\n  \n}",
+        "pythonStarter": "def two_sum(nums, target):\n    pass",
+        "functionName": "twoSum",
+        "pythonFunctionName": "two_sum",
+        "comparator": "sorted",
+        "testCases": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "expected": [
+              0,
+              1
+            ],
+            "label": "nums=[2,7,11,15], target=9"
+          },
+          {
+            "input": [
+              [
+                3,
+                2,
+                4
+              ],
+              6
+            ],
+            "expected": [
+              1,
+              2
+            ],
+            "label": "nums=[3,2,4], target=6"
+          },
+          {
+            "input": [
+              [
+                3,
+                3
+              ],
+              6
+            ],
+            "expected": [
+              0,
+              1
+            ],
+            "label": "nums=[3,3], target=6"
+          }
         ],
-        explanation: 'Use a hash map to store each number\'s index. For each num, check if (target - num) is already in the map. This gives O(n) time, O(n) space — much better than the O(n²) brute force.',
+        "hiddenCases": [
+          {
+            "input": [
+              [
+                -1,
+                -2,
+                -3,
+                -4,
+                -5
+              ],
+              -8
+            ],
+            "expected": [
+              2,
+              4
+            ]
+          },
+          {
+            "input": [
+              [
+                1,
+                5,
+                3,
+                2
+              ],
+              4
+            ],
+            "expected": [
+              2,
+              3
+            ]
+          }
+        ],
+        "explanation": "Use a hash map to store each number's index. For each num, check if (target - num) is already in the map. This gives O(n) time, O(n) space — much better than the O(n²) brute force."
       },
       {
-        id: 'te2', type: 'code',
-        title: 'Contains Duplicate',
-        description: 'Given an integer array <code>nums</code>, return <code>true</code> if any value appears <strong>at least twice</strong>, and <code>false</code> if every element is distinct.',
-        examples: [
-          { input: 'nums = [1, 2, 3, 1]', output: 'true' },
-          { input: 'nums = [1, 2, 3, 4]', output: 'false' },
-          { input: 'nums = [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]', output: 'true' },
+        "id": "te2",
+        "type": "code",
+        "title": "Contains Duplicate",
+        "description": "Given an integer array <code>nums</code>, return <code>true</code> if any value appears <strong>at least twice</strong>, and <code>false</code> if every element is distinct.",
+        "examples": [
+          {
+            "input": "nums = [1, 2, 3, 1]",
+            "output": "true"
+          },
+          {
+            "input": "nums = [1, 2, 3, 4]",
+            "output": "false"
+          },
+          {
+            "input": "nums = [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]",
+            "output": "true"
+          }
         ],
-        constraints: ['1 ≤ nums.length ≤ 10⁵', '-10⁹ ≤ nums[i] ≤ 10⁹'],
-        starter: 'function containsDuplicate(nums) {\n  \n}',
-        pythonStarter: 'def contains_duplicate(nums):\n    pass',
-        functionName: 'containsDuplicate',
-        pythonFunctionName: 'contains_duplicate',
-        comparator: 'exact',
-        testCases: [
-          { input: [[1,2,3,1]], expected: true, label: '[1,2,3,1]' },
-          { input: [[1,2,3,4]], expected: false, label: '[1,2,3,4]' },
-          { input: [[1,1,1,3,3,4]], expected: true, label: '[1,1,1,3,3,4]' },
+        "constraints": [
+          "1 ≤ nums.length ≤ 10⁵",
+          "-10⁹ ≤ nums[i] ≤ 10⁹"
         ],
-        hiddenCases: [
-          { input: [[1]], expected: false },
-          { input: [[1,2]], expected: false },
-          { input: [[1,1]], expected: true },
+        "starter": "function containsDuplicate(nums) {\n  \n}",
+        "pythonStarter": "def contains_duplicate(nums):\n    pass",
+        "functionName": "containsDuplicate",
+        "pythonFunctionName": "contains_duplicate",
+        "comparator": "exact",
+        "testCases": [
+          {
+            "input": [
+              [
+                1,
+                2,
+                3,
+                1
+              ]
+            ],
+            "expected": true,
+            "label": "[1,2,3,1]"
+          },
+          {
+            "input": [
+              [
+                1,
+                2,
+                3,
+                4
+              ]
+            ],
+            "expected": false,
+            "label": "[1,2,3,4]"
+          },
+          {
+            "input": [
+              [
+                1,
+                1,
+                1,
+                3,
+                3,
+                4
+              ]
+            ],
+            "expected": true,
+            "label": "[1,1,1,3,3,4]"
+          }
         ],
-        explanation: 'Add each number to a Set. If the number already exists in the Set, return true. If you finish the loop without finding one, return false. O(n) time, O(n) space.',
+        "hiddenCases": [
+          {
+            "input": [
+              [
+                1
+              ]
+            ],
+            "expected": false
+          },
+          {
+            "input": [
+              [
+                1,
+                2
+              ]
+            ],
+            "expected": false
+          },
+          {
+            "input": [
+              [
+                1,
+                1
+              ]
+            ],
+            "expected": true
+          }
+        ],
+        "explanation": "Add each number to a Set. If the number already exists in the Set, return true. If you finish the loop without finding one, return false. O(n) time, O(n) space."
       },
       {
-        id: 'te3', type: 'code',
-        title: 'Palindrome Number',
-        description: 'Given an integer <code>x</code>, return <code>true</code> if <code>x</code> is a <strong>palindrome</strong>, and <code>false</code> otherwise.\n\nA palindrome reads the same forwards and backwards.',
-        examples: [
-          { input: 'x = 121', output: 'true', explanation: '121 reads as 121 from left to right and from right to left.' },
-          { input: 'x = -121', output: 'false', explanation: 'From left to right: -121. From right to left: 121-. Not a palindrome.' },
-          { input: 'x = 10', output: 'false' },
+        "id": "te3",
+        "type": "code",
+        "title": "Palindrome Number",
+        "description": "Given an integer <code>x</code>, return <code>true</code> if <code>x</code> is a <strong>palindrome</strong>, and <code>false</code> otherwise.\n\nA palindrome reads the same forwards and backwards.",
+        "examples": [
+          {
+            "input": "x = 121",
+            "output": "true",
+            "explanation": "121 reads as 121 from left to right and from right to left."
+          },
+          {
+            "input": "x = -121",
+            "output": "false",
+            "explanation": "From left to right: -121. From right to left: 121-. Not a palindrome."
+          },
+          {
+            "input": "x = 10",
+            "output": "false"
+          }
         ],
-        constraints: ['-2³¹ ≤ x ≤ 2³¹ - 1'],
-        starter: 'function isPalindrome(x) {\n  \n}',
-        pythonStarter: 'def is_palindrome(x):\n    pass',
-        functionName: 'isPalindrome',
-        pythonFunctionName: 'is_palindrome',
-        comparator: 'exact',
-        testCases: [
-          { input: [121], expected: true, label: 'x = 121' },
-          { input: [-121], expected: false, label: 'x = -121' },
-          { input: [10], expected: false, label: 'x = 10' },
-          { input: [0], expected: true, label: 'x = 0' },
+        "constraints": [
+          "-2³¹ ≤ x ≤ 2³¹ - 1"
         ],
-        hiddenCases: [
-          { input: [1001], expected: false },
-          { input: [1221], expected: true },
+        "starter": "function isPalindrome(x) {\n  \n}",
+        "pythonStarter": "def is_palindrome(x):\n    pass",
+        "functionName": "isPalindrome",
+        "pythonFunctionName": "is_palindrome",
+        "comparator": "exact",
+        "testCases": [
+          {
+            "input": [
+              121
+            ],
+            "expected": true,
+            "label": "x = 121"
+          },
+          {
+            "input": [
+              -121
+            ],
+            "expected": false,
+            "label": "x = -121"
+          },
+          {
+            "input": [
+              10
+            ],
+            "expected": false,
+            "label": "x = 10"
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": true,
+            "label": "x = 0"
+          }
         ],
-        explanation: 'Negative numbers are never palindromes. Convert x to a string and compare it to its reverse: `String(x) === String(x).split("").reverse().join("")`. Or do it mathematically by reversing the digits.',
+        "hiddenCases": [
+          {
+            "input": [
+              1001
+            ],
+            "expected": false
+          },
+          {
+            "input": [
+              1221
+            ],
+            "expected": true
+          }
+        ],
+        "explanation": "Negative numbers are never palindromes. Convert x to a string and compare it to its reverse: `String(x) === String(x).split(\"\").reverse().join(\"\")`. Or do it mathematically by reversing the digits."
       },
       {
         "id": "te4",
@@ -2875,92 +3077,278 @@ const QUESTIONS = {
           }
         ],
         "explanation": "Keep a running total while iterating through nums, adding each element to it and pushing the current total onto the result array. O(n) time, O(n) space."
-      },
+      }
     ],
-    medium: [
+    "medium": [
       {
-        id: 'tm1', type: 'code',
-        title: 'Valid Parentheses',
-        description: 'Given a string <code>s</code> containing only the characters <code>(</code>, <code>)</code>, <code>{</code>, <code>}</code>, <code>[</code> and <code>]</code>, determine if the input string is valid.\n\nAn input string is valid if:\n• Open brackets are closed by the same type of brackets\n• Open brackets are closed in the correct order\n• Every close bracket has a corresponding open bracket',
-        examples: [
-          { input: 's = "()"', output: 'true' },
-          { input: 's = "()[]{}"', output: 'true' },
-          { input: 's = "(]"', output: 'false' },
-          { input: 's = "([)]"', output: 'false' },
-          { input: 's = "{[]}"', output: 'true' },
+        "id": "tm1",
+        "type": "code",
+        "title": "Valid Parentheses",
+        "description": "Given a string <code>s</code> containing only the characters <code>(</code>, <code>)</code>, <code>{</code>, <code>}</code>, <code>[</code> and <code>]</code>, determine if the input string is valid.\n\nAn input string is valid if:\n• Open brackets are closed by the same type of brackets\n• Open brackets are closed in the correct order\n• Every close bracket has a corresponding open bracket",
+        "examples": [
+          {
+            "input": "s = \"()\"",
+            "output": "true"
+          },
+          {
+            "input": "s = \"()[]{}\"",
+            "output": "true"
+          },
+          {
+            "input": "s = \"(]\"",
+            "output": "false"
+          },
+          {
+            "input": "s = \"([)]\"",
+            "output": "false"
+          },
+          {
+            "input": "s = \"{[]}\"",
+            "output": "true"
+          }
         ],
-        constraints: ['1 ≤ s.length ≤ 10⁴', 's consists of parentheses only ()[]{}'],
-        starter: 'function isValid(s) {\n  \n}',
-        pythonStarter: 'def is_valid(s):\n    pass',
-        functionName: 'isValid',
-        pythonFunctionName: 'is_valid',
-        comparator: 'exact',
-        testCases: [
-          { input: ['()'], expected: true, label: '"()"' },
-          { input: ['()[]{}'], expected: true, label: '"()[]{}"' },
-          { input: ['(]'], expected: false, label: '"(]"' },
-          { input: ['([)]'], expected: false, label: '"([)]"' },
-          { input: ['{[]}'], expected: true, label: '"{[]}"' },
+        "constraints": [
+          "1 ≤ s.length ≤ 10⁴",
+          "s consists of parentheses only ()[]{}"
         ],
-        hiddenCases: [
-          { input: [''], expected: true },
-          { input: ['{'], expected: false },
-          { input: ['(((('], expected: false },
+        "starter": "function isValid(s) {\n  \n}",
+        "pythonStarter": "def is_valid(s):\n    pass",
+        "functionName": "isValid",
+        "pythonFunctionName": "is_valid",
+        "comparator": "exact",
+        "testCases": [
+          {
+            "input": [
+              "()"
+            ],
+            "expected": true,
+            "label": "\"()\""
+          },
+          {
+            "input": [
+              "()[]{}"
+            ],
+            "expected": true,
+            "label": "\"()[]{}\""
+          },
+          {
+            "input": [
+              "(]"
+            ],
+            "expected": false,
+            "label": "\"(]\""
+          },
+          {
+            "input": [
+              "([)]"
+            ],
+            "expected": false,
+            "label": "\"([)]\""
+          },
+          {
+            "input": [
+              "{[]}"
+            ],
+            "expected": true,
+            "label": "\"{[]}\""
+          }
         ],
-        explanation: 'Classic stack problem. Push open brackets onto a stack. When you see a close bracket, check if the top of the stack is the matching open bracket. If not (or stack is empty), return false. At the end, the stack should be empty.',
+        "hiddenCases": [
+          {
+            "input": [
+              ""
+            ],
+            "expected": true
+          },
+          {
+            "input": [
+              "{"
+            ],
+            "expected": false
+          },
+          {
+            "input": [
+              "(((("
+            ],
+            "expected": false
+          }
+        ],
+        "explanation": "Classic stack problem. Push open brackets onto a stack. When you see a close bracket, check if the top of the stack is the matching open bracket. If not (or stack is empty), return false. At the end, the stack should be empty."
       },
       {
-        id: 'tm2', type: 'code',
-        title: 'Maximum Subarray',
-        description: 'Given an integer array <code>nums</code>, find the subarray with the largest sum, and return its sum.\n\nA subarray is a contiguous non-empty sequence of elements within an array.',
-        examples: [
-          { input: 'nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]', output: '6', explanation: 'Subarray [4,-1,2,1] has the largest sum = 6.' },
-          { input: 'nums = [1]', output: '1' },
-          { input: 'nums = [5, 4, -1, 7, 8]', output: '23' },
+        "id": "tm2",
+        "type": "code",
+        "title": "Maximum Subarray",
+        "description": "Given an integer array <code>nums</code>, find the subarray with the largest sum, and return its sum.\n\nA subarray is a contiguous non-empty sequence of elements within an array.",
+        "examples": [
+          {
+            "input": "nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]",
+            "output": "6",
+            "explanation": "Subarray [4,-1,2,1] has the largest sum = 6."
+          },
+          {
+            "input": "nums = [1]",
+            "output": "1"
+          },
+          {
+            "input": "nums = [5, 4, -1, 7, 8]",
+            "output": "23"
+          }
         ],
-        constraints: ['1 ≤ nums.length ≤ 10⁵', '-10⁴ ≤ nums[i] ≤ 10⁴'],
-        starter: 'function maxSubArray(nums) {\n  \n}',
-        pythonStarter: 'def max_sub_array(nums):\n    pass',
-        functionName: 'maxSubArray',
-        pythonFunctionName: 'max_sub_array',
-        comparator: 'exact',
-        testCases: [
-          { input: [[-2,1,-3,4,-1,2,1,-5,4]], expected: 6, label: '[-2,1,-3,4,-1,2,1,-5,4]' },
-          { input: [[1]], expected: 1, label: '[1]' },
-          { input: [[5,4,-1,7,8]], expected: 23, label: '[5,4,-1,7,8]' },
-          { input: [[-1]], expected: -1, label: '[-1]' },
+        "constraints": [
+          "1 ≤ nums.length ≤ 10⁵",
+          "-10⁴ ≤ nums[i] ≤ 10⁴"
         ],
-        hiddenCases: [
-          { input: [[-2,-1]], expected: -1 },
-          { input: [[1,2,3,-4,5]], expected: 7 },
+        "starter": "function maxSubArray(nums) {\n  \n}",
+        "pythonStarter": "def max_sub_array(nums):\n    pass",
+        "functionName": "maxSubArray",
+        "pythonFunctionName": "max_sub_array",
+        "comparator": "exact",
+        "testCases": [
+          {
+            "input": [
+              [
+                -2,
+                1,
+                -3,
+                4,
+                -1,
+                2,
+                1,
+                -5,
+                4
+              ]
+            ],
+            "expected": 6,
+            "label": "[-2,1,-3,4,-1,2,1,-5,4]"
+          },
+          {
+            "input": [
+              [
+                1
+              ]
+            ],
+            "expected": 1,
+            "label": "[1]"
+          },
+          {
+            "input": [
+              [
+                5,
+                4,
+                -1,
+                7,
+                8
+              ]
+            ],
+            "expected": 23,
+            "label": "[5,4,-1,7,8]"
+          },
+          {
+            "input": [
+              [
+                -1
+              ]
+            ],
+            "expected": -1,
+            "label": "[-1]"
+          }
         ],
-        explanation: "Kadane's Algorithm: keep a running `currentSum`. At each element, either extend the current subarray or start fresh (whichever is larger). Track the global max. O(n) time, O(1) space.",
+        "hiddenCases": [
+          {
+            "input": [
+              [
+                -2,
+                -1
+              ]
+            ],
+            "expected": -1
+          },
+          {
+            "input": [
+              [
+                1,
+                2,
+                3,
+                -4,
+                5
+              ]
+            ],
+            "expected": 7
+          }
+        ],
+        "explanation": "Kadane's Algorithm: keep a running `currentSum`. At each element, either extend the current subarray or start fresh (whichever is larger). Track the global max. O(n) time, O(1) space."
       },
       {
-        id: 'tm3', type: 'code',
-        title: 'Climbing Stairs',
-        description: 'You are climbing a staircase with <code>n</code> steps. Each time you can climb <strong>1 or 2 steps</strong>. In how many distinct ways can you climb to the top?',
-        examples: [
-          { input: 'n = 2', output: '2', explanation: '2 ways: {1,1} or {2}' },
-          { input: 'n = 3', output: '3', explanation: '3 ways: {1,1,1}, {1,2}, {2,1}' },
+        "id": "tm3",
+        "type": "code",
+        "title": "Climbing Stairs",
+        "description": "You are climbing a staircase with <code>n</code> steps. Each time you can climb <strong>1 or 2 steps</strong>. In how many distinct ways can you climb to the top?",
+        "examples": [
+          {
+            "input": "n = 2",
+            "output": "2",
+            "explanation": "2 ways: {1,1} or {2}"
+          },
+          {
+            "input": "n = 3",
+            "output": "3",
+            "explanation": "3 ways: {1,1,1}, {1,2}, {2,1}"
+          }
         ],
-        constraints: ['1 ≤ n ≤ 45'],
-        starter: 'function climbStairs(n) {\n  \n}',
-        pythonStarter: 'def climb_stairs(n):\n    pass',
-        functionName: 'climbStairs',
-        pythonFunctionName: 'climb_stairs',
-        comparator: 'exact',
-        testCases: [
-          { input: [2], expected: 2, label: 'n = 2' },
-          { input: [3], expected: 3, label: 'n = 3' },
-          { input: [5], expected: 8, label: 'n = 5' },
-          { input: [1], expected: 1, label: 'n = 1' },
+        "constraints": [
+          "1 ≤ n ≤ 45"
         ],
-        hiddenCases: [
-          { input: [10], expected: 89 },
-          { input: [44], expected: 1134903170 },
+        "starter": "function climbStairs(n) {\n  \n}",
+        "pythonStarter": "def climb_stairs(n):\n    pass",
+        "functionName": "climbStairs",
+        "pythonFunctionName": "climb_stairs",
+        "comparator": "exact",
+        "testCases": [
+          {
+            "input": [
+              2
+            ],
+            "expected": 2,
+            "label": "n = 2"
+          },
+          {
+            "input": [
+              3
+            ],
+            "expected": 3,
+            "label": "n = 3"
+          },
+          {
+            "input": [
+              5
+            ],
+            "expected": 8,
+            "label": "n = 5"
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": 1,
+            "label": "n = 1"
+          }
         ],
-        explanation: 'This is Fibonacci in disguise. ways(n) = ways(n-1) + ways(n-2). Either you came from step n-1 (1 step) or n-2 (2 steps). Use DP with two variables to get O(n) time, O(1) space.',
+        "hiddenCases": [
+          {
+            "input": [
+              10
+            ],
+            "expected": 89
+          },
+          {
+            "input": [
+              44
+            ],
+            "expected": 1134903170
+          }
+        ],
+        "explanation": "This is Fibonacci in disguise. ways(n) = ways(n-1) + ways(n-2). Either you came from step n-1 (1 step) or n-2 (2 steps). Use DP with two variables to get O(n) time, O(1) space."
       },
       {
         "id": "tm4",
@@ -7611,88 +7999,296 @@ const QUESTIONS = {
           }
         ],
         "explanation": "Greedy interval scheduling: sort intervals by end time. Keep track of the end of the last kept interval; whenever the next interval starts before that end, it must be removed (increment a counter), otherwise keep it and update the tracked end. This greedy strategy maximizes the number of non-overlapping intervals kept. O(n log n) time."
-      },
+      }
     ],
-    hard: [
+    "hard": [
       {
-        id: 'th1', type: 'code',
-        title: 'Jump Game',
-        description: 'You are given an integer array <code>nums</code>. You are initially positioned at the first index. Each element represents your maximum jump length at that position.\n\nReturn <code>true</code> if you can reach the last index, or <code>false</code> otherwise.',
-        examples: [
-          { input: 'nums = [2, 3, 1, 1, 4]', output: 'true', explanation: 'Jump 1 to index 1, then 3 steps to the last index.' },
-          { input: 'nums = [3, 2, 1, 0, 4]', output: 'false', explanation: 'You will always arrive at index 3 with 0 steps remaining.' },
+        "id": "th1",
+        "type": "code",
+        "title": "Jump Game",
+        "description": "You are given an integer array <code>nums</code>. You are initially positioned at the first index. Each element represents your maximum jump length at that position.\n\nReturn <code>true</code> if you can reach the last index, or <code>false</code> otherwise.",
+        "examples": [
+          {
+            "input": "nums = [2, 3, 1, 1, 4]",
+            "output": "true",
+            "explanation": "Jump 1 to index 1, then 3 steps to the last index."
+          },
+          {
+            "input": "nums = [3, 2, 1, 0, 4]",
+            "output": "false",
+            "explanation": "You will always arrive at index 3 with 0 steps remaining."
+          }
         ],
-        constraints: ['1 ≤ nums.length ≤ 10⁴', '0 ≤ nums[i] ≤ 10⁵'],
-        starter: 'function canJump(nums) {\n  \n}',
-        pythonStarter: 'def can_jump(nums):\n    pass',
-        functionName: 'canJump',
-        pythonFunctionName: 'can_jump',
-        comparator: 'exact',
-        testCases: [
-          { input: [[2,3,1,1,4]], expected: true, label: '[2,3,1,1,4]' },
-          { input: [[3,2,1,0,4]], expected: false, label: '[3,2,1,0,4]' },
-          { input: [[0]], expected: true, label: '[0] (already at end)' },
-          { input: [[2,0,0]], expected: true, label: '[2,0,0]' },
+        "constraints": [
+          "1 ≤ nums.length ≤ 10⁴",
+          "0 ≤ nums[i] ≤ 10⁵"
         ],
-        hiddenCases: [
-          { input: [[1,0,0]], expected: false },
-          { input: [[1,1,0,1]], expected: false },
-          { input: [[3,0,0,0]], expected: true },
+        "starter": "function canJump(nums) {\n  \n}",
+        "pythonStarter": "def can_jump(nums):\n    pass",
+        "functionName": "canJump",
+        "pythonFunctionName": "can_jump",
+        "comparator": "exact",
+        "testCases": [
+          {
+            "input": [
+              [
+                2,
+                3,
+                1,
+                1,
+                4
+              ]
+            ],
+            "expected": true,
+            "label": "[2,3,1,1,4]"
+          },
+          {
+            "input": [
+              [
+                3,
+                2,
+                1,
+                0,
+                4
+              ]
+            ],
+            "expected": false,
+            "label": "[3,2,1,0,4]"
+          },
+          {
+            "input": [
+              [
+                0
+              ]
+            ],
+            "expected": true,
+            "label": "[0] (already at end)"
+          },
+          {
+            "input": [
+              [
+                2,
+                0,
+                0
+              ]
+            ],
+            "expected": true,
+            "label": "[2,0,0]"
+          }
         ],
-        explanation: 'Greedy: track the farthest index reachable so far. At each index i, if i > maxReach, you\'re stuck — return false. Otherwise update maxReach = max(maxReach, i + nums[i]). O(n) time, O(1) space.',
+        "hiddenCases": [
+          {
+            "input": [
+              [
+                1,
+                0,
+                0
+              ]
+            ],
+            "expected": false
+          },
+          {
+            "input": [
+              [
+                1,
+                1,
+                0,
+                1
+              ]
+            ],
+            "expected": false
+          },
+          {
+            "input": [
+              [
+                3,
+                0,
+                0,
+                0
+              ]
+            ],
+            "expected": true
+          }
+        ],
+        "explanation": "Greedy: track the farthest index reachable so far. At each index i, if i > maxReach, you're stuck — return false. Otherwise update maxReach = max(maxReach, i + nums[i]). O(n) time, O(1) space."
       },
       {
-        id: 'th2', type: 'code',
-        title: 'Coin Change',
-        description: 'You are given an integer array <code>coins</code> representing coins of different denominations and an integer <code>amount</code>.\n\nReturn the <strong>fewest number of coins</strong> needed to make up that amount. If that amount cannot be made up, return <code>-1</code>.\n\nYou may use an unlimited number of each coin.',
-        examples: [
-          { input: 'coins = [1,5,10,25], amount = 36', output: '3', explanation: '25 + 10 + 1 = 36' },
-          { input: 'coins = [2], amount = 3', output: '-1' },
-          { input: 'coins = [1], amount = 0', output: '0' },
+        "id": "th2",
+        "type": "code",
+        "title": "Coin Change",
+        "description": "You are given an integer array <code>coins</code> representing coins of different denominations and an integer <code>amount</code>.\n\nReturn the <strong>fewest number of coins</strong> needed to make up that amount. If that amount cannot be made up, return <code>-1</code>.\n\nYou may use an unlimited number of each coin.",
+        "examples": [
+          {
+            "input": "coins = [1,5,10,25], amount = 36",
+            "output": "3",
+            "explanation": "25 + 10 + 1 = 36"
+          },
+          {
+            "input": "coins = [2], amount = 3",
+            "output": "-1"
+          },
+          {
+            "input": "coins = [1], amount = 0",
+            "output": "0"
+          }
         ],
-        constraints: ['1 ≤ coins.length ≤ 12', '1 ≤ coins[i] ≤ 2³¹ - 1', '0 ≤ amount ≤ 10⁴'],
-        starter: 'function coinChange(coins, amount) {\n  \n}',
-        pythonStarter: 'def coin_change(coins, amount):\n    pass',
-        functionName: 'coinChange',
-        pythonFunctionName: 'coin_change',
-        comparator: 'exact',
-        testCases: [
-          { input: [[1,5,10,25], 36], expected: 3, label: 'coins=[1,5,10,25], amount=36' },
-          { input: [[2], 3], expected: -1, label: 'coins=[2], amount=3' },
-          { input: [[1], 0], expected: 0, label: 'amount=0' },
-          { input: [[1,2,5], 11], expected: 3, label: 'coins=[1,2,5], amount=11' },
+        "constraints": [
+          "1 ≤ coins.length ≤ 12",
+          "1 ≤ coins[i] ≤ 2³¹ - 1",
+          "0 ≤ amount ≤ 10⁴"
         ],
-        hiddenCases: [
-          { input: [[186,419,83,408], 6249], expected: 20 },
-          { input: [[1], 10000], expected: 10000 },
+        "starter": "function coinChange(coins, amount) {\n  \n}",
+        "pythonStarter": "def coin_change(coins, amount):\n    pass",
+        "functionName": "coinChange",
+        "pythonFunctionName": "coin_change",
+        "comparator": "exact",
+        "testCases": [
+          {
+            "input": [
+              [
+                1,
+                5,
+                10,
+                25
+              ],
+              36
+            ],
+            "expected": 3,
+            "label": "coins=[1,5,10,25], amount=36"
+          },
+          {
+            "input": [
+              [
+                2
+              ],
+              3
+            ],
+            "expected": -1,
+            "label": "coins=[2], amount=3"
+          },
+          {
+            "input": [
+              [
+                1
+              ],
+              0
+            ],
+            "expected": 0,
+            "label": "amount=0"
+          },
+          {
+            "input": [
+              [
+                1,
+                2,
+                5
+              ],
+              11
+            ],
+            "expected": 3,
+            "label": "coins=[1,2,5], amount=11"
+          }
         ],
-        explanation: 'Bottom-up DP: create dp[0..amount] where dp[i] = min coins to make amount i. Initialize with Infinity, dp[0]=0. For each amount, try each coin: dp[i] = min(dp[i], dp[i-coin]+1). O(amount × coins) time.',
+        "hiddenCases": [
+          {
+            "input": [
+              [
+                186,
+                419,
+                83,
+                408
+              ],
+              6249
+            ],
+            "expected": 20
+          },
+          {
+            "input": [
+              [
+                1
+              ],
+              10000
+            ],
+            "expected": 10000
+          }
+        ],
+        "explanation": "Bottom-up DP: create dp[0..amount] where dp[i] = min coins to make amount i. Initialize with Infinity, dp[0]=0. For each amount, try each coin: dp[i] = min(dp[i], dp[i-coin]+1). O(amount × coins) time."
       },
       {
-        id: 'th3', type: 'code',
-        title: 'Unique Paths',
-        description: 'A robot starts at the top-left corner of an <code>m × n</code> grid and tries to reach the bottom-right corner. The robot can only move <strong>right or down</strong>.\n\nReturn the number of possible unique paths.',
-        examples: [
-          { input: 'm = 3, n = 7', output: '28' },
-          { input: 'm = 3, n = 2', output: '3', explanation: '↓↓→, ↓→↓, →↓↓' },
+        "id": "th3",
+        "type": "code",
+        "title": "Unique Paths",
+        "description": "A robot starts at the top-left corner of an <code>m × n</code> grid and tries to reach the bottom-right corner. The robot can only move <strong>right or down</strong>.\n\nReturn the number of possible unique paths.",
+        "examples": [
+          {
+            "input": "m = 3, n = 7",
+            "output": "28"
+          },
+          {
+            "input": "m = 3, n = 2",
+            "output": "3",
+            "explanation": "↓↓→, ↓→↓, →↓↓"
+          }
         ],
-        constraints: ['1 ≤ m, n ≤ 100'],
-        starter: 'function uniquePaths(m, n) {\n  \n}',
-        pythonStarter: 'def unique_paths(m, n):\n    pass',
-        functionName: 'uniquePaths',
-        pythonFunctionName: 'unique_paths',
-        comparator: 'exact',
-        testCases: [
-          { input: [3, 7], expected: 28, label: 'm=3, n=7' },
-          { input: [3, 2], expected: 3, label: 'm=3, n=2' },
-          { input: [1, 1], expected: 1, label: 'm=1, n=1' },
-          { input: [2, 2], expected: 2, label: 'm=2, n=2' },
+        "constraints": [
+          "1 ≤ m, n ≤ 100"
         ],
-        hiddenCases: [
-          { input: [7, 3], expected: 28 },
-          { input: [100, 1], expected: 1 },
+        "starter": "function uniquePaths(m, n) {\n  \n}",
+        "pythonStarter": "def unique_paths(m, n):\n    pass",
+        "functionName": "uniquePaths",
+        "pythonFunctionName": "unique_paths",
+        "comparator": "exact",
+        "testCases": [
+          {
+            "input": [
+              3,
+              7
+            ],
+            "expected": 28,
+            "label": "m=3, n=7"
+          },
+          {
+            "input": [
+              3,
+              2
+            ],
+            "expected": 3,
+            "label": "m=3, n=2"
+          },
+          {
+            "input": [
+              1,
+              1
+            ],
+            "expected": 1,
+            "label": "m=1, n=1"
+          },
+          {
+            "input": [
+              2,
+              2
+            ],
+            "expected": 2,
+            "label": "m=2, n=2"
+          }
         ],
-        explanation: 'DP: paths(i,j) = paths(i-1,j) + paths(i,j-1). Every cell is reachable from above or from the left. First row and column are all 1s (only one way to reach them). O(m×n) time. Can also be solved with combinatorics: C(m+n-2, m-1).',
+        "hiddenCases": [
+          {
+            "input": [
+              7,
+              3
+            ],
+            "expected": 28
+          },
+          {
+            "input": [
+              100,
+              1
+            ],
+            "expected": 1
+          }
+        ],
+        "explanation": "DP: paths(i,j) = paths(i-1,j) + paths(i,j-1). Every cell is reachable from above or from the left. First row and column are all 1s (only one way to reach them). O(m×n) time. Can also be solved with combinatorics: C(m+n-2, m-1)."
       },
       {
         "id": "th4",
@@ -11502,569 +12098,930 @@ const QUESTIONS = {
           }
         ],
         "explanation": "DP where dp[i] is a map from \"common difference\" to the length of the longest arithmetic subsequence ending at index i with that difference. For each pair (j, i) with j < i, the difference d = nums[i]-nums[j] extends whatever sequence ended at j with difference d (defaulting to a length-1 sequence, i.e. just nums[j], if none existed). O(n²) time and space."
-      },
-    ],
+      }
+    ]
   },
-
-  quant: {
-    easy: [
+  "quant": {
+    "easy": [
       {
-        id: 'qe4', type: 'numeric',
-        title: 'At Least One Head',
-        description: 'You flip a fair coin <strong>twice</strong>.\n\nWhat is the probability of getting <strong>at least one head</strong>?\n\nEnter as a decimal rounded to 2 decimal places (e.g. <code>0.75</code>).',
-        unit: '',
-        answer: 0.75,
-        tolerance: 0.005,
-        steps: [
-          { label: 'P(no heads at all)', value: 'P(TT) = (1/2)² = 0.25' },
-          { label: 'Complement rule', value: 'P(at least one head) = 1 − P(no heads)' },
-          { label: 'Result', value: '1 − 0.25 = 0.75' },
+        "id": "qe4",
+        "type": "numeric",
+        "title": "At Least One Head",
+        "description": "You flip a fair coin <strong>twice</strong>.\n\nWhat is the probability of getting <strong>at least one head</strong>?\n\nEnter as a decimal rounded to 2 decimal places (e.g. <code>0.75</code>).",
+        "unit": "",
+        "answer": 0.75,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "P(no heads at all)",
+            "value": "P(TT) = (1/2)² = 0.25"
+          },
+          {
+            "label": "Complement rule",
+            "value": "P(at least one head) = 1 − P(no heads)"
+          },
+          {
+            "label": "Result",
+            "value": "1 − 0.25 = 0.75"
+          }
         ],
-        explanation: 'Use the complement: P(≥1 head) = 1 − P(TT) = 1 − (1/2)² = 1 − 0.25 = 0.75. The complement approach avoids summing cases (HT, TH, HH).',
+        "explanation": "Use the complement: P(≥1 head) = 1 − P(TT) = 1 − (1/2)² = 1 − 0.25 = 0.75. The complement approach avoids summing cases (HT, TH, HH)."
       },
       {
-        id: 'qe5', type: 'numeric',
-        title: 'Matching Dice',
-        description: 'You roll two fair 6-sided dice simultaneously.\n\nWhat is the probability that <strong>both dice show the same number</strong>?\n\nEnter as a decimal rounded to 4 places (e.g. <code>0.1667</code>).',
-        unit: '',
-        answer: 0.1667,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Condition on the first die', value: 'It shows any value — that\'s fine' },
-          { label: 'Second die must match', value: 'P(match) = 1/6 ≈ 0.1667' },
+        "id": "qe5",
+        "type": "numeric",
+        "title": "Matching Dice",
+        "description": "You roll two fair 6-sided dice simultaneously.\n\nWhat is the probability that <strong>both dice show the same number</strong>?\n\nEnter as a decimal rounded to 4 places (e.g. <code>0.1667</code>).",
+        "unit": "",
+        "answer": 0.1667,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Condition on the first die",
+            "value": "It shows any value — that's fine"
+          },
+          {
+            "label": "Second die must match",
+            "value": "P(match) = 1/6 ≈ 0.1667"
+          }
         ],
-        explanation: 'Regardless of what the first die shows, the second must match it: P = 1/6 ≈ 0.1667. Equivalently: 6 matching pairs out of 36 total outcomes.',
+        "explanation": "Regardless of what the first die shows, the second must match it: P = 1/6 ≈ 0.1667. Equivalently: 6 matching pairs out of 36 total outcomes."
       },
       {
-        id: 'qe6', type: 'numeric',
-        title: 'Simple Return',
-        description: 'A stock price rises from <strong>$80</strong> to <strong>$100</strong> over one year.\n\nWhat is the <strong>simple return</strong>?\n\nEnter as a percentage (e.g. <code>25.00</code> for 25%).',
-        unit: '%',
-        answer: 25,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Price gain', value: '$100 − $80 = $20' },
-          { label: 'Return = gain / initial price', value: '$20 ÷ $80 × 100% = 25%' },
+        "id": "qe6",
+        "type": "numeric",
+        "title": "Simple Return",
+        "description": "A stock price rises from <strong>$80</strong> to <strong>$100</strong> over one year.\n\nWhat is the <strong>simple return</strong>?\n\nEnter as a percentage (e.g. <code>25.00</code> for 25%).",
+        "unit": "%",
+        "answer": 25,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Price gain",
+            "value": "$100 − $80 = $20"
+          },
+          {
+            "label": "Return = gain / initial price",
+            "value": "$20 ÷ $80 × 100% = 25%"
+          }
         ],
-        explanation: 'Simple return = (P_T − P_0) / P_0 = (100 − 80) / 80 = 0.25 = 25%.',
+        "explanation": "Simple return = (P<sub>T</sub> − P<sub>0</sub>) / P<sub>0</sub> = (100 − 80) / 80 = 0.25 = 25%."
       },
       {
-        id: 'qe1', type: 'numeric',
-        title: 'Expected Value of a Dice Game',
-        description: 'You roll a single fair 6-sided die. You win <strong>$4</strong> if you roll a 6, and you lose <strong>$1</strong> for any other result.\n\nWhat is the <strong>expected value</strong> of this game in dollars?\n\nEnter your answer rounded to 2 decimal places (e.g. <code>-0.50</code>).',
-        unit: '$',
-        answer: -0.17,
-        tolerance: 0.015,
-        steps: [
-          { label: 'P(rolling 6)', value: '1/6 ≈ 0.1667' },
-          { label: 'P(not rolling 6)', value: '5/6 ≈ 0.8333' },
-          { label: 'EV', value: '(1/6)×$4 + (5/6)×(−$1) = $0.667 − $0.833 = −$0.167 ≈ −$0.17' },
+        "id": "qe1",
+        "type": "numeric",
+        "title": "Expected Value of a Dice Game",
+        "description": "You roll a single fair 6-sided die. You win <strong>$4</strong> if you roll a 6, and you lose <strong>$1</strong> for any other result.\n\nWhat is the <strong>expected value</strong> of this game in dollars?\n\nEnter your answer rounded to 2 decimal places (e.g. <code>-0.50</code>).",
+        "unit": "$",
+        "answer": -0.17,
+        "tolerance": 0.015,
+        "steps": [
+          {
+            "label": "P(rolling 6)",
+            "value": "1/6 ≈ 0.1667"
+          },
+          {
+            "label": "P(not rolling 6)",
+            "value": "5/6 ≈ 0.8333"
+          },
+          {
+            "label": "EV",
+            "value": "(1/6)×$4 + (5/6)×(−$1) = $0.667 − $0.833 = −$0.167 ≈ −$0.17"
+          }
         ],
-        explanation: 'EV = Σ P(outcome) × value = (1/6)(4) + (5/6)(−1) = 4/6 − 5/6 = −1/6 ≈ −$0.17. The house has an edge — you lose on average.',
+        "explanation": "EV = Σ P(outcome) × value = (1/6)(4) + (5/6)(−1) = 4/6 − 5/6 = −1/6 ≈ −$0.17. The house has an edge — you lose on average."
       },
       {
-        id: 'qe2', type: 'numeric',
-        title: 'Probability: Red Face Card',
-        description: 'You draw one card at random from a standard 52-card deck.\n\nWhat is the probability of drawing a <strong>red face card</strong> (Jack, Queen, or King of Hearts or Diamonds)?\n\nEnter your answer as a decimal rounded to 4 places (e.g. <code>0.1154</code>).',
-        unit: '',
-        answer: 0.1154,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Red face cards', value: 'J♥, Q♥, K♥, J♦, Q♦, K♦ = 6 cards' },
-          { label: 'Total cards', value: '52' },
-          { label: 'Probability', value: '6/52 = 3/26 ≈ 0.1154' },
+        "id": "qe2",
+        "type": "numeric",
+        "title": "Probability: Red Face Card",
+        "description": "You draw one card at random from a standard 52-card deck.\n\nWhat is the probability of drawing a <strong>red face card</strong> (Jack, Queen, or King of Hearts or Diamonds)?\n\nEnter your answer as a decimal rounded to 4 places (e.g. <code>0.1154</code>).",
+        "unit": "",
+        "answer": 0.1154,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Red face cards",
+            "value": "J♥, Q♥, K♥, J♦, Q♦, K♦ = 6 cards"
+          },
+          {
+            "label": "Total cards",
+            "value": "52"
+          },
+          {
+            "label": "Probability",
+            "value": "6/52 = 3/26 ≈ 0.1154"
+          }
         ],
-        explanation: 'P = favorable outcomes / total outcomes = 6/52 = 3/26 ≈ 0.1154.',
+        "explanation": "P = favorable outcomes / total outcomes = 6/52 = 3/26 ≈ 0.1154."
       },
       {
-        id: 'qe3', type: 'numeric',
-        title: 'Portfolio Expected Return',
-        description: 'A portfolio is <strong>70% stocks</strong> (expected return <strong>9%</strong>) and <strong>30% bonds</strong> (expected return <strong>3%</strong>).\n\nWhat is the portfolio\'s expected annual return?\n\nEnter your answer as a percentage (e.g. <code>6.50</code> for 6.50%).',
-        unit: '%',
-        answer: 7.2,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Stock contribution', value: '0.70 × 9% = 6.3%' },
-          { label: 'Bond contribution', value: '0.30 × 3% = 0.9%' },
-          { label: 'Total', value: '6.3% + 0.9% = 7.2%' },
+        "id": "qe3",
+        "type": "numeric",
+        "title": "Portfolio Expected Return",
+        "description": "A portfolio is <strong>70% stocks</strong> (expected return <strong>9%</strong>) and <strong>30% bonds</strong> (expected return <strong>3%</strong>).\n\nWhat is the portfolio's expected annual return?\n\nEnter your answer as a percentage (e.g. <code>6.50</code> for 6.50%).",
+        "unit": "%",
+        "answer": 7.2,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Stock contribution",
+            "value": "0.70 × 9% = 6.3%"
+          },
+          {
+            "label": "Bond contribution",
+            "value": "0.30 × 3% = 0.9%"
+          },
+          {
+            "label": "Total",
+            "value": "6.3% + 0.9% = 7.2%"
+          }
         ],
-        explanation: 'E[R] = w₁×r₁ + w₂×r₂ = 0.70×9% + 0.30×3% = 6.3% + 0.9% = 7.2%.',
+        "explanation": "E[R] = w₁×r₁ + w₂×r₂ = 0.70×9% + 0.30×3% = 6.3% + 0.9% = 7.2%."
       },
       {
-        id: 'qe31', type: 'numeric',
-        title: 'P(Sum = 7 on Two Dice)',
-        description: 'Roll two fair 6-sided dice. What is the probability the sum equals <strong>7</strong>?\n\nEnter as a decimal rounded to 4 places.',
-        unit: '',
-        answer: 0.1667,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Ways to make 7', value: '(1,6),(2,5),(3,4),(4,3),(5,2),(6,1) → 6 ways' },
-          { label: 'Total outcomes', value: '6 × 6 = 36' },
-          { label: 'P(sum=7)', value: '6/36 = 1/6 ≈ 0.1667' },
+        "id": "qe31",
+        "type": "numeric",
+        "title": "P(Sum = 7 on Two Dice)",
+        "description": "Roll two fair 6-sided dice. What is the probability the sum equals <strong>7</strong>?\n\nEnter as a decimal rounded to 4 places.",
+        "unit": "",
+        "answer": 0.1667,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Ways to make 7",
+            "value": "(1,6),(2,5),(3,4),(4,3),(5,2),(6,1) → 6 ways"
+          },
+          {
+            "label": "Total outcomes",
+            "value": "6 × 6 = 36"
+          },
+          {
+            "label": "P(sum=7)",
+            "value": "6/36 = 1/6 ≈ 0.1667"
+          }
         ],
-        explanation: 'Seven is the most common sum on two dice — 6 out of 36 combinations make 7. Every number from 1 to 6 pairs with exactly one other number to sum to 7.',
+        "explanation": "Seven is the most common sum on two dice — 6 out of 36 combinations make 7. Every number from 1 to 6 pairs with exactly one other number to sum to 7."
       },
       {
-        id: 'qe32', type: 'numeric',
-        title: 'Expected Value of a Die Roll',
-        description: 'Roll one fair <strong>6-sided</strong> die. What is the expected value of the outcome?',
-        unit: '',
-        answer: 3.5,
-        tolerance: 0,
-        steps: [
-          { label: 'Sum of outcomes', value: '1 + 2 + 3 + 4 + 5 + 6 = 21' },
-          { label: 'Number of outcomes', value: '6' },
-          { label: 'E[X] = 21/6', value: '= 3.5' },
+        "id": "qe32",
+        "type": "numeric",
+        "title": "Expected Value of a Die Roll",
+        "description": "Roll one fair <strong>6-sided</strong> die. What is the expected value of the outcome?",
+        "unit": "",
+        "answer": 3.5,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Sum of outcomes",
+            "value": "1 + 2 + 3 + 4 + 5 + 6 = 21"
+          },
+          {
+            "label": "Number of outcomes",
+            "value": "6"
+          },
+          {
+            "label": "E[X] = 21/6",
+            "value": "= 3.5"
+          }
         ],
-        explanation: 'E[X] = (1+2+3+4+5+6)/6 = 21/6 = 3.5. By symmetry, the expected value equals the midpoint (1+6)/2 = 3.5.',
+        "explanation": "E[X] = (1+2+3+4+5+6)/6 = 21/6 = 3.5. By symmetry, the expected value equals the midpoint (1+6)/2 = 3.5."
       },
       {
-        id: 'qe33', type: 'numeric',
-        title: 'P(At Least One Head in 3 Flips)',
-        description: 'Flip a fair coin <strong>3 times</strong>. What is the probability of getting at least one head?\n\nEnter as a decimal rounded to 4 places.',
-        unit: '',
-        answer: 0.875,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'P(no heads) = P(all tails)', value: '(1/2)³ = 1/8 = 0.125' },
-          { label: 'Complement rule', value: 'P(at least one head) = 1 − 0.125' },
-          { label: 'P(at least one head)', value: '7/8 = 0.875' },
+        "id": "qe33",
+        "type": "numeric",
+        "title": "P(At Least One Head in 3 Flips)",
+        "description": "Flip a fair coin <strong>3 times</strong>. What is the probability of getting at least one head?\n\nEnter as a decimal rounded to 4 places.",
+        "unit": "",
+        "answer": 0.875,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "P(no heads) = P(all tails)",
+            "value": "(1/2)³ = 1/8 = 0.125"
+          },
+          {
+            "label": "Complement rule",
+            "value": "P(at least one head) = 1 − 0.125"
+          },
+          {
+            "label": "P(at least one head)",
+            "value": "7/8 = 0.875"
+          }
         ],
-        explanation: 'Use the complement: P(at least one head) = 1 − P(all tails) = 1 − (1/2)³ = 7/8 = 0.875.',
+        "explanation": "Use the complement: P(at least one head) = 1 − P(all tails) = 1 − (1/2)³ = 7/8 = 0.875."
       },
       {
-        id: 'qe34', type: 'numeric',
-        title: 'Compound Interest (3 Years)',
-        description: 'You invest <strong>$1,000</strong> at an annual interest rate of <strong>5%</strong>, compounded annually for <strong>3 years</strong>. What is the value at the end?',
-        unit: '$',
-        answer: 1157.63,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Compound interest formula', value: 'FV = PV × (1 + r)^n = 1000 × (1.05)³' },
-          { label: 'Compute (1.05)³', value: '1.1025 × 1.05 = 1.157625' },
-          { label: 'FV', value: '1000 × 1.157625 = $1,157.63' },
+        "id": "qe34",
+        "type": "numeric",
+        "title": "Compound Interest (3 Years)",
+        "description": "You invest <strong>$1,000</strong> at an annual interest rate of <strong>5%</strong>, compounded annually for <strong>3 years</strong>. What is the value at the end?",
+        "unit": "$",
+        "answer": 1157.63,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Compound interest formula",
+            "value": "FV = PV × (1 + r)^n = 1000 × (1.05)³"
+          },
+          {
+            "label": "Compute (1.05)³",
+            "value": "1.1025 × 1.05 = 1.157625"
+          },
+          {
+            "label": "FV",
+            "value": "1000 × 1.157625 = $1,157.63"
+          }
         ],
-        explanation: 'Compound interest applies to both principal and accumulated interest. After 3 years at 5%, $1,000 grows to $1,157.63 (vs. $1,150 with simple interest).',
+        "explanation": "Compound interest applies to both principal and accumulated interest. After 3 years at 5%, $1,000 grows to $1,157.63 (vs. $1,150 with simple interest)."
       },
       {
-        id: 'qe35', type: 'numeric',
-        title: 'Combinations: Choose 3 from 8',
-        description: 'How many ways can you choose <strong>3 items</strong> from a group of <strong>8</strong> when order does not matter?',
-        unit: '',
-        answer: 56,
-        tolerance: 0,
-        steps: [
-          { label: 'Combination formula', value: 'C(8,3) = 8! / (3! × 5!)' },
-          { label: 'Simplify numerator', value: '8 × 7 × 6 = 336' },
-          { label: 'C(8,3)', value: '336 / (3×2×1) = 336/6 = 56' },
+        "id": "qe35",
+        "type": "numeric",
+        "title": "Combinations: Choose 3 from 8",
+        "description": "How many ways can you choose <strong>3 items</strong> from a group of <strong>8</strong> when order does not matter?",
+        "unit": "",
+        "answer": 56,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Combination formula",
+            "value": "C(8,3) = 8! / (3! × 5!)"
+          },
+          {
+            "label": "Simplify numerator",
+            "value": "8 × 7 × 6 = 336"
+          },
+          {
+            "label": "C(8,3)",
+            "value": "336 / (3×2×1) = 336/6 = 56"
+          }
         ],
-        explanation: 'C(n,k) = n!/(k!(n−k)!) counts unordered selections. C(8,3) = (8×7×6)/(3×2×1) = 336/6 = 56.',
+        "explanation": "C(n,k) = n!/(k!(n−k)!) counts unordered selections. C(8,3) = (8×7×6)/(3×2×1) = 336/6 = 56."
       },
       {
-        id: 'qe36', type: 'numeric',
-        title: 'P(Drawing an Ace)',
-        description: 'Draw one card from a standard <strong>52-card deck</strong>. What is the probability of drawing an ace?\n\nEnter as a decimal rounded to 4 places.',
-        unit: '',
-        answer: 0.0769,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Number of aces', value: '4 (one per suit)' },
-          { label: 'Total cards', value: '52' },
-          { label: 'P(ace)', value: '4/52 = 1/13 ≈ 0.0769' },
+        "id": "qe36",
+        "type": "numeric",
+        "title": "P(Drawing an Ace)",
+        "description": "Draw one card from a standard <strong>52-card deck</strong>. What is the probability of drawing an ace?\n\nEnter as a decimal rounded to 4 places.",
+        "unit": "",
+        "answer": 0.0769,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Number of aces",
+            "value": "4 (one per suit)"
+          },
+          {
+            "label": "Total cards",
+            "value": "52"
+          },
+          {
+            "label": "P(ace)",
+            "value": "4/52 = 1/13 ≈ 0.0769"
+          }
         ],
-        explanation: 'P(ace) = 4/52 = 1/13 ≈ 7.69%. There are 4 aces in a 52-card deck, one of each suit.',
+        "explanation": "P(ace) = 4/52 = 1/13 ≈ 7.69%. There are 4 aces in a 52-card deck, one of each suit."
       },
       {
-        id: 'qe37', type: 'numeric',
-        title: 'Mean of a Dataset',
-        description: 'Find the mean of: <strong>4, 7, 13, 2, 9</strong>.',
-        unit: '',
-        answer: 7,
-        tolerance: 0,
-        steps: [
-          { label: 'Sum', value: '4 + 7 + 13 + 2 + 9 = 35' },
-          { label: 'Count', value: '5 values' },
-          { label: 'Mean', value: '35 / 5 = 7' },
+        "id": "qe37",
+        "type": "numeric",
+        "title": "Mean of a Dataset",
+        "description": "Find the mean of: <strong>4, 7, 13, 2, 9</strong>.",
+        "unit": "",
+        "answer": 7,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Sum",
+            "value": "4 + 7 + 13 + 2 + 9 = 35"
+          },
+          {
+            "label": "Count",
+            "value": "5 values"
+          },
+          {
+            "label": "Mean",
+            "value": "35 / 5 = 7"
+          }
         ],
-        explanation: 'The arithmetic mean is the sum divided by the count: 35/5 = 7.',
+        "explanation": "The arithmetic mean is the sum divided by the count: 35/5 = 7."
       },
       {
-        id: 'qe38', type: 'numeric',
-        title: 'Population Variance',
-        description: 'Compute the <strong>population variance</strong> of: <strong>2, 4, 4, 4, 5, 5, 7, 9</strong>.',
-        unit: '',
-        answer: 4,
-        tolerance: 0,
-        steps: [
-          { label: 'Mean', value: '(2+4+4+4+5+5+7+9)/8 = 40/8 = 5' },
-          { label: 'Sum of squared deviations', value: '9+1+1+1+0+0+4+16 = 32' },
-          { label: 'Variance', value: '32/8 = 4' },
+        "id": "qe38",
+        "type": "numeric",
+        "title": "Population Variance",
+        "description": "Compute the <strong>population variance</strong> of: <strong>2, 4, 4, 4, 5, 5, 7, 9</strong>.",
+        "unit": "",
+        "answer": 4,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Mean",
+            "value": "(2+4+4+4+5+5+7+9)/8 = 40/8 = 5"
+          },
+          {
+            "label": "Sum of squared deviations",
+            "value": "9+1+1+1+0+0+4+16 = 32"
+          },
+          {
+            "label": "Variance",
+            "value": "32/8 = 4"
+          }
         ],
-        explanation: 'Population variance = Σ(xᵢ−μ)²/n. With mean 5, the squared deviations sum to 32, giving variance 4 (std dev = 2).',
+        "explanation": "Population variance = Σ(xᵢ−μ)²/n. With mean 5, the squared deviations sum to 32, giving variance 4 (std dev = 2)."
       },
       {
-        id: 'qe39', type: 'numeric',
-        title: 'Simple Stock Return',
-        description: 'A stock bought at <strong>$80</strong> is sold at <strong>$92</strong> after one year with no dividends. What is the simple annual return?',
-        unit: '%',
-        answer: 15,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Price gain', value: '$92 − $80 = $12' },
-          { label: 'Return', value: '12/80 = 0.15 = 15%' },
+        "id": "qe39",
+        "type": "numeric",
+        "title": "Simple Stock Return",
+        "description": "A stock bought at <strong>$80</strong> is sold at <strong>$92</strong> after one year with no dividends. What is the simple annual return?",
+        "unit": "%",
+        "answer": 15,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Price gain",
+            "value": "$92 − $80 = $12"
+          },
+          {
+            "label": "Return",
+            "value": "12/80 = 0.15 = 15%"
+          }
         ],
-        explanation: 'Simple return = (P₁ − P₀)/P₀ = 12/80 = 15%.',
+        "explanation": "Simple return = (P₁ − P₀)/P₀ = 12/80 = 15%."
       },
       {
-        id: 'qe40', type: 'numeric',
-        title: 'Normal Distribution: 68% Rule',
-        description: 'Stock annual returns: mean <strong>10%</strong>, std dev <strong>20%</strong>. Using the empirical rule, what is the <strong>upper bound</strong> of the range that contains ~68% of outcomes?',
-        unit: '%',
-        answer: 30,
-        tolerance: 0.01,
-        steps: [
-          { label: '68% rule: μ ± 1σ', value: 'Contains ~68% of data' },
-          { label: 'Upper bound', value: 'μ + σ = 10% + 20% = 30%' },
+        "id": "qe40",
+        "type": "numeric",
+        "title": "Normal Distribution: 68% Rule",
+        "description": "Stock annual returns: mean <strong>10%</strong>, std dev <strong>20%</strong>. Using the empirical rule, what is the <strong>upper bound</strong> of the range that contains ~68% of outcomes?",
+        "unit": "%",
+        "answer": 30,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "68% rule: μ ± 1σ",
+            "value": "Contains ~68% of data"
+          },
+          {
+            "label": "Upper bound",
+            "value": "μ + σ = 10% + 20% = 30%"
+          }
         ],
-        explanation: 'By the 68-95-99.7 rule, about 68% of outcomes fall in [μ−σ, μ+σ] = [−10%, 30%]. The upper bound is 30%.',
+        "explanation": "By the 68-95-99.7 rule, about 68% of outcomes fall in [μ−σ, μ+σ] = [−10%, 30%]. The upper bound is 30%."
       },
       {
-        id: 'qe41', type: 'numeric',
-        title: 'P(Both Cards Are Red)',
-        description: 'Draw two cards without replacement from a standard <strong>52-card deck</strong>. What is the probability both are red?\n\nEnter as a decimal rounded to 4 places.',
-        unit: '',
-        answer: 0.2451,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'P(1st red)', value: '26/52 = 1/2' },
-          { label: 'P(2nd red | 1st red)', value: '25/51' },
-          { label: 'P(both red)', value: '(26/52) × (25/51) = 650/2652 ≈ 0.2451' },
+        "id": "qe41",
+        "type": "numeric",
+        "title": "P(Both Cards Are Red)",
+        "description": "Draw two cards without replacement from a standard <strong>52-card deck</strong>. What is the probability both are red?\n\nEnter as a decimal rounded to 4 places.",
+        "unit": "",
+        "answer": 0.2451,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "P(1st red)",
+            "value": "26/52 = 1/2"
+          },
+          {
+            "label": "P(2nd red | 1st red)",
+            "value": "25/51"
+          },
+          {
+            "label": "P(both red)",
+            "value": "(26/52) × (25/51) = 650/2652 ≈ 0.2451"
+          }
         ],
-        explanation: 'P = (26×25)/(52×51) = 650/2652 ≈ 24.51%. After drawing one red, 25 of the remaining 51 cards are red.',
+        "explanation": "P = (26×25)/(52×51) = 650/2652 ≈ 24.51%. After drawing one red, 25 of the remaining 51 cards are red."
       },
       {
-        id: 'qe42', type: 'numeric',
-        title: 'Expected Profit: Lottery Ticket',
-        description: 'A lottery ticket costs <strong>$2</strong>. You win <strong>$10</strong> with probability <strong>0.05</strong>, else nothing. What is the expected profit per ticket?',
-        unit: '$',
-        answer: -1.5,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Expected winnings', value: '0.05 × $10 = $0.50' },
-          { label: 'Cost', value: '$2.00' },
-          { label: 'Expected profit', value: '$0.50 − $2.00 = −$1.50' },
+        "id": "qe42",
+        "type": "numeric",
+        "title": "Expected Profit: Lottery Ticket",
+        "description": "A lottery ticket costs <strong>$2</strong>. You win <strong>$10</strong> with probability <strong>0.05</strong>, else nothing. What is the expected profit per ticket?",
+        "unit": "$",
+        "answer": -1.5,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Expected winnings",
+            "value": "0.05 × $10 = $0.50"
+          },
+          {
+            "label": "Cost",
+            "value": "$2.00"
+          },
+          {
+            "label": "Expected profit",
+            "value": "$0.50 − $2.00 = −$1.50"
+          }
         ],
-        explanation: 'Expected profit = gross payout − cost = $0.50 − $2.00 = −$1.50. Lotteries are negative EV — the house always profits in expectation.',
+        "explanation": "Expected profit = gross payout − cost = $0.50 − $2.00 = −$1.50. Lotteries are negative EV — the house always profits in expectation."
       },
       {
-        id: 'qe43', type: 'numeric',
-        title: 'Permutations: 4 Books',
-        description: 'In how many ways can you arrange <strong>4 distinct books</strong> on a shelf?',
-        unit: '',
-        answer: 24,
-        tolerance: 0,
-        steps: [
-          { label: 'Number of permutations', value: '4! = 4 × 3 × 2 × 1' },
-          { label: '4!', value: '= 24' },
+        "id": "qe43",
+        "type": "numeric",
+        "title": "Permutations: 4 Books",
+        "description": "In how many ways can you arrange <strong>4 distinct books</strong> on a shelf?",
+        "unit": "",
+        "answer": 24,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Number of permutations",
+            "value": "4! = 4 × 3 × 2 × 1"
+          },
+          {
+            "label": "4!",
+            "value": "= 24"
+          }
         ],
-        explanation: 'Arrangements of n distinct objects = n! = 4! = 24. Four choices for position 1, three for position 2, etc.',
+        "explanation": "Arrangements of n distinct objects = n! = 4! = 24. Four choices for position 1, three for position 2, etc."
       },
       {
-        id: 'qe44', type: 'numeric',
-        title: 'Zero-Coupon Bond Price',
-        description: 'A zero-coupon bond pays <strong>$1,000</strong> at maturity in <strong>2 years</strong>. Annual discount rate = <strong>6%</strong>. What is the price today?',
-        unit: '$',
-        answer: 889.00,
-        tolerance: 0.5,
-        steps: [
-          { label: 'PV formula', value: 'PV = FV / (1+r)^n = 1000 / (1.06)²' },
-          { label: '(1.06)² = 1.1236', value: '' },
-          { label: 'Price', value: '1000 / 1.1236 ≈ $889.00' },
+        "id": "qe44",
+        "type": "numeric",
+        "title": "Zero-Coupon Bond Price",
+        "description": "A zero-coupon bond pays <strong>$1,000</strong> at maturity in <strong>2 years</strong>. Annual discount rate = <strong>6%</strong>. What is the price today?",
+        "unit": "$",
+        "answer": 890,
+        "tolerance": 0.5,
+        "steps": [
+          {
+            "label": "PV formula",
+            "value": "PV = FV / (1+r)^n = 1000 / (1.06)²"
+          },
+          {
+            "label": "Formula",
+            "value": "(1.06)² = 1.1236"
+          },
+          {
+            "label": "Price",
+            "value": "1000 / 1.1236 ≈ $890.00"
+          }
         ],
-        explanation: 'Zero-coupon bond price = FV/(1+r)ⁿ = 1000/1.1236 ≈ $889.00. The discount reflects time value of money.',
+        "explanation": "Zero-coupon bond price = FV/(1+r)ⁿ = 1000/1.1236 ≈ $890.00. The discount reflects time value of money."
       },
       {
-        id: 'qe45', type: 'numeric',
-        title: 'P(Sum > 9 on Two Dice)',
-        description: 'Roll two fair dice. What is the probability the sum is <strong>greater than 9</strong>?\n\nEnter as a decimal rounded to 4 places.',
-        unit: '',
-        answer: 0.1667,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Sums > 9: 10, 11, 12', value: 'Ways: 3 + 2 + 1 = 6' },
-          { label: 'Total outcomes', value: '36' },
-          { label: 'P(sum > 9)', value: '6/36 = 1/6 ≈ 0.1667' },
+        "id": "qe45",
+        "type": "numeric",
+        "title": "P(Sum > 9 on Two Dice)",
+        "description": "Roll two fair dice. What is the probability the sum is <strong>greater than 9</strong>?\n\nEnter as a decimal rounded to 4 places.",
+        "unit": "",
+        "answer": 0.1667,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Sums > 9: 10, 11, 12",
+            "value": "Ways: 3 + 2 + 1 = 6"
+          },
+          {
+            "label": "Total outcomes",
+            "value": "36"
+          },
+          {
+            "label": "P(sum > 9)",
+            "value": "6/36 = 1/6 ≈ 0.1667"
+          }
         ],
-        explanation: 'P(sum > 9) = P(10)+P(11)+P(12) = 3/36+2/36+1/36 = 6/36 = 1/6 ≈ 16.67%.',
+        "explanation": "P(sum > 9) = P(10)+P(11)+P(12) = 3/36+2/36+1/36 = 6/36 = 1/6 ≈ 16.67%."
       },
       {
-        id: 'qe46', type: 'numeric',
-        title: 'Continuously Compounded Return',
-        description: 'A stock rises from <strong>$50</strong> to <strong>$60</strong> over one year. What is the continuously compounded (log) return in percent?',
-        unit: '%',
-        answer: 18.23,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Log return', value: 'r = ln(S₁/S₀) = ln(60/50) = ln(1.2)' },
-          { label: 'ln(1.2)', value: '≈ 0.18232' },
-          { label: 'Log return', value: '18.23%' },
+        "id": "qe46",
+        "type": "numeric",
+        "title": "Continuously Compounded Return",
+        "description": "A stock rises from <strong>$50</strong> to <strong>$60</strong> over one year. What is the continuously compounded (log) return in percent?",
+        "unit": "%",
+        "answer": 18.23,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Log return",
+            "value": "r = ln(S₁/S₀) = ln(60/50) = ln(1.2)"
+          },
+          {
+            "label": "ln(1.2)",
+            "value": "≈ 0.18232"
+          },
+          {
+            "label": "Log return",
+            "value": "18.23%"
+          }
         ],
-        explanation: 'Log return = ln(S₁/S₀) = ln(1.2) ≈ 18.23%. Slightly less than the simple 20% return. Log returns are additive over time.',
+        "explanation": "Log return = ln(S₁/S₀) = ln(1.2) ≈ 18.23%. Slightly less than the simple 20% return. Log returns are additive over time."
       },
       {
-        id: 'qe47', type: 'numeric',
-        title: 'EV: Biased Coin Game',
-        description: 'A biased coin shows heads with probability <strong>0.6</strong>. You win <strong>$3</strong> on heads, lose <strong>$2</strong> on tails. What is the expected value per flip?',
-        unit: '$',
-        answer: 1.00,
-        tolerance: 0.01,
-        steps: [
-          { label: 'E[win on heads]', value: '0.6 × $3 = $1.80' },
-          { label: 'E[loss on tails]', value: '0.4 × (−$2) = −$0.80' },
-          { label: 'E[X]', value: '$1.80 − $0.80 = $1.00' },
+        "id": "qe47",
+        "type": "numeric",
+        "title": "EV: Biased Coin Game",
+        "description": "A biased coin shows heads with probability <strong>0.6</strong>. You win <strong>$3</strong> on heads, lose <strong>$2</strong> on tails. What is the expected value per flip?",
+        "unit": "$",
+        "answer": 1,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "E[win on heads]",
+            "value": "0.6 × $3 = $1.80"
+          },
+          {
+            "label": "E[loss on tails]",
+            "value": "0.4 × (−$2) = −$0.80"
+          },
+          {
+            "label": "E[X]",
+            "value": "$1.80 − $0.80 = $1.00"
+          }
         ],
-        explanation: 'EV = P(H)×win + P(T)×loss = 0.6×3 + 0.4×(−2) = 1.80 − 0.80 = $1.00 per flip.',
+        "explanation": "EV = P(H)×win + P(T)×loss = 0.6×3 + 0.4×(−2) = 1.80 − 0.80 = $1.00 per flip."
       },
       {
-        id: 'qe48', type: 'numeric',
-        title: 'P(Matching Birthdays: 2 People)',
-        description: 'In a group of <strong>2 people</strong>, what is the probability they share the same birthday? (Assume 365 equally likely days.)\n\nEnter as a decimal rounded to 4 places.',
-        unit: '',
-        answer: 0.0027,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'P(person 2 matches person 1)', value: '1/365 ≈ 0.0027' },
+        "id": "qe48",
+        "type": "numeric",
+        "title": "P(Matching Birthdays: 2 People)",
+        "description": "In a group of <strong>2 people</strong>, what is the probability they share the same birthday? (Assume 365 equally likely days.)\n\nEnter as a decimal rounded to 4 places.",
+        "unit": "",
+        "answer": 0.0027,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "P(person 2 matches person 1)",
+            "value": "1/365 ≈ 0.0027"
+          }
         ],
-        explanation: 'P(shared birthday) = 1/365 ≈ 0.27% for 2 people. This small number makes the birthday paradox (50% chance with just 23 people) counterintuitive.',
+        "explanation": "P(shared birthday) = 1/365 ≈ 0.27% for 2 people. This small number makes the birthday paradox (50% chance with just 23 people) counterintuitive."
       },
       {
-        id: 'qe49', type: 'numeric',
-        title: 'Simple Interest Earned',
-        description: 'You deposit <strong>$5,000</strong> at <strong>4% simple annual interest</strong>. How much interest do you earn after <strong>3 years</strong>?',
-        unit: '$',
-        answer: 600,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Simple interest formula', value: 'I = P × r × t = 5000 × 0.04 × 3' },
-          { label: 'I', value: '= $600' },
+        "id": "qe49",
+        "type": "numeric",
+        "title": "Simple Interest Earned",
+        "description": "You deposit <strong>$5,000</strong> at <strong>4% simple annual interest</strong>. How much interest do you earn after <strong>3 years</strong>?",
+        "unit": "$",
+        "answer": 600,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Simple interest formula",
+            "value": "I = P × r × t = 5000 × 0.04 × 3"
+          },
+          {
+            "label": "I",
+            "value": "= $600"
+          }
         ],
-        explanation: 'Simple interest: I = Prt = 5000 × 0.04 × 3 = $600. Only the original principal earns interest (unlike compound interest).',
+        "explanation": "Simple interest: I = Prt = 5000 × 0.04 × 3 = $600. Only the original principal earns interest (unlike compound interest)."
       },
       {
-        id: 'qe50', type: 'numeric',
-        title: 'Variance of Bernoulli Variable',
-        description: 'X is a Bernoulli random variable with P(X=1) = <strong>0.4</strong>. What is the variance of X?',
-        unit: '',
-        answer: 0.24,
-        tolerance: 0.001,
-        steps: [
-          { label: 'Bernoulli variance', value: 'Var(X) = p(1−p)' },
-          { label: 'Var(X)', value: '0.4 × 0.6 = 0.24' },
+        "id": "qe50",
+        "type": "numeric",
+        "title": "Variance of Bernoulli Variable",
+        "description": "X is a Bernoulli random variable with P(X=1) = <strong>0.4</strong>. What is the variance of X?",
+        "unit": "",
+        "answer": 0.24,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Bernoulli variance",
+            "value": "Var(X) = p(1−p)"
+          },
+          {
+            "label": "Var(X)",
+            "value": "0.4 × 0.6 = 0.24"
+          }
         ],
-        explanation: 'For Bernoulli(p): Var(X) = p(1−p) = 0.4 × 0.6 = 0.24. Variance is maximized at p=0.5.',
+        "explanation": "For Bernoulli(p): Var(X) = p(1−p) = 0.4 × 0.6 = 0.24. Variance is maximized at p=0.5."
       },
       {
-        id: 'qe51', type: 'numeric',
-        title: 'P(At Least One 6 in 2 Rolls)',
-        description: 'Roll a fair die <strong>twice</strong>. What is the probability of at least one <strong>6</strong>?\n\nEnter as a decimal rounded to 4 places.',
-        unit: '',
-        answer: 0.3056,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'P(no 6 in two rolls)', value: '(5/6)² = 25/36' },
-          { label: 'Complement', value: 'P(at least one 6) = 1 − 25/36 = 11/36 ≈ 0.3056' },
+        "id": "qe51",
+        "type": "numeric",
+        "title": "P(At Least One 6 in 2 Rolls)",
+        "description": "Roll a fair die <strong>twice</strong>. What is the probability of at least one <strong>6</strong>?\n\nEnter as a decimal rounded to 4 places.",
+        "unit": "",
+        "answer": 0.3056,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "P(no 6 in two rolls)",
+            "value": "(5/6)² = 25/36"
+          },
+          {
+            "label": "Complement",
+            "value": "P(at least one 6) = 1 − 25/36 = 11/36 ≈ 0.3056"
+          }
         ],
-        explanation: 'P(≥1 six) = 1 − (5/6)² = 11/36 ≈ 30.56%. Use the complement to avoid counting overlapping cases.',
+        "explanation": "P(≥1 six) = 1 − (5/6)² = 11/36 ≈ 30.56%. Use the complement to avoid counting overlapping cases."
       },
       {
-        id: 'qe52', type: 'numeric',
-        title: 'Annuity Future Value',
-        description: 'You invest <strong>$100</strong> at the end of each year for <strong>3 years</strong> at <strong>5% annual interest</strong>. What is the total future value at the end of year 3?',
-        unit: '$',
-        answer: 315.25,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Year 1 deposit grows 2 years', value: '100 × (1.05)² = $110.25' },
-          { label: 'Year 2 deposit grows 1 year', value: '100 × 1.05 = $105.00' },
-          { label: 'Year 3 deposit grows 0 years', value: '100' },
-          { label: 'Total FV', value: '$110.25 + $105.00 + $100.00 = $315.25' },
+        "id": "qe52",
+        "type": "numeric",
+        "title": "Annuity Future Value",
+        "description": "You invest <strong>$100</strong> at the end of each year for <strong>3 years</strong> at <strong>5% annual interest</strong>. What is the total future value at the end of year 3?",
+        "unit": "$",
+        "answer": 315.25,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Year 1 deposit grows 2 years",
+            "value": "100 × (1.05)² = $110.25"
+          },
+          {
+            "label": "Year 2 deposit grows 1 year",
+            "value": "100 × 1.05 = $105.00"
+          },
+          {
+            "label": "Year 3 deposit grows 0 years",
+            "value": "100"
+          },
+          {
+            "label": "Total FV",
+            "value": "$110.25 + $105.00 + $100.00 = $315.25"
+          }
         ],
-        explanation: 'Each payment compounds from when it is made. The year-1 payment earns interest for 2 years, year-2 for 1 year, year-3 for 0 years. FV = $315.25.',
+        "explanation": "Each payment compounds from when it is made. The year-1 payment earns interest for 2 years, year-2 for 1 year, year-3 for 0 years. FV = $315.25."
       },
       {
-        id: 'qe53', type: 'numeric',
-        title: '5-Card Poker Hands',
-        description: 'How many distinct <strong>5-card hands</strong> can be dealt from a standard 52-card deck?',
-        unit: '',
-        answer: 2598960,
-        tolerance: 0,
-        steps: [
-          { label: 'C(52, 5)', value: '52! / (5! × 47!)' },
-          { label: 'Numerator', value: '52 × 51 × 50 × 49 × 48 = 311,875,200' },
-          { label: 'C(52,5)', value: '311,875,200 / 120 = 2,598,960' },
+        "id": "qe53",
+        "type": "numeric",
+        "title": "5-Card Poker Hands",
+        "description": "How many distinct <strong>5-card hands</strong> can be dealt from a standard 52-card deck?",
+        "unit": "",
+        "answer": 2598960,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "C(52, 5)",
+            "value": "52! / (5! × 47!)"
+          },
+          {
+            "label": "Numerator",
+            "value": "52 × 51 × 50 × 49 × 48 = 311,875,200"
+          },
+          {
+            "label": "C(52,5)",
+            "value": "311,875,200 / 120 = 2,598,960"
+          }
         ],
-        explanation: 'C(52,5) = 2,598,960 total 5-card hands. This is the denominator for all poker probability calculations.',
+        "explanation": "C(52,5) = 2,598,960 total 5-card hands. This is the denominator for all poker probability calculations."
       },
       {
-        id: 'qe54', type: 'numeric',
-        title: 'Perpetuity Present Value',
-        description: 'A perpetuity pays <strong>$50</strong> per year forever. The discount rate is <strong>5%</strong>. What is the present value?',
-        unit: '$',
-        answer: 1000,
-        tolerance: 0.01,
-        steps: [
-          { label: 'PV of perpetuity', value: 'PV = C / r' },
-          { label: 'PV', value: '$50 / 0.05 = $1,000' },
+        "id": "qe54",
+        "type": "numeric",
+        "title": "Perpetuity Present Value",
+        "description": "A perpetuity pays <strong>$50</strong> per year forever. The discount rate is <strong>5%</strong>. What is the present value?",
+        "unit": "$",
+        "answer": 1000,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "PV of perpetuity",
+            "value": "PV = C / r"
+          },
+          {
+            "label": "PV",
+            "value": "$50 / 0.05 = $1,000"
+          }
         ],
-        explanation: 'Perpetuity PV = C/r. Derived from summing the geometric series C/(1+r) + C/(1+r)² + … = C/r. $50 per year discounted at 5% = $1,000.',
+        "explanation": "Perpetuity PV = C/r. Derived from summing the geometric series C/(1+r) + C/(1+r)² + … = C/r. $50 per year discounted at 5% = $1,000."
       },
       {
-        id: 'qe55', type: 'numeric',
-        title: 'Normal Distribution: 95% Rule',
-        description: 'Monthly portfolio returns: mean <strong>1%</strong>, std dev <strong>3%</strong>. Using the empirical rule, what fraction of months have returns between <strong>−5%</strong> and <strong>7%</strong>?',
-        unit: '%',
-        answer: 95,
-        tolerance: 0.5,
-        steps: [
-          { label: 'Check bounds', value: '−5% = 1% − 2×3%; 7% = 1% + 2×3%' },
-          { label: '95% rule: μ ± 2σ', value: 'Contains ~95% of observations' },
-          { label: 'Answer', value: '≈ 95%' },
+        "id": "qe55",
+        "type": "numeric",
+        "title": "Normal Distribution: 95% Rule",
+        "description": "Monthly portfolio returns: mean <strong>1%</strong>, std dev <strong>3%</strong>. Using the empirical rule, what fraction of months have returns between <strong>−5%</strong> and <strong>7%</strong>?",
+        "unit": "%",
+        "answer": 95,
+        "tolerance": 0.5,
+        "steps": [
+          {
+            "label": "Check bounds",
+            "value": "−5% = 1% − 2×3%; 7% = 1% + 2×3%"
+          },
+          {
+            "label": "95% rule: μ ± 2σ",
+            "value": "Contains ~95% of observations"
+          },
+          {
+            "label": "Answer",
+            "value": "≈ 95%"
+          }
         ],
-        explanation: 'The range [−5%, 7%] = [μ−2σ, μ+2σ]. By the 68-95-99.7 rule, approximately 95% of normally distributed values fall within 2 standard deviations.',
+        "explanation": "The range [−5%, 7%] = [μ−2σ, μ+2σ]. By the 68-95-99.7 rule, approximately 95% of normally distributed values fall within 2 standard deviations."
       },
       {
-        id: 'qe56', type: 'numeric',
-        title: 'Forward Price (Continuous Compounding)',
-        description: 'A stock trades at <strong>$100</strong>. The risk-free rate is <strong>8%</strong> continuously compounded. What is the <strong>6-month forward price</strong>?',
-        unit: '$',
-        answer: 104.08,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Forward price formula', value: 'F = S × e^(rT)' },
-          { label: 'F = 100 × e^(0.08 × 0.5)', value: '= 100 × e^0.04 = 100 × 1.04081' },
-          { label: 'F', value: '≈ $104.08' },
+        "id": "qe56",
+        "type": "numeric",
+        "title": "Forward Price (Continuous Compounding)",
+        "description": "A stock trades at <strong>$100</strong>. The risk-free rate is <strong>8%</strong> continuously compounded. What is the <strong>6-month forward price</strong>?",
+        "unit": "$",
+        "answer": 104.08,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Forward price formula",
+            "value": "F = S × e^(rT)"
+          },
+          {
+            "label": "F = 100 × e^(0.08 × 0.5)",
+            "value": "= 100 × e^0.04 = 100 × 1.04081"
+          },
+          {
+            "label": "F",
+            "value": "≈ $104.08"
+          }
         ],
-        explanation: 'F = S₀ × e^(rT) = 100 × e^0.04 ≈ $104.08. Any other forward price would create an arbitrage opportunity.',
+        "explanation": "F = S₀ × e^(rT) = 100 × e^0.04 ≈ $104.08. Any other forward price would create an arbitrage opportunity."
       },
       {
-        id: 'qe57', type: 'numeric',
-        title: 'Standard Deviation from Variance',
-        description: 'A random variable has variance <strong>49</strong>. What is its standard deviation?',
-        unit: '',
-        answer: 7,
-        tolerance: 0,
-        steps: [
-          { label: 'σ = √Variance', value: 'σ = √49' },
-          { label: 'σ', value: '= 7' },
+        "id": "qe57",
+        "type": "numeric",
+        "title": "Standard Deviation from Variance",
+        "description": "A random variable has variance <strong>49</strong>. What is its standard deviation?",
+        "unit": "",
+        "answer": 7,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "σ = √Variance",
+            "value": "σ = √49"
+          },
+          {
+            "label": "σ",
+            "value": "= 7"
+          }
         ],
-        explanation: 'Standard deviation is the square root of variance: σ = √49 = 7. Standard deviation has the same units as the original variable.',
+        "explanation": "Standard deviation is the square root of variance: σ = √49 = 7. Standard deviation has the same units as the original variable."
       },
       {
-        id: 'qe58', type: 'numeric',
-        title: 'Covariance from Correlation',
-        description: 'Two stocks have correlation <strong>0.6</strong>, with standard deviations <strong>10%</strong> and <strong>15%</strong>. What is their covariance (in %²)?',
-        unit: '',
-        answer: 90,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Cov = ρ × σ_X × σ_Y', value: '= 0.6 × 10 × 15' },
-          { label: 'Cov', value: '= 90 %²' },
+        "id": "qe58",
+        "type": "numeric",
+        "title": "Covariance from Correlation",
+        "description": "Two stocks have correlation <strong>0.6</strong>, with standard deviations <strong>10%</strong> and <strong>15%</strong>. What is their covariance (in %²)?",
+        "unit": "",
+        "answer": 90,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Cov = ρ × σ<sub>X</sub> × σ<sub>Y</sub>",
+            "value": "= 0.6 × 10 × 15"
+          },
+          {
+            "label": "Cov",
+            "value": "= 90 %²"
+          }
         ],
-        explanation: 'Cov(X,Y) = ρ·σ_X·σ_Y = 0.6 × 10 × 15 = 90. Covariance = correlation × product of standard deviations.',
+        "explanation": "Cov(X,Y) = ρ·σ<sub>X</sub>·σ<sub>Y</sub> = 0.6 × 10 × 15 = 90. Covariance = correlation × product of standard deviations."
       },
       {
-        id: 'qe59', type: 'numeric',
-        title: 'Binomial Probability: 2 Successes in 5 Trials',
-        description: 'In <strong>5 independent trials</strong> each with success probability <strong>0.3</strong>, what is P(exactly 2 successes)?\n\nRound to 4 decimal places.',
-        unit: '',
-        answer: 0.3087,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Binomial formula', value: 'P(X=2) = C(5,2) × 0.3² × 0.7³' },
-          { label: 'C(5,2) = 10', value: '10 × 0.09 × 0.343 = 10 × 0.03087' },
-          { label: 'P(X=2)', value: '= 0.3087' },
+        "id": "qe59",
+        "type": "numeric",
+        "title": "Binomial Probability: 2 Successes in 5 Trials",
+        "description": "In <strong>5 independent trials</strong> each with success probability <strong>0.3</strong>, what is P(exactly 2 successes)?\n\nRound to 4 decimal places.",
+        "unit": "",
+        "answer": 0.3087,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Binomial formula",
+            "value": "P(X=2) = C(5,2) × 0.3² × 0.7³"
+          },
+          {
+            "label": "C(5,2) = 10",
+            "value": "10 × 0.09 × 0.343 = 10 × 0.03087"
+          },
+          {
+            "label": "P(X=2)",
+            "value": "= 0.3087"
+          }
         ],
-        explanation: 'P(X=k) = C(n,k)pᵏ(1−p)^(n−k). Here C(5,2)=10, 0.3²=0.09, 0.7³=0.343 → P = 0.3087.',
+        "explanation": "P(X=k) = C(n,k)pᵏ(1−p)^(n−k). Here C(5,2)=10, 0.3²=0.09, 0.7³=0.343 → P = 0.3087."
       },
       {
-        id: 'qe60', type: 'numeric',
-        title: 'P(Two Aces in a Row)',
-        description: 'Draw two cards without replacement from a standard deck. What is the probability that <strong>both are aces</strong>?\n\nRound to 4 decimal places.',
-        unit: '',
-        answer: 0.0045,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'P(1st is ace)', value: '4/52' },
-          { label: 'P(2nd is ace | 1st was ace)', value: '3/51' },
-          { label: 'P(both aces)', value: '(4/52) × (3/51) = 12/2652 ≈ 0.0045' },
+        "id": "qe60",
+        "type": "numeric",
+        "title": "P(Two Aces in a Row)",
+        "description": "Draw two cards without replacement from a standard deck. What is the probability that <strong>both are aces</strong>?\n\nRound to 4 decimal places.",
+        "unit": "",
+        "answer": 0.0045,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "P(1st is ace)",
+            "value": "4/52"
+          },
+          {
+            "label": "P(2nd is ace | 1st was ace)",
+            "value": "3/51"
+          },
+          {
+            "label": "P(both aces)",
+            "value": "(4/52) × (3/51) = 12/2652 ≈ 0.0045"
+          }
         ],
-        explanation: 'P = (4×3)/(52×51) = 12/2652 ≈ 0.45%. A rare event — about 1 in 221 hands.',
+        "explanation": "P = (4×3)/(52×51) = 12/2652 ≈ 0.45%. A rare event — about 1 in 221 hands."
       },
       {
-        id: 'qe61', type: 'numeric',
-        title: 'Call Option Intrinsic Value',
-        description: 'A call option has strike <strong>$55</strong>. The underlying stock is at <strong>$62</strong>. What is the intrinsic value?',
-        unit: '$',
-        answer: 7,
-        tolerance: 0,
-        steps: [
-          { label: 'Intrinsic value = max(S − K, 0)', value: '' },
-          { label: 'max(62 − 55, 0)', value: '= max(7, 0) = $7' },
+        "id": "qe61",
+        "type": "numeric",
+        "title": "Call Option Intrinsic Value",
+        "description": "A call option has strike <strong>$55</strong>. The underlying stock is at <strong>$62</strong>. What is the intrinsic value?",
+        "unit": "$",
+        "answer": 7,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Intrinsic value = max(S − K, 0)"
+          },
+          {
+            "label": "max(62 − 55, 0)",
+            "value": "= max(7, 0) = $7"
+          }
         ],
-        explanation: 'Intrinsic value = max(S − K, 0) = max($62 − $55, 0) = $7. The option is in-the-money by $7.',
+        "explanation": "Intrinsic value = max(S − K, 0) = max($62 − $55, 0) = $7. The option is in-the-money by $7."
       },
       {
-        id: 'qe62', type: 'numeric',
-        title: 'Median of a Dataset',
-        description: 'Find the median of: <strong>3, 8, 1, 15, 7, 4, 11</strong>.',
-        unit: '',
-        answer: 7,
-        tolerance: 0,
-        steps: [
-          { label: 'Sort the data', value: '1, 3, 4, 7, 8, 11, 15' },
-          { label: 'Middle value (4th of 7)', value: '7' },
+        "id": "qe62",
+        "type": "numeric",
+        "title": "Median of a Dataset",
+        "description": "Find the median of: <strong>3, 8, 1, 15, 7, 4, 11</strong>.",
+        "unit": "",
+        "answer": 7,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Sort the data",
+            "value": "1, 3, 4, 7, 8, 11, 15"
+          },
+          {
+            "label": "Middle value (4th of 7)",
+            "value": "7"
+          }
         ],
-        explanation: 'Median = middle value after sorting. With 7 values, the median is the 4th: {1,3,4,<strong>7</strong>,8,11,15} → 7.',
+        "explanation": "Median = middle value after sorting. With 7 values, the median is the 4th: {1,3,4,<strong>7</strong>,8,11,15} → 7."
       },
       {
-        id: 'qe63', type: 'numeric',
-        title: 'Variance of Two Independent Variables',
-        description: 'X and Y are independent. <strong>Var[X] = 9</strong>, <strong>Var[Y] = 16</strong>. What is <strong>Var[X + Y]</strong>?',
-        unit: '',
-        answer: 25,
-        tolerance: 0,
-        steps: [
-          { label: 'For independent variables', value: 'Var[X+Y] = Var[X] + Var[Y]' },
-          { label: 'Var[X+Y]', value: '9 + 16 = 25' },
+        "id": "qe63",
+        "type": "numeric",
+        "title": "Variance of Two Independent Variables",
+        "description": "X and Y are independent. <strong>Var[X] = 9</strong>, <strong>Var[Y] = 16</strong>. What is <strong>Var[X + Y]</strong>?",
+        "unit": "",
+        "answer": 25,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "For independent variables",
+            "value": "Var[X+Y] = Var[X] + Var[Y]"
+          },
+          {
+            "label": "Var[X+Y]",
+            "value": "9 + 16 = 25"
+          }
         ],
-        explanation: 'For independent random variables, Var[X+Y] = Var[X] + Var[Y] = 9 + 16 = 25. (Cross terms cancel because Cov = 0.)',
+        "explanation": "For independent random variables, Var[X+Y] = Var[X] + Var[Y] = 9 + 16 = 25. (Cross terms cancel because Cov = 0.)"
       },
       {
-        id: 'qe64', type: 'numeric',
-        title: 'Portfolio Expected Return (60/40)',
-        description: 'A portfolio: <strong>60%</strong> in Stock A (expected return <strong>12%</strong>), <strong>40%</strong> in Stock B (expected return <strong>6%</strong>). What is the portfolio expected return?',
-        unit: '%',
-        answer: 9.6,
-        tolerance: 0.01,
-        steps: [
-          { label: 'E[Rp] = w_A × r_A + w_B × r_B', value: '' },
-          { label: '= 0.60 × 12% + 0.40 × 6%', value: '= 7.2% + 2.4%' },
-          { label: 'E[Rp]', value: '= 9.6%' },
+        "id": "qe64",
+        "type": "numeric",
+        "title": "Portfolio Expected Return (60/40)",
+        "description": "A portfolio: <strong>60%</strong> in Stock A (expected return <strong>12%</strong>), <strong>40%</strong> in Stock B (expected return <strong>6%</strong>). What is the portfolio expected return?",
+        "unit": "%",
+        "answer": 9.6,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "E[Rp] = w<sub>A</sub> × r<sub>A</sub> + w<sub>B</sub> × r<sub>B</sub>"
+          },
+          {
+            "label": "= 0.60 × 12% + 0.40 × 6%",
+            "value": "= 7.2% + 2.4%"
+          },
+          {
+            "label": "E[Rp]",
+            "value": "= 9.6%"
+          }
         ],
-        explanation: 'Portfolio expected return = weighted average of component returns = 0.60×12% + 0.40×6% = 9.6%.',
+        "explanation": "Portfolio expected return = weighted average of component returns = 0.60×12% + 0.40×6% = 9.6%."
       },
       {
-        id: 'qe65', type: 'numeric',
-        title: 'P(Rolling at Least 4)',
-        description: 'You roll one fair 6-sided die. What is the probability of rolling <strong>4 or higher</strong>?',
-        unit: '',
-        answer: 0.5,
-        tolerance: 0.005,
-        steps: [
-          { label: 'Favorable outcomes', value: '4, 5, 6 → 3 outcomes' },
-          { label: 'P(≥ 4)', value: '3/6 = 0.5' },
+        "id": "qe65",
+        "type": "numeric",
+        "title": "P(Rolling at Least 4)",
+        "description": "You roll one fair 6-sided die. What is the probability of rolling <strong>4 or higher</strong>?",
+        "unit": "",
+        "answer": 0.5,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "Favorable outcomes",
+            "value": "4, 5, 6 → 3 outcomes"
+          },
+          {
+            "label": "P(≥ 4)",
+            "value": "3/6 = 0.5"
+          }
         ],
-        explanation: 'P(X ≥ 4) = 3/6 = 1/2. Exactly half of the faces show 4, 5, or 6.',
+        "explanation": "P(X ≥ 4) = 3/6 = 1/2. Exactly half of the faces show 4, 5, or 6."
       },
       {
         id: 'qe66', type: 'numeric',
@@ -12206,490 +13163,822 @@ const QUESTIONS = {
         explanation: 'Since both colors are equally likely, guessing either wins with probability 0.5, for an expected value of $5 — though most people would only pay a few dollars to play, since a guaranteed loss feels riskier than the average suggests.',
       },
     ],
-    medium: [
+    "medium": [
       {
-        id: 'qm4', type: 'numeric',
-        title: "Bayes' Theorem: Medical Test",
-        description: 'A disease affects <strong>10%</strong> of a population.\n\nA diagnostic test has:\n• <strong>90% sensitivity</strong> (correctly detects disease)\n• <strong>80% specificity</strong> (correctly identifies healthy people)\n\nA patient tests positive. What is the probability they actually have the disease?\n\nEnter as a decimal rounded to 3 places (e.g. <code>0.333</code>).',
-        unit: '',
-        answer: 0.333,
-        tolerance: 0.002,
-        steps: [
-          { label: 'P(positive | disease)', value: '90% sensitivity → 0.9' },
-          { label: 'P(positive | healthy)', value: '1 − 80% specificity = 20% false positive rate → 0.2' },
-          { label: 'P(positive overall)', value: '0.9×0.1 + 0.2×0.9 = 0.09 + 0.18 = 0.27' },
-          { label: 'P(disease | positive)', value: '0.09 ÷ 0.27 = 1/3 ≈ 0.333' },
+        "id": "qm4",
+        "type": "numeric",
+        "title": "Bayes' Theorem: Medical Test",
+        "description": "A disease affects <strong>10%</strong> of a population.\n\nA diagnostic test has:\n• <strong>90% sensitivity</strong> (correctly detects disease)\n• <strong>80% specificity</strong> (correctly identifies healthy people)\n\nA patient tests positive. What is the probability they actually have the disease?\n\nEnter as a decimal rounded to 3 places (e.g. <code>0.333</code>).",
+        "unit": "",
+        "answer": 0.333,
+        "tolerance": 0.002,
+        "steps": [
+          {
+            "label": "P(positive | disease)",
+            "value": "90% sensitivity → 0.9"
+          },
+          {
+            "label": "P(positive | healthy)",
+            "value": "1 − 80% specificity = 20% false positive rate → 0.2"
+          },
+          {
+            "label": "P(positive overall)",
+            "value": "0.9×0.1 + 0.2×0.9 = 0.09 + 0.18 = 0.27"
+          },
+          {
+            "label": "P(disease | positive)",
+            "value": "0.09 ÷ 0.27 = 1/3 ≈ 0.333"
+          }
         ],
-        explanation: "Bayes': P(D|+) = P(+|D)×P(D) / P(+) = 0.9×0.1 / 0.27 = 1/3 ≈ 0.333. Even with a 90% sensitive test, only 1 in 3 positives actually has the disease when prevalence is just 10%. This is why screening rare diseases needs very high specificity.",
+        "explanation": "Bayes': P(D|+) = P(+|D)×P(D) / P(+) = 0.9×0.1 / 0.27 = 1/3 ≈ 0.333. Even with a 90% sensitive test, only 1 in 3 positives actually has the disease when prevalence is just 10%. This is why screening rare diseases needs very high specificity."
       },
       {
-        id: 'qm5', type: 'numeric',
-        title: 'CAPM Expected Return',
-        description: 'Using the <strong>Capital Asset Pricing Model (CAPM)</strong>:\n\n• Risk-free rate: <strong>3%</strong>\n• Expected market return: <strong>10%</strong>\n• Asset beta (β): <strong>1.5</strong>\n\nWhat is the <strong>expected return</strong> of the asset?\n\nEnter as a percentage (e.g. <code>13.50</code>).',
-        unit: '%',
-        answer: 13.5,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Market risk premium', value: 'E[Rm] − rf = 10% − 3% = 7%' },
-          { label: 'Beta contribution', value: 'β × 7% = 1.5 × 7% = 10.5%' },
-          { label: 'E[R] = rf + β × (E[Rm] − rf)', value: '3% + 10.5% = 13.5%' },
+        "id": "qm5",
+        "type": "numeric",
+        "title": "CAPM Expected Return",
+        "description": "Using the <strong>Capital Asset Pricing Model (CAPM)</strong>:\n\n• Risk-free rate: <strong>3%</strong>\n• Expected market return: <strong>10%</strong>\n• Asset beta (β): <strong>1.5</strong>\n\nWhat is the <strong>expected return</strong> of the asset?\n\nEnter as a percentage (e.g. <code>13.50</code>).",
+        "unit": "%",
+        "answer": 13.5,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Market risk premium",
+            "value": "E[Rm] − rf = 10% − 3% = 7%"
+          },
+          {
+            "label": "Beta contribution",
+            "value": "β × 7% = 1.5 × 7% = 10.5%"
+          },
+          {
+            "label": "E[R] = rf + β × (E[Rm] − rf)",
+            "value": "3% + 10.5% = 13.5%"
+          }
         ],
-        explanation: 'CAPM: E[R] = rf + β(E[Rm]−rf) = 3% + 1.5×7% = 13.5%. A beta of 1.5 means 50% more market exposure than the average asset. The extra return comes from bearing extra systematic risk.',
+        "explanation": "CAPM: E[R] = rf + β(E[Rm]−rf) = 3% + 1.5×7% = 13.5%. A beta of 1.5 means 50% more market exposure than the average asset. The extra return comes from bearing extra systematic risk."
       },
       {
-        id: 'qm6', type: 'numeric',
-        title: 'Standard Deviation of Returns',
-        description: 'A stock has the following annual return distribution:\n• <strong>+20%</strong> with probability 0.5\n• <strong>−10%</strong> with probability 0.3\n• <strong>0%</strong> with probability 0.2\n\nWhat is the <strong>standard deviation</strong> of returns?\n\nEnter as a percentage rounded to 2 decimal places.',
-        unit: '%',
-        answer: 13.45,
-        tolerance: 0.05,
-        steps: [
-          { label: 'E[R]', value: '0.5×20 + 0.3×(−10) + 0.2×0 = 10 − 3 = 7%' },
-          { label: 'Variance = Σ pᵢ×(rᵢ−E[R])²', value: '0.5×(13)² + 0.3×(17)² + 0.2×(7)² = 84.5 + 86.7 + 9.8 = 181' },
-          { label: 'σ = √Variance', value: '√181 ≈ 13.45%' },
+        "id": "qm6",
+        "type": "numeric",
+        "title": "Standard Deviation of Returns",
+        "description": "A stock has the following annual return distribution:\n• <strong>+20%</strong> with probability 0.5\n• <strong>−10%</strong> with probability 0.3\n• <strong>0%</strong> with probability 0.2\n\nWhat is the <strong>standard deviation</strong> of returns?\n\nEnter as a percentage rounded to 2 decimal places.",
+        "unit": "%",
+        "answer": 13.45,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "E[R]",
+            "value": "0.5×20 + 0.3×(−10) + 0.2×0 = 10 − 3 = 7%"
+          },
+          {
+            "label": "Variance = Σ pᵢ×(rᵢ−E[R])²",
+            "value": "0.5×(13)² + 0.3×(17)² + 0.2×(7)² = 84.5 + 86.7 + 9.8 = 181"
+          },
+          {
+            "label": "σ = √Variance",
+            "value": "√181 ≈ 13.45%"
+          }
         ],
-        explanation: 'E[R] = 7%. Variance = Σpᵢ(rᵢ−μ)² = 0.5×169 + 0.3×289 + 0.2×49 = 84.5 + 86.7 + 9.8 = 181. σ = √181 ≈ 13.45%.',
+        "explanation": "E[R] = 7%. Variance = Σpᵢ(rᵢ−μ)² = 0.5×169 + 0.3×289 + 0.2×49 = 84.5 + 86.7 + 9.8 = 181. σ = √181 ≈ 13.45%."
       },
       {
-        id: 'qm1', type: 'numeric',
-        title: 'Returns Are Not Symmetric',
-        description: 'A stock rises <strong>50%</strong> in January, then falls <strong>50%</strong> in February.\n\nStarting from $100, what is the stock price at the end of February?\n\nEnter the price in dollars (e.g. <code>75.00</code>).',
-        unit: '$',
-        answer: 75,
-        tolerance: 0.01,
-        steps: [
-          { label: 'After +50%', value: '$100 × 1.50 = $150' },
-          { label: 'After −50%', value: '$150 × 0.50 = $75' },
+        "id": "qm1",
+        "type": "numeric",
+        "title": "Returns Are Not Symmetric",
+        "description": "A stock rises <strong>50%</strong> in January, then falls <strong>50%</strong> in February.\n\nStarting from $100, what is the stock price at the end of February?\n\nEnter the price in dollars (e.g. <code>75.00</code>).",
+        "unit": "$",
+        "answer": 75,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "After +50%",
+            "value": "$100 × 1.50 = $150"
+          },
+          {
+            "label": "After −50%",
+            "value": "$150 × 0.50 = $75"
+          }
         ],
-        explanation: 'Percentage gains and losses are NOT symmetric. A 50% gain followed by a 50% loss = $100 × 1.5 × 0.5 = $75. Net return = −25%. This is why geometric returns are used for multi-period analysis.',
+        "explanation": "Percentage gains and losses are NOT symmetric. A 50% gain followed by a 50% loss = $100 × 1.5 × 0.5 = $75. Net return = −25%. This is why geometric returns are used for multi-period analysis."
       },
       {
-        id: 'qm2', type: 'numeric',
-        title: 'Monty Hall Problem',
-        description: 'You\'re on a game show. There are <strong>3 doors</strong>: one has a car, two have goats. You pick Door 1. The host (who always knows where the car is) opens Door 3, revealing a goat.\n\nYou switch to Door 2. What is the probability you win the car?\n\nEnter as a fraction in decimal form (e.g. <code>0.333</code> for 1/3).',
-        unit: '',
-        answer: 0.6667,
-        tolerance: 0.001,
-        steps: [
-          { label: 'P(car behind Door 1) initially', value: '1/3' },
-          { label: 'P(car NOT behind Door 1)', value: '2/3 (split across Doors 2 and 3)' },
-          { label: 'Host reveals a goat behind Door 3', value: 'Your original pick stays at 1/3 — the remaining 2/3 consolidates onto Door 2' },
-          { label: 'P(win by switching)', value: '2/3 ≈ 0.6667' },
+        "id": "qm2",
+        "type": "numeric",
+        "title": "Monty Hall Problem",
+        "description": "You're on a game show. There are <strong>3 doors</strong>: one has a car, two have goats. You pick Door 1. The host (who always knows where the car is) opens Door 3, revealing a goat.\n\nYou switch to Door 2. What is the probability you win the car?\n\nEnter as a fraction in decimal form (e.g. <code>0.333</code> for 1/3).",
+        "unit": "",
+        "answer": 0.6667,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "P(car behind Door 1) initially",
+            "value": "1/3"
+          },
+          {
+            "label": "P(car NOT behind Door 1)",
+            "value": "2/3 (split across Doors 2 and 3)"
+          },
+          {
+            "label": "Host reveals a goat behind Door 3",
+            "value": "Your original pick stays at 1/3 — the remaining 2/3 consolidates onto Door 2"
+          },
+          {
+            "label": "P(win by switching)",
+            "value": "2/3 ≈ 0.6667"
+          }
         ],
-        explanation: 'Switching gives you 2/3 probability of winning. Your initial pick had a 1/3 chance. The remaining 2/3 probability was split between doors 2 and 3 — when the host eliminates one, all 2/3 collapses onto the remaining door. Always switch.',
+        "explanation": "Switching gives you 2/3 probability of winning. Your initial pick had a 1/3 chance. The remaining 2/3 probability was split between doors 2 and 3 — when the host eliminates one, all 2/3 collapses onto the remaining door. Always switch."
       },
       {
-        id: 'qm3', type: 'numeric',
-        title: 'Geometric Distribution',
-        description: 'You roll a fair 6-sided die repeatedly until you roll a <strong>6</strong>.\n\nWhat is the <strong>expected number of rolls</strong>?\n\nEnter an exact integer.',
-        unit: 'rolls',
-        answer: 6,
-        tolerance: 0,
-        steps: [
-          { label: 'Distribution', value: 'Geometric with p = 1/6' },
-          { label: 'E[X]', value: '1/p = 1/(1/6) = 6' },
+        "id": "qm3",
+        "type": "numeric",
+        "title": "Geometric Distribution",
+        "description": "You roll a fair 6-sided die repeatedly until you roll a <strong>6</strong>.\n\nWhat is the <strong>expected number of rolls</strong>?\n\nEnter an exact integer.",
+        "unit": "rolls",
+        "answer": 6,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Distribution",
+            "value": "Geometric with p = 1/6"
+          },
+          {
+            "label": "E[X]",
+            "value": "1/p = 1/(1/6) = 6"
+          }
         ],
-        explanation: 'For a geometric distribution with success probability p, E[X] = 1/p. Here p = 1/6, so you expect to roll 6 times on average.',
+        "explanation": "For a geometric distribution with success probability p, E[X] = 1/p. Here p = 1/6, so you expect to roll 6 times on average."
       },
       {
-        id: 'qm37', type: 'numeric',
-        title: "Bayes' Theorem: Disease Testing",
-        description: 'A disease affects <strong>1%</strong> of the population. A test has <strong>95% sensitivity</strong> (true positive rate) and <strong>90% specificity</strong> (true negative rate). If you test positive, what is the probability you have the disease?\n\nRound to 4 decimal places.',
-        unit: '',
-        answer: 0.0876,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'P(+|D)=0.95, P(+|no D)=0.10, P(D)=0.01', value: '' },
-          { label: 'P(+) = 0.95×0.01 + 0.10×0.99', value: '= 0.0095 + 0.099 = 0.1085' },
-          { label: "P(D|+) = P(+|D)×P(D) / P(+)", value: '= 0.0095 / 0.1085 ≈ 0.0876' },
+        "id": "qm37",
+        "type": "numeric",
+        "title": "Bayes' Theorem: Disease Testing",
+        "description": "A disease affects <strong>1%</strong> of the population. A test has <strong>95% sensitivity</strong> (true positive rate) and <strong>90% specificity</strong> (true negative rate). If you test positive, what is the probability you have the disease?\n\nRound to 4 decimal places.",
+        "unit": "",
+        "answer": 0.0876,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "P(+|D)=0.95, P(+|no D)=0.10, P(D)=0.01"
+          },
+          {
+            "label": "P(+) = 0.95×0.01 + 0.10×0.99",
+            "value": "= 0.0095 + 0.099 = 0.1085"
+          },
+          {
+            "label": "P(D|+) = P(+|D)×P(D) / P(+)",
+            "value": "= 0.0095 / 0.1085 ≈ 0.0876"
+          }
         ],
-        explanation: "Bayes': P(D|+) = P(+|D)P(D)/P(+) = 0.0095/0.1085 ≈ 8.76%. Even with a 95% sensitive test, most positives are false alarms when the disease affects only 1% of people.",
+        "explanation": "Bayes': P(D|+) = P(+|D)P(D)/P(+) = 0.0095/0.1085 ≈ 8.76%. Even with a 95% sensitive test, most positives are false alarms when the disease affects only 1% of people."
       },
       {
-        id: 'qm38', type: 'numeric',
-        title: 'Geometric Distribution: Expected Rolls',
-        description: 'You roll a fair die repeatedly until you get a <strong>6</strong>. What is the expected number of rolls?',
-        unit: 'rolls',
-        answer: 6,
-        tolerance: 0,
-        steps: [
-          { label: 'X ~ Geometric(p = 1/6)', value: '' },
-          { label: 'E[X] = 1/p', value: '= 1/(1/6) = 6 rolls' },
+        "id": "qm38",
+        "type": "numeric",
+        "title": "Geometric Distribution: Expected Rolls",
+        "description": "You roll a fair die repeatedly until you get a <strong>6</strong>. What is the expected number of rolls?",
+        "unit": "rolls",
+        "answer": 6,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "X ~ Geometric(p = 1/6)"
+          },
+          {
+            "label": "E[X] = 1/p",
+            "value": "= 1/(1/6) = 6 rolls"
+          }
         ],
-        explanation: 'For Geometric(p): E[X] = 1/p = 6. On average you need 6 rolls to get one six.',
+        "explanation": "For Geometric(p): E[X] = 1/p = 6. On average you need 6 rolls to get one six."
       },
       {
-        id: 'qm39', type: 'numeric',
-        title: 'Portfolio Variance with Correlation',
-        description: 'Portfolio: <strong>50%</strong> in Asset A (σ = <strong>20%</strong>), <strong>50%</strong> in Asset B (σ = <strong>30%</strong>), correlation = <strong>0.4</strong>. What is the portfolio standard deviation?',
-        unit: '%',
-        answer: 21.10,
-        tolerance: 0.1,
-        steps: [
-          { label: 'σ²_p = w²_A σ²_A + w²_B σ²_B + 2w_A w_B ρ σ_A σ_B', value: '' },
-          { label: '= 0.25×400 + 0.25×900 + 2×0.5×0.5×0.4×20×30', value: '= 100 + 225 + 120 = 445' },
-          { label: 'σ_p = √445', value: '≈ 21.10%' },
+        "id": "qm39",
+        "type": "numeric",
+        "title": "Portfolio Variance with Correlation",
+        "description": "Portfolio: <strong>50%</strong> in Asset A (σ = <strong>20%</strong>), <strong>50%</strong> in Asset B (σ = <strong>30%</strong>), correlation = <strong>0.4</strong>. What is the portfolio standard deviation?",
+        "unit": "%",
+        "answer": 21.1,
+        "tolerance": 0.1,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "σ<sub>p</sub>² = w<sub>A</sub>² σ<sub>A</sub>² + w<sub>B</sub>² σ<sub>B</sub>² + 2w<sub>A</sub> w<sub>B</sub> ρ σ<sub>A</sub> σ<sub>B</sub>"
+          },
+          {
+            "label": "= 0.25×400 + 0.25×900 + 2×0.5×0.5×0.4×20×30",
+            "value": "= 100 + 225 + 120 = 445"
+          },
+          {
+            "label": "σ<sub>p</sub> = √445",
+            "value": "≈ 21.10%"
+          }
         ],
-        explanation: 'Var_p = 100 + 225 + 2(0.25)(0.4)(600) = 100+225+120 = 445. σ_p = √445 ≈ 21.10%.',
+        "explanation": "Var<sub>p</sub> = 100 + 225 + 2(0.25)(0.4)(600) = 100+225+120 = 445. σ<sub>p</sub> = √445 ≈ 21.10%."
       },
       {
-        id: 'qm40', type: 'numeric',
-        title: 'Sharpe Ratio',
-        description: 'Portfolio: expected return <strong>12%</strong>, volatility <strong>18%</strong>, risk-free rate <strong>3%</strong>. What is the Sharpe ratio?',
-        unit: '',
-        answer: 0.5,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Sharpe = (E[R] − Rf) / σ', value: '' },
-          { label: '= (12% − 3%) / 18%', value: '= 9% / 18%' },
-          { label: 'Sharpe ratio', value: '= 0.5' },
+        "id": "qm40",
+        "type": "numeric",
+        "title": "Sharpe Ratio",
+        "description": "Portfolio: expected return <strong>12%</strong>, volatility <strong>18%</strong>, risk-free rate <strong>3%</strong>. What is the Sharpe ratio?",
+        "unit": "",
+        "answer": 0.5,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Sharpe = (E[R] − Rf) / σ"
+          },
+          {
+            "label": "= (12% − 3%) / 18%",
+            "value": "= 9% / 18%"
+          },
+          {
+            "label": "Sharpe ratio",
+            "value": "= 0.5"
+          }
         ],
-        explanation: 'Sharpe ratio = excess return / volatility = 9%/18% = 0.5. Measures risk-adjusted return; above 1.0 is generally considered strong.',
+        "explanation": "Sharpe ratio = excess return / volatility = 9%/18% = 0.5. Measures risk-adjusted return; above 1.0 is generally considered strong."
       },
       {
-        id: 'qm41', type: 'numeric',
-        title: 'Put-Call Parity',
-        description: 'A European call option is worth <strong>$8</strong>. Strike = <strong>$100</strong>, stock price = <strong>$100</strong>, risk-free rate = <strong>5%</strong>, T = <strong>1 year</strong> (continuous). What is the put price?\n\nRound to 2 decimal places.',
-        unit: '$',
-        answer: 3.12,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Put-call parity: C − P = S − K×e^(−rT)', value: '' },
-          { label: 'PV of strike = 100×e^(−0.05)', value: '= 100×0.9512 = 95.12' },
-          { label: 'P = C − S + PV(K) = 8 − 100 + 95.12', value: '= $3.12' },
+        "id": "qm41",
+        "type": "numeric",
+        "title": "Put-Call Parity",
+        "description": "A European call option is worth <strong>$8</strong>. Strike = <strong>$100</strong>, stock price = <strong>$100</strong>, risk-free rate = <strong>5%</strong>, T = <strong>1 year</strong> (continuous). What is the put price?\n\nRound to 2 decimal places.",
+        "unit": "$",
+        "answer": 3.12,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Put-call parity: C − P = S − K×e^(−rT)"
+          },
+          {
+            "label": "PV of strike = 100×e^(−0.05)",
+            "value": "= 100×0.9512 = 95.12"
+          },
+          {
+            "label": "P = C − S + PV(K) = 8 − 100 + 95.12",
+            "value": "= $3.12"
+          }
         ],
-        explanation: 'Put-call parity: C − P = S − Ke^(−rT). Rearranging: P = C + Ke^(−rT) − S = 8 + 95.12 − 100 = $3.12.',
+        "explanation": "Put-call parity: C − P = S − Ke^(−rT). Rearranging: P = C + Ke^(−rT) − S = 8 + 95.12 − 100 = $3.12."
       },
       {
-        id: 'qm42', type: 'numeric',
-        title: 'Poisson: P(X = 3)',
-        description: 'Customers arrive at rate <strong>λ = 4</strong> per hour (Poisson). What is the probability that exactly <strong>3</strong> arrive in one hour?\n\nRound to 4 decimal places.',
-        unit: '',
-        answer: 0.1954,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'P(X=k) = e^(−λ) × λᵏ / k!', value: '' },
-          { label: 'P(X=3) = e^(−4) × 4³ / 3!', value: '= e^(−4) × 64 / 6' },
-          { label: 'P(X=3)', value: '= 0.01832 × 64 / 6 ≈ 0.1954' },
+        "id": "qm42",
+        "type": "numeric",
+        "title": "Poisson: P(X = 3)",
+        "description": "Customers arrive at rate <strong>λ = 4</strong> per hour (Poisson). What is the probability that exactly <strong>3</strong> arrive in one hour?\n\nRound to 4 decimal places.",
+        "unit": "",
+        "answer": 0.1954,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "P(X=k) = e^(−λ) × λᵏ / k!"
+          },
+          {
+            "label": "P(X=3) = e^(−4) × 4³ / 3!",
+            "value": "= e^(−4) × 64 / 6"
+          },
+          {
+            "label": "P(X=3)",
+            "value": "= 0.01832 × 64 / 6 ≈ 0.1954"
+          }
         ],
-        explanation: 'P(X=3) = e^(−4) × 4³/3! = e^(−4) × 64/6 ≈ 0.1954.',
+        "explanation": "P(X=3) = e^(−4) × 4³/3! = e^(−4) × 64/6 ≈ 0.1954."
       },
       {
-        id: 'qm43', type: 'numeric',
-        title: 'CAPM Expected Return',
-        description: 'CAPM: risk-free rate = <strong>3%</strong>, market return = <strong>10%</strong>, beta = <strong>1.5</strong>. What is the expected return?',
-        unit: '%',
-        answer: 13.5,
-        tolerance: 0.01,
-        steps: [
-          { label: 'E[R] = Rf + β × (E[Rm] − Rf)', value: '' },
-          { label: 'Market risk premium', value: '10% − 3% = 7%' },
-          { label: 'E[R]', value: '3% + 1.5 × 7% = 3% + 10.5% = 13.5%' },
+        "id": "qm43",
+        "type": "numeric",
+        "title": "CAPM Expected Return",
+        "description": "CAPM: risk-free rate = <strong>3%</strong>, market return = <strong>10%</strong>, beta = <strong>1.5</strong>. What is the expected return?",
+        "unit": "%",
+        "answer": 13.5,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "E[R] = Rf + β × (E[Rm] − Rf)"
+          },
+          {
+            "label": "Market risk premium",
+            "value": "10% − 3% = 7%"
+          },
+          {
+            "label": "E[R]",
+            "value": "3% + 1.5 × 7% = 3% + 10.5% = 13.5%"
+          }
         ],
-        explanation: 'CAPM: E[R] = 3% + 1.5×7% = 13.5%. Beta of 1.5 means 50% more market exposure → 50% higher risk premium.',
+        "explanation": "CAPM: E[R] = 3% + 1.5×7% = 13.5%. Beta of 1.5 means 50% more market exposure → 50% higher risk premium."
       },
       {
-        id: 'qm44', type: 'numeric',
-        title: 'Conditional Probability: Face Card',
-        description: 'A card is drawn from a standard deck and it is a <strong>face card</strong> (J, Q, K). What is the probability it is also a <strong>heart</strong>?',
-        unit: '',
-        answer: 0.25,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Total face cards', value: '12 (J, Q, K in 4 suits)' },
-          { label: 'Face cards that are hearts', value: '3 (J♥, Q♥, K♥)' },
-          { label: 'P(heart | face card)', value: '3/12 = 0.25' },
+        "id": "qm44",
+        "type": "numeric",
+        "title": "Conditional Probability: Face Card",
+        "description": "A card is drawn from a standard deck and it is a <strong>face card</strong> (J, Q, K). What is the probability it is also a <strong>heart</strong>?",
+        "unit": "",
+        "answer": 0.25,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Total face cards",
+            "value": "12 (J, Q, K in 4 suits)"
+          },
+          {
+            "label": "Face cards that are hearts",
+            "value": "3 (J♥, Q♥, K♥)"
+          },
+          {
+            "label": "P(heart | face card)",
+            "value": "3/12 = 0.25"
+          }
         ],
-        explanation: 'P(heart | face) = 3/12 = 1/4. Among the 12 face cards (J, Q, K × 4 suits), exactly 3 are hearts.',
+        "explanation": "P(heart | face) = 3/12 = 1/4. Among the 12 face cards (J, Q, K × 4 suits), exactly 3 are hearts."
       },
       {
-        id: 'qm45', type: 'numeric',
-        title: "Gambler's Ruin: P(Win)",
-        description: 'A gambler starts with <strong>$3</strong> and plays a fair game. The game ends when they reach <strong>$0</strong> (ruin) or <strong>$10</strong> (win). What is the probability the gambler wins?',
-        unit: '',
-        answer: 0.3,
-        tolerance: 0.005,
-        steps: [
-          { label: "Gambler's ruin (fair game)", value: 'P(win) = k / N' },
-          { label: 'k = 3, N = 10', value: 'P(win) = 3/10' },
-          { label: 'P(win)', value: '= 0.30' },
+        "id": "qm45",
+        "type": "numeric",
+        "title": "Gambler's Ruin: P(Win)",
+        "description": "A gambler starts with <strong>$3</strong> and plays a fair game. The game ends when they reach <strong>$0</strong> (ruin) or <strong>$10</strong> (win). What is the probability the gambler wins?",
+        "unit": "",
+        "answer": 0.3,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "Gambler's ruin (fair game)",
+            "value": "P(win) = k / N"
+          },
+          {
+            "label": "k = 3, N = 10",
+            "value": "P(win) = 3/10"
+          },
+          {
+            "label": "P(win)",
+            "value": "= 0.30"
+          }
         ],
-        explanation: 'For a symmetric random walk absorbed at 0 or N: P(reach N | start at k) = k/N = 3/10 = 30%.',
+        "explanation": "For a symmetric random walk absorbed at 0 or N: P(reach N | start at k) = k/N = 3/10 = 30%."
       },
       {
-        id: 'qm46', type: 'numeric',
-        title: 'Macaulay Duration',
-        description: 'A bond: <strong>$100 face</strong>, <strong>6% annual coupon</strong>, <strong>2 years to maturity</strong>, YTM = <strong>6%</strong>. What is the Macaulay Duration?',
-        unit: 'years',
-        answer: 1.9434,
-        tolerance: 0.005,
-        steps: [
-          { label: 'PV(CF₁) = 6/1.06 = 5.660; PV(CF₂) = 106/1.06² = 94.340', value: '' },
-          { label: 'Price = 5.660 + 94.340 = 100', value: '' },
-          { label: 'D = (1×5.660 + 2×94.340)/100', value: '= 194.34/100 = 1.9434 years' },
+        "id": "qm46",
+        "type": "numeric",
+        "title": "Macaulay Duration",
+        "description": "A bond: <strong>$100 face</strong>, <strong>6% annual coupon</strong>, <strong>2 years to maturity</strong>, YTM = <strong>6%</strong>. What is the Macaulay Duration?",
+        "unit": "years",
+        "answer": 1.9434,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "PV(CF₁) = 6/1.06 = 5.660; PV(CF₂) = 106/1.06² = 94.340"
+          },
+          {
+            "label": "Formula",
+            "value": "Price = 5.660 + 94.340 = 100"
+          },
+          {
+            "label": "D = (1×5.660 + 2×94.340)/100",
+            "value": "= 194.34/100 = 1.9434 years"
+          }
         ],
-        explanation: 'Macaulay Duration = PV-weighted average maturity. At par (coupon=YTM), D = (1×5.66 + 2×94.34)/100 ≈ 1.943 years.',
+        "explanation": "Macaulay Duration = PV-weighted average maturity. At par (coupon=YTM), D = (1×5.66 + 2×94.34)/100 ≈ 1.943 years."
       },
       {
-        id: 'qm47', type: 'numeric',
-        title: 'Kelly Criterion (2:1 Odds)',
-        description: 'A bet pays <strong>$2 profit per $1 risked</strong> with probability <strong>0.55</strong>, or loses the $1 with probability 0.45. What fraction of bankroll should you bet (Kelly criterion)?',
-        unit: '',
-        answer: 0.325,
-        tolerance: 0.005,
-        steps: [
-          { label: 'Kelly: f* = (bp − q) / b', value: 'b=2, p=0.55, q=0.45' },
-          { label: 'Numerator: 2×0.55 − 0.45', value: '= 1.10 − 0.45 = 0.65' },
-          { label: 'f* = 0.65 / 2', value: '= 0.325 = 32.5%' },
+        "id": "qm47",
+        "type": "numeric",
+        "title": "Kelly Criterion (2:1 Odds)",
+        "description": "A bet pays <strong>$2 profit per $1 risked</strong> with probability <strong>0.55</strong>, or loses the $1 with probability 0.45. What fraction of bankroll should you bet (Kelly criterion)?",
+        "unit": "",
+        "answer": 0.325,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "Kelly: f* = (bp − q) / b",
+            "value": "b=2, p=0.55, q=0.45"
+          },
+          {
+            "label": "Numerator: 2×0.55 − 0.45",
+            "value": "= 1.10 − 0.45 = 0.65"
+          },
+          {
+            "label": "f* = 0.65 / 2",
+            "value": "= 0.325 = 32.5%"
+          }
         ],
-        explanation: 'Kelly f* = (bp−q)/b = (2×0.55−0.45)/2 = 0.65/2 = 32.5%. This maximizes long-run geometric growth rate.',
+        "explanation": "Kelly f* = (bp−q)/b = (2×0.55−0.45)/2 = 0.65/2 = 32.5%. This maximizes long-run geometric growth rate."
       },
       {
-        id: 'qm48', type: 'numeric',
-        title: 'Law of Total Expectation',
-        description: 'A fair coin is flipped. If heads, X is uniform on {1, 2, 3}. If tails, X is uniform on {4, 5}. What is <strong>E[X]</strong>?',
-        unit: '',
-        answer: 3.25,
-        tolerance: 0.01,
-        steps: [
-          { label: 'E[X | heads] = (1+2+3)/3', value: '= 2' },
-          { label: 'E[X | tails] = (4+5)/2', value: '= 4.5' },
-          { label: 'E[X] = 0.5×2 + 0.5×4.5', value: '= 1 + 2.25 = 3.25' },
+        "id": "qm48",
+        "type": "numeric",
+        "title": "Law of Total Expectation",
+        "description": "A fair coin is flipped. If heads, X is uniform on {1, 2, 3}. If tails, X is uniform on {4, 5}. What is <strong>E[X]</strong>?",
+        "unit": "",
+        "answer": 3.25,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "E[X | heads] = (1+2+3)/3",
+            "value": "= 2"
+          },
+          {
+            "label": "E[X | tails] = (4+5)/2",
+            "value": "= 4.5"
+          },
+          {
+            "label": "E[X] = 0.5×2 + 0.5×4.5",
+            "value": "= 1 + 2.25 = 3.25"
+          }
         ],
-        explanation: 'E[X] = P(H)·E[X|H] + P(T)·E[X|T] = 0.5×2 + 0.5×4.5 = 3.25.',
+        "explanation": "E[X] = P(H)·E[X|H] + P(T)·E[X|T] = 0.5×2 + 0.5×4.5 = 3.25."
       },
       {
-        id: 'qm49', type: 'numeric',
-        title: 'Markov Chain Steady State',
-        description: 'A two-state Markov chain: from state A, go to B with prob <strong>0.3</strong>; from state B, go to A with prob <strong>0.4</strong>. What is the <strong>steady-state probability of A</strong>?',
-        unit: '',
-        answer: 0.5714,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Balance: π_A × 0.3 = π_B × 0.4', value: '' },
-          { label: 'Plus π_A + π_B = 1', value: 'Solve: π_A = 4/7' },
-          { label: 'π_A', value: '= 4/7 ≈ 0.5714' },
+        "id": "qm49",
+        "type": "numeric",
+        "title": "Markov Chain Steady State",
+        "description": "A two-state Markov chain: from state A, go to B with prob <strong>0.3</strong>; from state B, go to A with prob <strong>0.4</strong>. What is the <strong>steady-state probability of A</strong>?",
+        "unit": "",
+        "answer": 0.5714,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Balance: π<sub>A</sub> × 0.3 = π<sub>B</sub> × 0.4"
+          },
+          {
+            "label": "Plus π<sub>A</sub> + π<sub>B</sub> = 1",
+            "value": "Solve: π<sub>A</sub> = 4/7"
+          },
+          {
+            "label": "π<sub>A</sub>",
+            "value": "= 4/7 ≈ 0.5714"
+          }
         ],
-        explanation: 'Steady-state: flow from A to B equals flow from B to A. π_A(0.3) = π_B(0.4), so π_A/π_B = 4/3. With normalization: π_A = 4/7 ≈ 0.5714.',
+        "explanation": "Steady-state: flow from A to B equals flow from B to A. π<sub>A</sub>(0.3) = π<sub>B</sub>(0.4), so π<sub>A</sub>/π<sub>B</sub> = 4/3. With normalization: π<sub>A</sub> = 4/7 ≈ 0.5714."
       },
       {
-        id: 'qm50', type: 'numeric',
-        title: 'Negative Binomial: Expected Trials',
-        description: 'You need <strong>3 successes</strong> in Bernoulli trials with p = <strong>0.25</strong>. What is the expected number of trials?',
-        unit: 'trials',
-        answer: 12,
-        tolerance: 0,
-        steps: [
-          { label: 'Negative binomial: E[X] = r/p', value: 'r = 3, p = 0.25' },
-          { label: 'E[X]', value: '= 3 / 0.25 = 12 trials' },
+        "id": "qm50",
+        "type": "numeric",
+        "title": "Negative Binomial: Expected Trials",
+        "description": "You need <strong>3 successes</strong> in Bernoulli trials with p = <strong>0.25</strong>. What is the expected number of trials?",
+        "unit": "trials",
+        "answer": 12,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Negative binomial: E[X] = r/p",
+            "value": "r = 3, p = 0.25"
+          },
+          {
+            "label": "E[X]",
+            "value": "= 3 / 0.25 = 12 trials"
+          }
         ],
-        explanation: 'Negative Binomial: expected trials for r successes = r/p = 3/0.25 = 12.',
+        "explanation": "Negative Binomial: expected trials for r successes = r/p = 3/0.25 = 12."
       },
       {
-        id: 'qm51', type: 'numeric',
-        title: 'Option Time Value',
-        description: 'A call with strike <strong>$50</strong> on a stock at <strong>$54</strong> is priced at <strong>$6.50</strong>. What is the time value of this option?',
-        unit: '$',
-        answer: 2.5,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Intrinsic value = max(54−50, 0)', value: '= $4.00' },
-          { label: 'Time value = price − intrinsic', value: '= $6.50 − $4.00' },
-          { label: 'Time value', value: '= $2.50' },
+        "id": "qm51",
+        "type": "numeric",
+        "title": "Option Time Value",
+        "description": "A call with strike <strong>$50</strong> on a stock at <strong>$54</strong> is priced at <strong>$6.50</strong>. What is the time value of this option?",
+        "unit": "$",
+        "answer": 2.5,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Intrinsic value = max(54−50, 0)",
+            "value": "= $4.00"
+          },
+          {
+            "label": "Time value = price − intrinsic",
+            "value": "= $6.50 − $4.00"
+          },
+          {
+            "label": "Time value",
+            "value": "= $2.50"
+          }
         ],
-        explanation: 'Option price = intrinsic value + time value. Intrinsic = max(S−K,0) = $4. Time value = $6.50 − $4 = $2.50 (value of optionality before expiry).',
+        "explanation": "Option price = intrinsic value + time value. Intrinsic = max(S−K,0) = $4. Time value = $6.50 − $4 = $2.50 (value of optionality before expiry)."
       },
       {
-        id: 'qm52', type: 'numeric',
-        title: 'Law of Total Variance',
-        description: 'A fair die is rolled. If ≤ 3, X ~ Uniform{1,2,3} (mean=2, var=2/3). If > 3, X ~ Uniform{4,5,6} (mean=5, var=2/3). Find <strong>Var(X)</strong>.',
-        unit: '',
-        answer: 2.9167,
-        tolerance: 0.005,
-        steps: [
-          { label: 'E[Var(X|Y)] = 0.5×(2/3)+0.5×(2/3)', value: '= 2/3 ≈ 0.667' },
-          { label: 'Var(E[X|Y]): E[X]=3.5; Var = 0.5(2−3.5)²+0.5(5−3.5)²', value: '= 0.5×2.25+0.5×2.25 = 2.25' },
-          { label: 'Var(X) = 2/3 + 2.25', value: '≈ 2.917' },
+        "id": "qm52",
+        "type": "numeric",
+        "title": "Law of Total Variance",
+        "description": "A fair die is rolled. If ≤ 3, X ~ Uniform{1,2,3} (mean=2, var=2/3). If > 3, X ~ Uniform{4,5,6} (mean=5, var=2/3). Find <strong>Var(X)</strong>.",
+        "unit": "",
+        "answer": 2.9167,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "E[Var(X|Y)] = 0.5×(2/3)+0.5×(2/3)",
+            "value": "= 2/3 ≈ 0.667"
+          },
+          {
+            "label": "Var(E[X|Y]): E[X]=3.5; Var = 0.5(2−3.5)²+0.5(5−3.5)²",
+            "value": "= 0.5×2.25+0.5×2.25 = 2.25"
+          },
+          {
+            "label": "Var(X) = 2/3 + 2.25",
+            "value": "≈ 2.917"
+          }
         ],
-        explanation: 'Law of total variance: Var(X) = E[Var(X|Y)] + Var(E[X|Y]) = 2/3 + 2.25 ≈ 2.917.',
+        "explanation": "Law of total variance: Var(X) = E[Var(X|Y)] + Var(E[X|Y]) = 2/3 + 2.25 ≈ 2.917."
       },
       {
-        id: 'qm53', type: 'numeric',
-        title: 'Forward Price with Dividend',
-        description: 'Stock = <strong>$120</strong>, pays dividend <strong>$2</strong> in 6 months. Risk-free rate = <strong>6%</strong> continuously compounded. What is the <strong>1-year forward price</strong>?',
-        unit: '$',
-        answer: 125.38,
-        tolerance: 0.1,
-        steps: [
-          { label: 'PV(dividend) = 2×e^(−0.06×0.5)', value: '= 2×e^(−0.03) = 2×0.9704 = 1.941' },
-          { label: 'Adjusted spot: S* = 120 − 1.941', value: '= 118.059' },
-          { label: 'F = 118.059 × e^(0.06)', value: '= 118.059 × 1.0618 ≈ $125.38' },
+        "id": "qm53",
+        "type": "numeric",
+        "title": "Forward Price with Dividend",
+        "description": "Stock = <strong>$120</strong>, pays dividend <strong>$2</strong> in 6 months. Risk-free rate = <strong>6%</strong> continuously compounded. What is the <strong>1-year forward price</strong>?",
+        "unit": "$",
+        "answer": 125.38,
+        "tolerance": 0.1,
+        "steps": [
+          {
+            "label": "PV(dividend) = 2×e^(−0.06×0.5)",
+            "value": "= 2×e^(−0.03) = 2×0.9704 = 1.941"
+          },
+          {
+            "label": "Adjusted spot: S* = 120 − 1.941",
+            "value": "= 118.059"
+          },
+          {
+            "label": "F = 118.059 × e^(0.06)",
+            "value": "= 118.059 × 1.0618 ≈ $125.38"
+          }
         ],
-        explanation: 'F = (S − PV(D)) × e^(rT). Dividend paid at 6 months has PV = 2e^(−0.03) ≈ $1.94. Adjusted spot = $118.06. F = 118.06 × e^0.06 ≈ $125.38.',
+        "explanation": "F = (S − PV(D)) × e^(rT). Dividend paid at 6 months has PV = 2e^(−0.03) ≈ $1.94. Adjusted spot = $118.06. F = 118.06 × e^0.06 ≈ $125.38."
       },
       {
-        id: 'qm54', type: 'numeric',
-        title: 'Poisson: Expected Interarrival Time',
-        description: 'Trades arrive via a Poisson process at rate <strong>λ = 3</strong> per minute. What is the expected time between consecutive trades?',
-        unit: 'minutes',
-        answer: 0.3333,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Interarrival times are Exponential(λ)', value: '' },
-          { label: 'E[T] = 1/λ', value: '= 1/3 ≈ 0.3333 minutes' },
+        "id": "qm54",
+        "type": "numeric",
+        "title": "Poisson: Expected Interarrival Time",
+        "description": "Trades arrive via a Poisson process at rate <strong>λ = 3</strong> per minute. What is the expected time between consecutive trades?",
+        "unit": "minutes",
+        "answer": 0.3333,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Interarrival times are Exponential(λ)"
+          },
+          {
+            "label": "E[T] = 1/λ",
+            "value": "= 1/3 ≈ 0.3333 minutes"
+          }
         ],
-        explanation: 'For a Poisson(λ) process, interarrival times ~ Exponential(λ) with mean 1/λ = 1/3 ≈ 20 seconds.',
+        "explanation": "For a Poisson(λ) process, interarrival times ~ Exponential(λ) with mean 1/λ = 1/3 ≈ 20 seconds."
       },
       {
-        id: 'qm55', type: 'numeric',
-        title: 'Risk-Neutral Probability (Binomial)',
-        description: 'Stock = <strong>$100</strong>, up to <strong>$110</strong> (u=1.1) or down to <strong>$90</strong> (d=0.9). Risk-free rate = <strong>5%</strong> per period (continuous). Find the risk-neutral probability of an up move.',
-        unit: '',
-        answer: 0.7564,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'q = (e^r − d) / (u − d)', value: '' },
-          { label: 'q = (e^0.05 − 0.9) / (1.1 − 0.9)', value: '= (1.05127 − 0.9) / 0.2' },
-          { label: 'q', value: '= 0.15127 / 0.2 ≈ 0.7564' },
+        "id": "qm55",
+        "type": "numeric",
+        "title": "Risk-Neutral Probability (Binomial)",
+        "description": "Stock = <strong>$100</strong>, up to <strong>$110</strong> (u=1.1) or down to <strong>$90</strong> (d=0.9). Risk-free rate = <strong>5%</strong> per period (continuous). Find the risk-neutral probability of an up move.",
+        "unit": "",
+        "answer": 0.7564,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "q = (e^r − d) / (u − d)"
+          },
+          {
+            "label": "q = (e^0.05 − 0.9) / (1.1 − 0.9)",
+            "value": "= (1.05127 − 0.9) / 0.2"
+          },
+          {
+            "label": "q",
+            "value": "= 0.15127 / 0.2 ≈ 0.7564"
+          }
         ],
-        explanation: 'Risk-neutral q = (e^r − d)/(u − d) = (1.05127 − 0.9)/0.2 ≈ 0.7564.',
+        "explanation": "Risk-neutral q = (e^r − d)/(u − d) = (1.05127 − 0.9)/0.2 ≈ 0.7564."
       },
       {
-        id: 'qm56', type: 'numeric',
-        title: 'Correlation for Half Variance',
-        description: 'Two assets each have σ = <strong>20%</strong>. You hold equal weights. At what correlation does portfolio variance equal <strong>half</strong> the variance of one asset?',
-        unit: '',
-        answer: 0,
-        tolerance: 0.01,
-        steps: [
-          { label: 'σ²_p = 0.5σ²(1+ρ)', value: 'For equal-weight 2-asset portfolio' },
-          { label: 'Set = 0.5σ²', value: '0.5σ²(1+ρ) = 0.5σ² → ρ = 0' },
-          { label: 'ρ', value: '= 0' },
+        "id": "qm56",
+        "type": "numeric",
+        "title": "Correlation for Half Variance",
+        "description": "Two assets each have σ = <strong>20%</strong>. You hold equal weights. At what correlation does portfolio variance equal <strong>half</strong> the variance of one asset?",
+        "unit": "",
+        "answer": 0,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "σ²_p = 0.5σ²(1+ρ)",
+            "value": "For equal-weight 2-asset portfolio"
+          },
+          {
+            "label": "Set = 0.5σ²",
+            "value": "0.5σ²(1+ρ) = 0.5σ² → ρ = 0"
+          },
+          {
+            "label": "ρ",
+            "value": "= 0"
+          }
         ],
-        explanation: 'Portfolio variance = 0.5σ²(1+ρ). For this to equal 0.5σ², we need ρ = 0. Zero correlation exactly halves the variance of an equal-weighted portfolio.',
+        "explanation": "Portfolio variance = 0.5σ²(1+ρ). For this to equal 0.5σ², we need ρ = 0. Zero correlation exactly halves the variance of an equal-weighted portfolio."
       },
       {
-        id: 'qm57', type: 'numeric',
-        title: 'Conditional Expected Sum (Dice)',
-        description: 'Roll two fair dice. Given the sum is <strong>at least 10</strong>, what is the expected value of the sum?\n\nRound to 2 decimal places.',
-        unit: '',
-        answer: 10.67,
-        tolerance: 0.02,
-        steps: [
-          { label: 'Outcomes with sum ≥ 10', value: 'Sum=10: 3 ways, Sum=11: 2 ways, Sum=12: 1 way → 6 total' },
-          { label: 'Weighted sum', value: '(10×3 + 11×2 + 12×1) / 6 = (30+22+12)/6' },
-          { label: 'E[sum | sum≥10]', value: '= 64/6 ≈ 10.67' },
+        "id": "qm57",
+        "type": "numeric",
+        "title": "Conditional Expected Sum (Dice)",
+        "description": "Roll two fair dice. Given the sum is <strong>at least 10</strong>, what is the expected value of the sum?\n\nRound to 2 decimal places.",
+        "unit": "",
+        "answer": 10.67,
+        "tolerance": 0.02,
+        "steps": [
+          {
+            "label": "Outcomes with sum ≥ 10",
+            "value": "Sum=10: 3 ways, Sum=11: 2 ways, Sum=12: 1 way → 6 total"
+          },
+          {
+            "label": "Weighted sum",
+            "value": "(10×3 + 11×2 + 12×1) / 6 = (30+22+12)/6"
+          },
+          {
+            "label": "E[sum | sum≥10]",
+            "value": "= 64/6 ≈ 10.67"
+          }
         ],
-        explanation: 'E[sum | sum≥10] = (10×3 + 11×2 + 12×1)/6 = 64/6 ≈ 10.67.',
+        "explanation": "E[sum | sum≥10] = (10×3 + 11×2 + 12×1)/6 = 64/6 ≈ 10.67."
       },
       {
-        id: 'qm58', type: 'numeric',
-        title: 'Bond Yield to Maturity',
-        description: 'A 1-year bond costs <strong>$980</strong> and pays <strong>$50 coupon</strong> + <strong>$1,000 face</strong> at maturity. What is the yield to maturity?',
-        unit: '%',
-        answer: 7.14,
-        tolerance: 0.05,
-        steps: [
-          { label: 'YTM equation: 980 = 1050 / (1+y)', value: '' },
-          { label: '1+y = 1050/980 = 1.07143', value: '' },
-          { label: 'y', value: '= 7.14%' },
+        "id": "qm58",
+        "type": "numeric",
+        "title": "Bond Yield to Maturity",
+        "description": "A 1-year bond costs <strong>$980</strong> and pays <strong>$50 coupon</strong> + <strong>$1,000 face</strong> at maturity. What is the yield to maturity?",
+        "unit": "%",
+        "answer": 7.14,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "YTM equation: 980 = 1050 / (1+y)"
+          },
+          {
+            "label": "Formula",
+            "value": "1+y = 1050/980 = 1.07143"
+          },
+          {
+            "label": "y",
+            "value": "= 7.14%"
+          }
         ],
-        explanation: 'For a 1-year bond: YTM = (Total CF / Price) − 1 = (1050/980) − 1 = 7.14%.',
+        "explanation": "For a 1-year bond: YTM = (Total CF / Price) − 1 = (1050/980) − 1 = 7.14%."
       },
       {
-        id: 'qm59', type: 'numeric',
-        title: 'Expected Maximum of 3 Uniforms',
-        description: 'Draw <strong>3 numbers</strong> independently from Uniform[0, 1]. What is the expected value of the <strong>maximum</strong>?',
-        unit: '',
-        answer: 0.75,
-        tolerance: 0.005,
-        steps: [
-          { label: 'Order statistic formula', value: 'E[X_(k)] = k / (n+1) for Uniform[0,1]' },
-          { label: 'Maximum: k=n=3', value: 'E[max] = 3/4 = 0.75' },
+        "id": "qm59",
+        "type": "numeric",
+        "title": "Expected Maximum of 3 Uniforms",
+        "description": "Draw <strong>3 numbers</strong> independently from Uniform[0, 1]. What is the expected value of the <strong>maximum</strong>?",
+        "unit": "",
+        "answer": 0.75,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "Order statistic formula",
+            "value": "E[X_(k)] = k / (n+1) for Uniform[0,1]"
+          },
+          {
+            "label": "Maximum: k=n=3",
+            "value": "E[max] = 3/4 = 0.75"
+          }
         ],
-        explanation: 'For n i.i.d. Uniform[0,1], E[kth order statistic] = k/(n+1). Maximum (k=n=3): E[max] = 3/4 = 0.75.',
+        "explanation": "For n i.i.d. Uniform[0,1], E[kth order statistic] = k/(n+1). Maximum (k=n=3): E[max] = 3/4 = 0.75."
       },
       {
-        id: 'qm60', type: 'numeric',
-        title: 'GBM Expected Price',
-        description: 'A stock follows GBM with S₀ = <strong>$100</strong>, μ = <strong>0.12</strong>, σ = <strong>0.25</strong>. What is the expected stock price after <strong>2 years</strong>?',
-        unit: '$',
-        answer: 127.12,
-        tolerance: 0.5,
-        steps: [
-          { label: 'E[S_T] = S₀ × e^(μT)', value: '' },
-          { label: 'E[S₂] = 100 × e^(0.12×2)', value: '= 100 × e^0.24 = 100 × 1.2712' },
-          { label: 'E[S₂]', value: '≈ $127.12' },
+        "id": "qm60",
+        "type": "numeric",
+        "title": "GBM Expected Price",
+        "description": "A stock follows GBM with S₀ = <strong>$100</strong>, μ = <strong>0.12</strong>, σ = <strong>0.25</strong>. What is the expected stock price after <strong>2 years</strong>?",
+        "unit": "$",
+        "answer": 127.12,
+        "tolerance": 0.5,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "E[S<sub>T</sub>] = S₀ × e^(μT)"
+          },
+          {
+            "label": "E[S₂] = 100 × e^(0.12×2)",
+            "value": "= 100 × e^0.24 = 100 × 1.2712"
+          },
+          {
+            "label": "E[S₂]",
+            "value": "≈ $127.12"
+          }
         ],
-        explanation: 'Under GBM, E[S_T] = S₀ e^(μT). Note μ is the arithmetic drift. With μ=0.12, T=2: E[S₂] = 100e^0.24 ≈ $127.12.',
+        "explanation": "Under GBM, E[S<sub>T</sub>] = S₀ e^(μT). Note μ is the arithmetic drift. With μ=0.12, T=2: E[S₂] = 100e^0.24 ≈ $127.12."
       },
       {
-        id: 'qm61', type: 'numeric',
-        title: 'Poisson: P(Zero Events)',
-        description: 'A server crashes at rate <strong>λ = 0.5</strong> per day. What is the probability of <strong>no crashes</strong> in a day?\n\nRound to 4 decimal places.',
-        unit: '',
-        answer: 0.6065,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'P(X=0) = e^(−λ)', value: '' },
-          { label: 'P(X=0) = e^(−0.5)', value: '≈ 0.6065' },
+        "id": "qm61",
+        "type": "numeric",
+        "title": "Poisson: P(Zero Events)",
+        "description": "A server crashes at rate <strong>λ = 0.5</strong> per day. What is the probability of <strong>no crashes</strong> in a day?\n\nRound to 4 decimal places.",
+        "unit": "",
+        "answer": 0.6065,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "P(X=0) = e^(−λ)"
+          },
+          {
+            "label": "P(X=0) = e^(−0.5)",
+            "value": "≈ 0.6065"
+          }
         ],
-        explanation: 'P(X=0) = e^(−λ) = e^(−0.5) ≈ 60.65%. P(at least one crash) ≈ 39.35%.',
+        "explanation": "P(X=0) = e^(−λ) = e^(−0.5) ≈ 60.65%. P(at least one crash) ≈ 39.35%."
       },
       {
-        id: 'qm62', type: 'numeric',
-        title: 'Modified Duration',
-        description: 'A bond has Macaulay duration <strong>4.5 years</strong> and YTM <strong>8%</strong> annual. What is the Modified Duration?',
-        unit: 'years',
-        answer: 4.1667,
-        tolerance: 0.005,
-        steps: [
-          { label: 'D_mod = D_mac / (1 + y)', value: '' },
-          { label: 'D_mod = 4.5 / (1.08)', value: '= 4.1667 years' },
+        "id": "qm62",
+        "type": "numeric",
+        "title": "Modified Duration",
+        "description": "A bond has Macaulay duration <strong>4.5 years</strong> and YTM <strong>8%</strong> annual. What is the Modified Duration?",
+        "unit": "years",
+        "answer": 4.1667,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "D<sub>mod</sub> = D<sub>mac</sub> / (1 + y)"
+          },
+          {
+            "label": "D<sub>mod</sub> = 4.5 / (1.08)",
+            "value": "= 4.1667 years"
+          }
         ],
-        explanation: 'Modified duration = Macaulay duration / (1+y) = 4.5/1.08 ≈ 4.167. A 1% yield rise → price falls by ~4.17%.',
+        "explanation": "Modified duration = Macaulay duration / (1+y) = 4.5/1.08 ≈ 4.167. A 1% yield rise → price falls by ~4.17%."
       },
       {
-        id: 'qm63', type: 'numeric',
-        title: 'Minimum Variance Portfolio',
-        description: 'Asset A: σ_A = <strong>15%</strong>. Asset B: σ_B = <strong>25%</strong>. Correlation ρ = <strong>0.2</strong>. What <strong>weight in Asset A</strong> minimizes portfolio variance?\n\nRound to 4 decimal places.',
-        unit: '',
-        answer: 0.7857,
-        tolerance: 0.005,
-        steps: [
-          { label: 'w_A = (σ²_B − ρσ_Aσ_B) / (σ²_A + σ²_B − 2ρσ_Aσ_B)', value: '' },
-          { label: 'Num: 625 − 0.2×15×25 = 625 − 75 = 550', value: 'Den: 225+625−2×75 = 700' },
-          { label: 'w_A = 550/700', value: '≈ 0.7857' },
+        "id": "qm63",
+        "type": "numeric",
+        "title": "Minimum Variance Portfolio",
+        "description": "Asset A: σ<sub>A</sub> = <strong>15%</strong>. Asset B: σ<sub>B</sub> = <strong>25%</strong>. Correlation ρ = <strong>0.2</strong>. What <strong>weight in Asset A</strong> minimizes portfolio variance?\n\nRound to 4 decimal places.",
+        "unit": "",
+        "answer": 0.7857,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "w<sub>A</sub> = (σ<sub>B</sub>² − ρσ<sub>A</sub>σ<sub>B</sub>) / (σ<sub>A</sub>² + σ<sub>B</sub>² − 2ρσ<sub>A</sub>σ<sub>B</sub>)"
+          },
+          {
+            "label": "Num: 625 − 0.2×15×25 = 625 − 75 = 550",
+            "value": "Den: 225+625−2×75 = 700"
+          },
+          {
+            "label": "w<sub>A</sub> = 550/700",
+            "value": "≈ 0.7857"
+          }
         ],
-        explanation: 'Minimum variance weight: w_A = (σ²_B − ρσ_Aσ_B)/(σ²_A + σ²_B − 2ρσ_Aσ_B) = 550/700 ≈ 0.7857. More weight on the lower-volatility asset.',
+        "explanation": "Minimum variance weight: w<sub>A</sub> = (σ<sub>B</sub>² − ρσ<sub>A</sub>σ<sub>B</sub>)/(σ<sub>A</sub>² + σ<sub>B</sub>² − 2ρσ<sub>A</sub>σ<sub>B</sub>) = 550/700 ≈ 0.7857. More weight on the lower-volatility asset."
       },
       {
-        id: 'qm64', type: 'numeric',
-        title: 'Conditional Variance (Poisson-Binomial)',
-        description: 'X|N ~ Binomial(N, 0.5) and N ~ Poisson(λ=<strong>6</strong>). What is <strong>Var(X)</strong>?\n\nHint: Use the law of total variance.',
-        unit: '',
-        answer: 3,
-        tolerance: 0.01,
-        steps: [
-          { label: 'E[Var(X|N)] = E[N/4] = λ/4', value: '= 6/4 = 1.5' },
-          { label: 'Var(E[X|N]) = Var(N/2) = Var(N)/4 = λ/4', value: '= 1.5' },
-          { label: 'Var(X) = 1.5 + 1.5', value: '= 3' },
+        "id": "qm64",
+        "type": "numeric",
+        "title": "Conditional Variance (Poisson-Binomial)",
+        "description": "X|N ~ Binomial(N, 0.5) and N ~ Poisson(λ=<strong>6</strong>). What is <strong>Var(X)</strong>?\n\nHint: Use the law of total variance.",
+        "unit": "",
+        "answer": 3,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "E[Var(X|N)] = E[N/4] = λ/4",
+            "value": "= 6/4 = 1.5"
+          },
+          {
+            "label": "Var(E[X|N]) = Var(N/2) = Var(N)/4 = λ/4",
+            "value": "= 1.5"
+          },
+          {
+            "label": "Var(X) = 1.5 + 1.5",
+            "value": "= 3"
+          }
         ],
-        explanation: 'Law of total variance: E[Var(X|N)] + Var(E[X|N]) = λ/4 + λ/4 = 1.5+1.5 = 3.',
+        "explanation": "Law of total variance: E[Var(X|N)] + Var(E[X|N]) = λ/4 + λ/4 = 1.5+1.5 = 3."
       },
       {
-        id: 'qm65', type: 'numeric',
-        title: "Gambler's Ruin: Unfair Game",
-        description: 'A gambler with <strong>$2</strong> plays against a house with <strong>$8</strong> (total $10). Win prob p = <strong>0.4</strong>, lose prob q = <strong>0.6</strong>. What is the probability the gambler wins all $10?\n\nRound to 4 decimal places.',
-        unit: '',
-        answer: 0.0221,
-        tolerance: 0.001,
-        steps: [
-          { label: 'r = q/p = 0.6/0.4 = 1.5', value: 'Unfair formula: P(win) = (1−rᵏ)/(1−r^N)' },
-          { label: 'k=2, N=10: (1−1.5²)/(1−1.5^10)', value: '= (1−2.25)/(1−57.665) = −1.25/−56.665' },
-          { label: 'P(win)', value: '= 1.25/56.665 ≈ 0.0221' },
+        "id": "qm65",
+        "type": "numeric",
+        "title": "Gambler's Ruin: Unfair Game",
+        "description": "A gambler with <strong>$2</strong> plays against a house with <strong>$8</strong> (total $10). Win prob p = <strong>0.4</strong>, lose prob q = <strong>0.6</strong>. What is the probability the gambler wins all $10?\n\nRound to 4 decimal places.",
+        "unit": "",
+        "answer": 0.0221,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "r = q/p = 0.6/0.4 = 1.5",
+            "value": "Unfair formula: P(win) = (1−rᵏ)/(1−r^N)"
+          },
+          {
+            "label": "k=2, N=10: (1−1.5²)/(1−1.5^10)",
+            "value": "= (1−2.25)/(1−57.665) = −1.25/−56.665"
+          },
+          {
+            "label": "P(win)",
+            "value": "= 1.25/56.665 ≈ 0.0221"
+          }
         ],
-        explanation: "Unfair gambler's ruin: P = (1−r^k)/(1−r^N) where r=q/p=1.5. With k=2, N=10: P = (1−2.25)/(1−57.665) ≈ 2.21%. The unfavorable odds dramatically reduce win probability.",
+        "explanation": "Unfair gambler's ruin: P = (1−r^k)/(1−r^N) where r=q/p=1.5. With k=2, N=10: P = (1−2.25)/(1−57.665) ≈ 2.21%. The unfavorable odds dramatically reduce win probability."
       },
       {
         id: 'qm66', type: 'numeric',
@@ -12972,491 +14261,826 @@ const QUESTIONS = {
         explanation: 'P(even) = (1 + e^(−2m))/2. For m=20, e^(−40) is astronomically small, so the probability of an even count is essentially exactly 0.5 whenever the Poisson mean is reasonably large.',
       },
     ],
-    hard: [
+    "hard": [
       {
-        id: 'qh4', type: 'numeric',
-        title: 'Risk-Neutral Probability',
-        description: 'In a one-period <strong>binomial options model</strong>:\n• Current stock price: <strong>$100</strong>\n• Up move to: <strong>$110</strong>\n• Down move to: <strong>$90</strong>\n• Risk-free rate: <strong>5%</strong> per period\n\nWhat is the <strong>risk-neutral probability</strong> of an up move?\n\nEnter as a decimal rounded to 4 places (e.g. <code>0.7500</code>).',
-        unit: '',
-        answer: 0.75,
-        tolerance: 0.005,
-        steps: [
-          { label: 'Risk-neutral condition', value: 'p×S_u + (1−p)×S_d = S×(1+r)' },
-          { label: 'Substituting values', value: 'p×110 + (1−p)×90 = 100×1.05 = 105' },
-          { label: 'Simplify', value: '90 + 20p = 105 → 20p = 15 → p = 0.75' },
+        "id": "qh4",
+        "type": "numeric",
+        "title": "Risk-Neutral Probability",
+        "description": "In a one-period <strong>binomial options model</strong>:\n• Current stock price: <strong>$100</strong>\n• Up move to: <strong>$110</strong>\n• Down move to: <strong>$90</strong>\n• Risk-free rate: <strong>5%</strong> per period\n\nWhat is the <strong>risk-neutral probability</strong> of an up move?\n\nEnter as a decimal rounded to 4 places (e.g. <code>0.7500</code>).",
+        "unit": "",
+        "answer": 0.75,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "Risk-neutral condition",
+            "value": "p×S<sub>u</sub> + (1−p)×S<sub>d</sub> = S×(1+r)"
+          },
+          {
+            "label": "Substituting values",
+            "value": "p×110 + (1−p)×90 = 100×1.05 = 105"
+          },
+          {
+            "label": "Simplify",
+            "value": "90 + 20p = 105 → 20p = 15 → p = 0.75"
+          }
         ],
-        explanation: 'The risk-neutral probability satisfies: p = (S(1+r) − S_d) / (S_u − S_d) = (105−90)/(110−90) = 15/20 = 0.75. Note: this is NOT the real probability of an up move — it\'s a mathematical construct used to price derivatives by discounting at the risk-free rate.',
+        "explanation": "The risk-neutral probability satisfies: p = (S(1+r) − S<sub>d</sub>) / (S<sub>u</sub> − S<sub>d</sub>) = (105−90)/(110−90) = 15/20 = 0.75. Note: this is NOT the real probability of an up move — it's a mathematical construct used to price derivatives by discounting at the risk-free rate."
       },
       {
-        id: 'qh5', type: 'numeric',
-        title: 'Continuously Compounded Return',
-        description: 'A stock price doubles from <strong>$50</strong> to <strong>$100</strong> in exactly one year.\n\nWhat is the <strong>continuously compounded (log) return</strong>?\n\nUse ln(2) ≈ 0.6931. Enter as a percentage rounded to 2 decimal places.',
-        unit: '%',
-        answer: 69.31,
-        tolerance: 0.1,
-        steps: [
-          { label: 'Log return formula', value: 'r_c = ln(P_T / P_0) = ln(100/50)' },
-          { label: 'Evaluate', value: '= ln(2) ≈ 0.6931 = 69.31%' },
+        "id": "qh5",
+        "type": "numeric",
+        "title": "Continuously Compounded Return",
+        "description": "A stock price doubles from <strong>$50</strong> to <strong>$100</strong> in exactly one year.\n\nWhat is the <strong>continuously compounded (log) return</strong>?\n\nUse ln(2) ≈ 0.6931. Enter as a percentage rounded to 2 decimal places.",
+        "unit": "%",
+        "answer": 69.31,
+        "tolerance": 0.1,
+        "steps": [
+          {
+            "label": "Log return formula",
+            "value": "r<sub>c</sub> = ln(P<sub>T</sub> / P<sub>0</sub>) = ln(100/50)"
+          },
+          {
+            "label": "Evaluate",
+            "value": "= ln(2) ≈ 0.6931 = 69.31%"
+          }
         ],
-        explanation: 'Continuously compounded return = ln(P_T/P_0) = ln(2) ≈ 69.31%. Compare to the simple return of 100%. Log returns are additive over time and normally distributed under GBM, making them essential in quantitative finance.',
+        "explanation": "Continuously compounded return = ln(P<sub>T</sub>/P<sub>0</sub>) = ln(2) ≈ 69.31%. Compare to the simple return of 100%. Log returns are additive over time and normally distributed under GBM, making them essential in quantitative finance."
       },
       {
-        id: 'qh6', type: 'numeric',
-        title: 'Sharpe Ratio Comparison',
-        description: 'Two portfolios, risk-free rate = 2%:\n\n• Portfolio A: expected return <strong>15%</strong>, volatility <strong>18%</strong>\n• Portfolio B: expected return <strong>9%</strong>, volatility <strong>6%</strong>\n\nWhat is <strong>Portfolio B\'s Sharpe ratio</strong>? Round to 2 decimal places.',
-        unit: '',
-        answer: 1.17,
-        tolerance: 0.01,
-        steps: [
-          { label: "Portfolio B excess return", value: '9% − 2% = 7%' },
-          { label: 'Sharpe(B) = excess return ÷ σ', value: '7% ÷ 6% ≈ 1.17' },
+        "id": "qh6",
+        "type": "numeric",
+        "title": "Sharpe Ratio Comparison",
+        "description": "Two portfolios, risk-free rate = 2%:\n\n• Portfolio A: expected return <strong>15%</strong>, volatility <strong>18%</strong>\n• Portfolio B: expected return <strong>9%</strong>, volatility <strong>6%</strong>\n\nWhat is <strong>Portfolio B's Sharpe ratio</strong>? Round to 2 decimal places.",
+        "unit": "",
+        "answer": 1.17,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Portfolio B excess return",
+            "value": "9% − 2% = 7%"
+          },
+          {
+            "label": "Sharpe(B) = excess return ÷ σ",
+            "value": "7% ÷ 6% ≈ 1.17"
+          }
         ],
-        explanation: 'Sharpe(B) = (9%−2%)/6% = 1.17. Sharpe(A) = (15%−2%)/18% = 0.72. Despite lower absolute return, B is more efficient per unit of risk — a critical insight for risk-adjusted portfolio evaluation.',
+        "explanation": "Sharpe(B) = (9%−2%)/6% = 1.17. Sharpe(A) = (15%−2%)/18% = 0.72. Despite lower absolute return, B is more efficient per unit of risk — a critical insight for risk-adjusted portfolio evaluation."
       },
       {
-        id: 'qh1', type: 'numeric',
-        title: 'Portfolio Volatility',
-        description: 'A portfolio: <strong>60% stocks</strong> (σ = 20%) and <strong>40% bonds</strong> (σ = 5%).\nThe correlation between them is <strong>zero</strong>.\n\nWhat is the portfolio standard deviation (σ)?\n\nEnter as a percentage rounded to 2 decimal places (e.g. <code>12.17</code>).',
-        unit: '%',
-        answer: 12.17,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Variance formula (ρ=0)', value: 'Var = w₁²σ₁² + w₂²σ₂²' },
-          { label: 'Substitute', value: 'Var = (0.6)²(0.20)² + (0.4)²(0.05)²' },
-          { label: 'Calculate', value: '= 0.36×0.04 + 0.16×0.0025 = 0.0144 + 0.0004 = 0.0148' },
-          { label: 'σ', value: '√0.0148 ≈ 0.1217 = 12.17%' },
+        "id": "qh1",
+        "type": "numeric",
+        "title": "Portfolio Volatility",
+        "description": "A portfolio: <strong>60% stocks</strong> (σ = 20%) and <strong>40% bonds</strong> (σ = 5%).\nThe correlation between them is <strong>zero</strong>.\n\nWhat is the portfolio standard deviation (σ)?\n\nEnter as a percentage rounded to 2 decimal places (e.g. <code>12.17</code>).",
+        "unit": "%",
+        "answer": 12.17,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Variance formula (ρ=0)",
+            "value": "Var = w₁²σ₁² + w₂²σ₂²"
+          },
+          {
+            "label": "Substitute",
+            "value": "Var = (0.6)²(0.20)² + (0.4)²(0.05)²"
+          },
+          {
+            "label": "Calculate",
+            "value": "= 0.36×0.04 + 0.16×0.0025 = 0.0144 + 0.0004 = 0.0148"
+          },
+          {
+            "label": "σ",
+            "value": "√0.0148 ≈ 0.1217 = 12.17%"
+          }
         ],
-        explanation: 'With zero correlation, portfolio variance = w₁²σ₁² + w₂²σ₂². Cross terms drop out. Diversification reduces portfolio volatility below the weighted average (which would be 14%).',
+        "explanation": "With zero correlation, portfolio variance = w₁²σ₁² + w₂²σ₂². Cross terms drop out. Diversification reduces portfolio volatility below the weighted average (which would be 14%)."
       },
       {
-        id: 'qh2', type: 'numeric',
-        title: 'Expected Value: Roll Until 6',
-        description: 'You roll a fair die until you see a 6. Your payout is <strong>$2ⁿ</strong> where n is the total number of rolls.\n\nWhat is the <strong>expected payout</strong>?\n\nHint: This is a famous paradox. Enter your answer (integer or "inf" not accepted — compute the finite closed form for finite n).\n\nFor n capped at 20 rolls max, what is the expected payout in dollars? Round to nearest dollar.',
-        unit: '$',
-        answer: 21,
-        tolerance: 1,
-        steps: [
-          { label: 'P(stop at roll n)', value: '(5/6)^(n-1) × (1/6)' },
-          { label: 'Payout at roll n', value: '2ⁿ' },
-          { label: 'EV (capped at 20)', value: 'Σ(n=1 to 20) (5/6)^(n-1)×(1/6)×2ⁿ ≈ $21' },
+        "id": "qh2",
+        "type": "numeric",
+        "title": "Expected Value: Roll Until 6",
+        "description": "You roll a fair die until you see a 6. Your payout is <strong>$2ⁿ</strong> where n is the total number of rolls.\n\nWhat is the <strong>expected payout</strong>?\n\nHint: This is a famous paradox. Enter your answer (integer or \"inf\" not accepted — compute the finite closed form for finite n).\n\nFor n capped at 20 rolls max, what is the expected payout in dollars? Round to nearest dollar.",
+        "unit": "$",
+        "answer": 13675,
+        "tolerance": 1,
+        "steps": [
+          {
+            "label": "P(stop at roll n)",
+            "value": "(5/6)^(n-1) × (1/6)"
+          },
+          {
+            "label": "Payout at roll n",
+            "value": "2ⁿ"
+          },
+          {
+            "label": "EV (capped at 20)",
+            "value": "Σ(n=1 to 20) (5/6)^(n-1)×(1/6)×2ⁿ ≈ $13,675"
+          }
         ],
-        explanation: 'Each term: (1/6)×(5/6)^(n-1)×2ⁿ = (1/6)(10/6)^(n-1)×2 → each term ≈ (5/3)^(n-1)/3. Sum of first 20 terms ≈ $21. The uncapped version diverges (St. Petersburg paradox).',
+        "explanation": "Each term: (1/6)×(5/6)^(n-1)×2ⁿ. Since (5/6)×2 = 5/3 > 1, each successive term grows rather than shrinks, so the finite sum of 20 terms is large: ≈ $13,675. The uncapped version diverges entirely (St. Petersburg paradox)."
       },
       {
-        id: 'qh3', type: 'numeric',
-        title: 'Options Delta Hedging P&L',
-        description: 'You hold a delta-neutral portfolio: <strong>long 100 call options</strong> (delta = 0.5 each), <strong>short 50 shares</strong>.\n\nThe stock moves from <strong>$100 to $105</strong> (a +5% move).\n\nApproximately, what is your P&L from this position in dollars? (Use delta approximation only — ignore gamma.)',
-        unit: '$',
-        answer: 0,
-        tolerance: 5,
-        steps: [
-          { label: 'Call P&L', value: '100 options × 0.5 delta × $5 move = +$250' },
-          { label: 'Stock P&L', value: '−50 shares × $5 move = −$250' },
-          { label: 'Net P&L', value: '$250 − $250 = $0 (delta neutral)' },
+        "id": "qh3",
+        "type": "numeric",
+        "title": "Options Delta Hedging P&L",
+        "description": "You hold a delta-neutral portfolio: <strong>long 100 call options</strong> (delta = 0.5 each), <strong>short 50 shares</strong>.\n\nThe stock moves from <strong>$100 to $105</strong> (a +5% move).\n\nApproximately, what is your P&L from this position in dollars? (Use delta approximation only — ignore gamma.)",
+        "unit": "$",
+        "answer": 0,
+        "tolerance": 5,
+        "steps": [
+          {
+            "label": "Call P&L",
+            "value": "100 options × 0.5 delta × $5 move = +$250"
+          },
+          {
+            "label": "Stock P&L",
+            "value": "−50 shares × $5 move = −$250"
+          },
+          {
+            "label": "Net P&L",
+            "value": "$250 − $250 = $0 (delta neutral)"
+          }
         ],
-        explanation: 'Delta-neutral means the portfolio is hedged against small moves. Long calls gain as stock rises, but short stock position loses by the same amount. Net P&L ≈ $0 (delta approximation). In reality, gamma creates positive convexity that generates small profit.',
+        "explanation": "Delta-neutral means the portfolio is hedged against small moves. Long calls gain as stock rises, but short stock position loses by the same amount. Net P&L ≈ $0 (delta approximation). In reality, gamma creates positive convexity that generates small profit."
       },
       {
-        id: 'qh37', type: 'numeric',
-        title: "Itô's Lemma: Drift of ln(S)",
-        description: 'Under GBM: dS = μS dt + σS dW with μ = <strong>0.10</strong> and σ = <strong>0.30</strong>.\n\nWhat is the <strong>drift of ln(S)</strong> (the dt coefficient in d(ln S))?',
-        unit: '',
-        answer: 0.055,
-        tolerance: 0.001,
-        steps: [
-          { label: "Itô's lemma: d(ln S) = (μ − σ²/2) dt + σ dW", value: '' },
-          { label: 'Itô correction: σ²/2 = 0.09/2 = 0.045', value: '' },
-          { label: 'Drift', value: '= 0.10 − 0.045 = 0.055' },
+        "id": "qh37",
+        "type": "numeric",
+        "title": "Itô's Lemma: Drift of ln(S)",
+        "description": "Under GBM: dS = μS dt + σS dW with μ = <strong>0.10</strong> and σ = <strong>0.30</strong>.\n\nWhat is the <strong>drift of ln(S)</strong> (the dt coefficient in d(ln S))?",
+        "unit": "",
+        "answer": 0.055,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Itô's lemma: d(ln S) = (μ − σ²/2) dt + σ dW"
+          },
+          {
+            "label": "Formula",
+            "value": "Itô correction: σ²/2 = 0.09/2 = 0.045"
+          },
+          {
+            "label": "Drift",
+            "value": "= 0.10 − 0.045 = 0.055"
+          }
         ],
-        explanation: "Itô's lemma for f=ln(S) gives drift = μ − σ²/2. The −σ²/2 is the Itô correction from the second-order term. Log-drift (0.055) < arithmetic drift (0.10).",
+        "explanation": "Itô's lemma for f=ln(S) gives drift = μ − σ²/2. The −σ²/2 is the Itô correction from the second-order term. Log-drift (0.055) < arithmetic drift (0.10)."
       },
       {
-        id: 'qh38', type: 'numeric',
-        title: 'Brownian Motion: E[W_t²]',
-        description: 'Let W_t be a standard Brownian motion. What is <strong>E[W_t²]</strong> at time t = <strong>4</strong>?',
-        unit: '',
-        answer: 4,
-        tolerance: 0,
-        steps: [
-          { label: 'W_t ~ N(0, t) for all t ≥ 0', value: '' },
-          { label: 'E[W_t²] = Var(W_t) + (E[W_t])²', value: '= t + 0 = t' },
-          { label: 'E[W_4²]', value: '= 4' },
+        "id": "qh38",
+        "type": "numeric",
+        "title": "Brownian Motion: E[W<sub>t</sub>²]",
+        "description": "Let W<sub>t</sub> be a standard Brownian motion. What is <strong>E[W<sub>t</sub>²]</strong> at time t = <strong>4</strong>?",
+        "unit": "",
+        "answer": 4,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "W<sub>t</sub> ~ N(0, t) for all t ≥ 0"
+          },
+          {
+            "label": "E[W<sub>t</sub>²] = Var(W<sub>t</sub>) + (E[W<sub>t</sub>])²",
+            "value": "= t + 0 = t"
+          },
+          {
+            "label": "E[W<sub>4</sub>²]",
+            "value": "= 4"
+          }
         ],
-        explanation: 'W_t ~ N(0,t), so E[W_t²] = Var(W_t) = t. At t=4: E[W_4²] = 4. Note that W_t² − t is a martingale.',
+        "explanation": "W<sub>t</sub> ~ N(0,t), so E[W<sub>t</sub>²] = Var(W<sub>t</sub>) = t. At t=4: E[W<sub>4</sub>²] = 4. Note that W<sub>t</sub>² − t is a martingale."
       },
       {
-        id: 'qh39', type: 'numeric',
-        title: 'GBM Variance at T=1',
-        description: 'Under GBM with S₀ = <strong>$1</strong>, μ = <strong>0.08</strong>, σ = <strong>0.20</strong>, what is <strong>Var(S_T)</strong> at T = <strong>1</strong>?\n\nRound to 4 decimal places.',
-        unit: '',
-        answer: 0.0479,
-        tolerance: 0.001,
-        steps: [
-          { label: 'Var(S_T) = S₀² × e^(2μT) × (e^(σ²T) − 1)', value: '' },
-          { label: 'e^(2×0.08) × (e^(0.04) − 1)', value: '= 1.1735 × 0.04081 = 0.04789' },
-          { label: 'Var(S₁)', value: '≈ 0.0479' },
+        "id": "qh39",
+        "type": "numeric",
+        "title": "GBM Variance at T=1",
+        "description": "Under GBM with S₀ = <strong>$1</strong>, μ = <strong>0.08</strong>, σ = <strong>0.20</strong>, what is <strong>Var(S<sub>T</sub>)</strong> at T = <strong>1</strong>?\n\nRound to 4 decimal places.",
+        "unit": "",
+        "answer": 0.0479,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Var(S<sub>T</sub>) = S₀² × e^(2μT) × (e^(σ²T) − 1)"
+          },
+          {
+            "label": "e^(2×0.08) × (e^(0.04) − 1)",
+            "value": "= 1.1735 × 0.04081 = 0.04789"
+          },
+          {
+            "label": "Var(S₁)",
+            "value": "≈ 0.0479"
+          }
         ],
-        explanation: 'Var(S_T) = S₀²e^(2μT)(e^(σ²T)−1). With μ=0.08, σ=0.20, T=1: e^0.16≈1.1735; e^0.04−1≈0.04081. Var ≈ 0.0479.',
+        "explanation": "Var(S<sub>T</sub>) = S₀²e^(2μT)(e^(σ²T)−1). With μ=0.08, σ=0.20, T=1: e^0.16≈1.1735; e^0.04−1≈0.04081. Var ≈ 0.0479."
       },
       {
-        id: 'qh40', type: 'numeric',
-        title: 'Binomial Option Pricing: Call',
-        description: 'Stock = <strong>$100</strong>, up to <strong>$120</strong> or down to <strong>$80</strong> in one year. Risk-free = <strong>5%</strong> (continuous). Price a European call with strike <strong>$105</strong>.',
-        unit: '$',
-        answer: 8.97,
-        tolerance: 0.1,
-        steps: [
-          { label: 'q = (e^0.05 − 0.8)/(1.2−0.8)', value: '= (1.05127−0.8)/0.4 ≈ 0.6282' },
-          { label: 'C_u = max(120−105,0)=15; C_d = max(80−105,0)=0', value: '' },
-          { label: 'C = e^(−0.05) × (0.6282×15 + 0.3718×0)', value: '= 0.9512 × 9.423 ≈ $8.97' },
+        "id": "qh40",
+        "type": "numeric",
+        "title": "Binomial Option Pricing: Call",
+        "description": "Stock = <strong>$100</strong>, up to <strong>$120</strong> or down to <strong>$80</strong> in one year. Risk-free = <strong>5%</strong> (continuous). Price a European call with strike <strong>$105</strong>.",
+        "unit": "$",
+        "answer": 8.97,
+        "tolerance": 0.1,
+        "steps": [
+          {
+            "label": "q = (e^0.05 − 0.8)/(1.2−0.8)",
+            "value": "= (1.05127−0.8)/0.4 ≈ 0.6282"
+          },
+          {
+            "label": "Formula",
+            "value": "C<sub>u</sub> = max(120−105,0)=15; C<sub>d</sub> = max(80−105,0)=0"
+          },
+          {
+            "label": "C = e^(−0.05) × (0.6282×15 + 0.3718×0)",
+            "value": "= 0.9512 × 9.423 ≈ $8.97"
+          }
         ],
-        explanation: 'Risk-neutral q = (e^r−d)/(u−d) ≈ 0.6282. Call price = e^(−0.05)×(0.6282×15) = 0.9512×9.423 ≈ $8.97.',
+        "explanation": "Risk-neutral q = (e^r−d)/(u−d) ≈ 0.6282. Call price = e^(−0.05)×(0.6282×15) = 0.9512×9.423 ≈ $8.97."
       },
       {
-        id: 'qh41', type: 'numeric',
-        title: "Itô's Lemma: Drift of S²",
-        description: 'Let dS = 0.05S dt + 0.20S dW. What is the <strong>drift coefficient</strong> (the dt term divided by S²) of the process Y = S²?',
-        unit: '',
-        answer: 0.14,
-        tolerance: 0.001,
-        steps: [
-          { label: "d(S²) = 2S dS + (dS)²", value: '' },
-          { label: 'Drift: 2S(0.05S) + σ²S²', value: '= 0.10S² + 0.04S² = 0.14S²' },
-          { label: 'Coefficient', value: '= 2μ + σ² = 0.10 + 0.04 = 0.14' },
+        "id": "qh41",
+        "type": "numeric",
+        "title": "Itô's Lemma: Drift of S²",
+        "description": "Let dS = 0.05S dt + 0.20S dW. What is the <strong>drift coefficient</strong> (the dt term divided by S²) of the process Y = S²?",
+        "unit": "",
+        "answer": 0.14,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "d(S²) = 2S dS + (dS)²"
+          },
+          {
+            "label": "Drift: 2S(0.05S) + σ²S²",
+            "value": "= 0.10S² + 0.04S² = 0.14S²"
+          },
+          {
+            "label": "Coefficient",
+            "value": "= 2μ + σ² = 0.10 + 0.04 = 0.14"
+          }
         ],
-        explanation: "d(S²) = (2μ+σ²)S² dt + 2σS² dW. Drift coefficient = 2(0.05)+0.04 = 0.14.",
+        "explanation": "d(S²) = (2μ+σ²)S² dt + 2σS² dW. Drift coefficient = 2(0.05)+0.04 = 0.14."
       },
       {
-        id: 'qh42', type: 'numeric',
-        title: 'Covariance of BM at Two Times',
-        description: 'Let W_t be standard Brownian motion. Compute <strong>Cov(W_3, W_7)</strong>.',
-        unit: '',
-        answer: 3,
-        tolerance: 0,
-        steps: [
-          { label: 'BM covariance: Cov(W_s, W_t) = min(s, t)', value: '' },
-          { label: 'Cov(W_3, W_7) = min(3, 7)', value: '= 3' },
+        "id": "qh42",
+        "type": "numeric",
+        "title": "Covariance of BM at Two Times",
+        "description": "Let W<sub>t</sub> be standard Brownian motion. Compute <strong>Cov(W<sub>3</sub>, W<sub>7</sub>)</strong>.",
+        "unit": "",
+        "answer": 3,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "BM covariance: Cov(W<sub>s</sub>, W<sub>t</sub>) = min(s, t)"
+          },
+          {
+            "label": "Cov(W<sub>3</sub>, W<sub>7</sub>) = min(3, 7)",
+            "value": "= 3"
+          }
         ],
-        explanation: 'Cov(W_s, W_t) = min(s,t) for standard BM. This follows from independence of increments: W_t = W_s + (W_t−W_s), and Cov(W_s, W_t−W_s)=0.',
+        "explanation": "Cov(W<sub>s</sub>, W<sub>t</sub>) = min(s,t) for standard BM. This follows from independence of increments: W<sub>t</sub> = W<sub>s</sub> + (W<sub>t</sub>−W<sub>s</sub>), and Cov(W<sub>s</sub>, W<sub>t</sub>−W<sub>s</sub>)=0."
       },
       {
-        id: 'qh43', type: 'numeric',
-        title: 'Black-Scholes Delta',
-        description: "A call option has d₁ = <strong>0.50</strong>. What is the option's <strong>delta</strong>?\n\nUse N(0.50) ≈ 0.6915.",
-        unit: '',
-        answer: 0.6915,
-        tolerance: 0.0005,
-        steps: [
-          { label: 'Delta of call = N(d₁)', value: '' },
-          { label: 'N(0.50)', value: '≈ 0.6915' },
-          { label: 'Δ', value: '= 0.6915' },
+        "id": "qh43",
+        "type": "numeric",
+        "title": "Black-Scholes Delta",
+        "description": "A call option has d₁ = <strong>0.50</strong>. What is the option's <strong>delta</strong>?\n\nUse N(0.50) ≈ 0.6915.",
+        "unit": "",
+        "answer": 0.6915,
+        "tolerance": 0.0005,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Delta of call = N(d₁)"
+          },
+          {
+            "label": "N(0.50)",
+            "value": "≈ 0.6915"
+          },
+          {
+            "label": "Δ",
+            "value": "= 0.6915"
+          }
         ],
-        explanation: "Black-Scholes call delta = N(d₁) ≈ 0.6915. Delta = shares needed to hedge one option. Changes from ~0 (deep OTM) to ~1 (deep ITM).",
+        "explanation": "Black-Scholes call delta = N(d₁) ≈ 0.6915. Delta = shares needed to hedge one option. Changes from ~0 (deep OTM) to ~1 (deep ITM)."
       },
       {
-        id: 'qh44', type: 'numeric',
-        title: 'Random Walk Absorption Time',
-        description: 'A symmetric random walk on {0, 1, 2, 3} is absorbed at 0 and 3. Starting at state <strong>1</strong>, what is the expected time to absorption?',
-        unit: 'steps',
-        answer: 2,
-        tolerance: 0,
-        steps: [
-          { label: 't_k = 1 + 0.5t_{k−1} + 0.5t_{k+1}; t_0=t_3=0', value: '' },
-          { label: 'By symmetry t_1=t_2; t_1 = 1+0.5t_2', value: 'Substitute t_2=t_1: t_1=1+0.5t_1 → t_1=2' },
-          { label: 'E[T|start=1]', value: '= 2 steps' },
+        "id": "qh44",
+        "type": "numeric",
+        "title": "Random Walk Absorption Time",
+        "description": "A symmetric random walk on {0, 1, 2, 3} is absorbed at 0 and 3. Starting at state <strong>1</strong>, what is the expected time to absorption?",
+        "unit": "steps",
+        "answer": 2,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "t<sub>k</sub> = 1 + 0.5t<sub>k−1</sub> + 0.5t<sub>k+1</sub>; t<sub>0</sub>=t<sub>3</sub>=0"
+          },
+          {
+            "label": "By symmetry t<sub>1</sub>=t<sub>2</sub>; t<sub>1</sub> = 1+0.5t<sub>2</sub>",
+            "value": "Substitute t<sub>2</sub>=t<sub>1</sub>: t<sub>1</sub>=1+0.5t<sub>1</sub> → t<sub>1</sub>=2"
+          },
+          {
+            "label": "E[T|start=1]",
+            "value": "= 2 steps"
+          }
         ],
-        explanation: 'Setting up equations: t_1 = 1+0.5×0+0.5×t_2, t_2 = 1+0.5×t_1+0.5×0. By symmetry t_1=t_2, so t_1=1+0.5t_1 → t_1=2. Alternatively: E[T|k] = k(N−k) for N=3, k=1 → 1×2=2.',
+        "explanation": "Setting up equations: t<sub>1</sub> = 1+0.5×0+0.5×t<sub>2</sub>, t<sub>2</sub> = 1+0.5×t<sub>1</sub>+0.5×0. By symmetry t<sub>1</sub>=t<sub>2</sub>, so t<sub>1</sub>=1+0.5t<sub>1</sub> → t<sub>1</sub>=2. Alternatively: E[T|k] = k(N−k) for N=3, k=1 → 1×2=2."
       },
       {
-        id: 'qh45', type: 'numeric',
-        title: 'Variance of Linear Combination',
-        description: 'X and Y: Var(X) = <strong>9</strong>, Var(Y) = <strong>16</strong>, Cov(X,Y) = <strong>4</strong>. Find <strong>Var(2X − 3Y)</strong>.',
-        unit: '',
-        answer: 132,
-        tolerance: 0,
-        steps: [
-          { label: 'Var(aX+bY) = a²Var(X) + b²Var(Y) + 2ab·Cov(X,Y)', value: '' },
-          { label: 'a=2, b=−3: 4×9 + 9×16 + 2(2)(−3)(4)', value: '= 36 + 144 − 48' },
-          { label: 'Var(2X−3Y)', value: '= 132' },
+        "id": "qh45",
+        "type": "numeric",
+        "title": "Variance of Linear Combination",
+        "description": "X and Y: Var(X) = <strong>9</strong>, Var(Y) = <strong>16</strong>, Cov(X,Y) = <strong>4</strong>. Find <strong>Var(2X − 3Y)</strong>.",
+        "unit": "",
+        "answer": 132,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Var(aX+bY) = a²Var(X) + b²Var(Y) + 2ab·Cov(X,Y)"
+          },
+          {
+            "label": "a=2, b=−3: 4×9 + 9×16 + 2(2)(−3)(4)",
+            "value": "= 36 + 144 − 48"
+          },
+          {
+            "label": "Var(2X−3Y)",
+            "value": "= 132"
+          }
         ],
-        explanation: 'Var(2X−3Y) = 4Var(X)+9Var(Y)+2(2)(−3)Cov(X,Y) = 36+144−48 = 132.',
+        "explanation": "Var(2X−3Y) = 4Var(X)+9Var(Y)+2(2)(−3)Cov(X,Y) = 36+144−48 = 132."
       },
       {
-        id: 'qh46', type: 'numeric',
-        title: 'Reflection Principle: BM Maximum',
-        description: 'For standard BM, what is P(max_{0≤s≤1} W_s ≥ <strong>1.5</strong>)?\n\nUse 1−N(1.5) ≈ 0.0668.',
-        unit: '',
-        answer: 0.1336,
-        tolerance: 0.001,
-        steps: [
-          { label: 'Reflection principle: P(max≥a) = 2P(W_T≥a) for a>0', value: '' },
-          { label: 'P(W_1 ≥ 1.5) = 1−N(1.5)', value: '≈ 0.0668' },
-          { label: 'P(max ≥ 1.5) = 2×0.0668', value: '= 0.1336' },
+        "id": "qh46",
+        "type": "numeric",
+        "title": "Reflection Principle: BM Maximum",
+        "description": "For standard BM, what is P(max<sub>0≤s≤1</sub> W<sub>s</sub> ≥ <strong>1.5</strong>)?\n\nUse 1−N(1.5) ≈ 0.0668.",
+        "unit": "",
+        "answer": 0.1336,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Reflection principle: P(max≥a) = 2P(W<sub>T</sub>≥a) for a>0"
+          },
+          {
+            "label": "P(W<sub>1</sub> ≥ 1.5) = 1−N(1.5)",
+            "value": "≈ 0.0668"
+          },
+          {
+            "label": "P(max ≥ 1.5) = 2×0.0668",
+            "value": "= 0.1336"
+          }
         ],
-        explanation: 'The reflection principle: P(max_{0≤s≤T} W_s ≥ a) = 2P(W_T ≥ a). With T=1, a=1.5: 2×(1−N(1.5)) = 2×0.0668 = 0.1336.',
+        "explanation": "The reflection principle: P(max<sub>0≤s≤T</sub> W<sub>s</sub> ≥ a) = 2P(W<sub>T</sub> ≥ a). With T=1, a=1.5: 2×(1−N(1.5)) = 2×0.0668 = 0.1336."
       },
       {
-        id: 'qh47', type: 'numeric',
-        title: 'MGF: Identify Variance',
-        description: 'The MGF of X is M(t) = e^(2t + 8t²). What is <strong>Var(X)</strong>?',
-        unit: '',
-        answer: 16,
-        tolerance: 0,
-        steps: [
-          { label: 'Normal MGF: M(t) = e^(μt + σ²t²/2)', value: '' },
-          { label: 'Match: μ=2, σ²/2=8', value: 'So σ²=16' },
-          { label: 'Var(X)', value: '= 16' },
+        "id": "qh47",
+        "type": "numeric",
+        "title": "MGF: Identify Variance",
+        "description": "The MGF of X is M(t) = e^(2t + 8t²). What is <strong>Var(X)</strong>?",
+        "unit": "",
+        "answer": 16,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Normal MGF: M(t) = e^(μt + σ²t²/2)"
+          },
+          {
+            "label": "Match: μ=2, σ²/2=8",
+            "value": "So σ²=16"
+          },
+          {
+            "label": "Var(X)",
+            "value": "= 16"
+          }
         ],
-        explanation: "Normal MGF is e^(μt+σ²t²/2). Matching e^(2t+8t²): μ=2, σ²/2=8 → σ²=16. So X ~ N(2,16).",
+        "explanation": "Normal MGF is e^(μt+σ²t²/2). Matching e^(2t+8t²): μ=2, σ²/2=8 → σ²=16. So X ~ N(2,16)."
       },
       {
-        id: 'qh48', type: 'numeric',
-        title: "Markov's Inequality",
-        description: 'X ≥ 0 with E[X] = <strong>5</strong>. What is the upper bound on P(X ≥ <strong>20</strong>) from Markov\'s inequality?',
-        unit: '',
-        answer: 0.25,
-        tolerance: 0.001,
-        steps: [
-          { label: "Markov's: P(X≥a) ≤ E[X]/a", value: '' },
-          { label: 'P(X≥20) ≤ 5/20', value: '= 1/4' },
-          { label: 'Upper bound', value: '= 0.25' },
+        "id": "qh48",
+        "type": "numeric",
+        "title": "Markov's Inequality",
+        "description": "X ≥ 0 with E[X] = <strong>5</strong>. What is the upper bound on P(X ≥ <strong>20</strong>) from Markov's inequality?",
+        "unit": "",
+        "answer": 0.25,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Markov's: P(X≥a) ≤ E[X]/a"
+          },
+          {
+            "label": "P(X≥20) ≤ 5/20",
+            "value": "= 1/4"
+          },
+          {
+            "label": "Upper bound",
+            "value": "= 0.25"
+          }
         ],
-        explanation: "Markov's inequality: P(X≥a) ≤ E[X]/a = 5/20 = 0.25. This distribution-free bound holds for any non-negative X.",
+        "explanation": "Markov's inequality: P(X≥a) ≤ E[X]/a = 5/20 = 0.25. This distribution-free bound holds for any non-negative X."
       },
       {
-        id: 'qh49', type: 'numeric',
-        title: "Chebyshev's Inequality",
-        description: 'X has mean <strong>50</strong> and variance <strong>25</strong>. Upper bound on P(|X − 50| ≥ <strong>15</strong>) from Chebyshev?',
-        unit: '',
-        answer: 0.1111,
-        tolerance: 0.001,
-        steps: [
-          { label: "Chebyshev: P(|X−μ|≥k) ≤ Var(X)/k²", value: '' },
-          { label: 'P(|X−50|≥15) ≤ 25/225', value: '= 1/9' },
-          { label: 'Upper bound', value: '≈ 0.1111' },
+        "id": "qh49",
+        "type": "numeric",
+        "title": "Chebyshev's Inequality",
+        "description": "X has mean <strong>50</strong> and variance <strong>25</strong>. Upper bound on P(|X − 50| ≥ <strong>15</strong>) from Chebyshev?",
+        "unit": "",
+        "answer": 0.1111,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Chebyshev: P(|X−μ|≥k) ≤ Var(X)/k²"
+          },
+          {
+            "label": "P(|X−50|≥15) ≤ 25/225",
+            "value": "= 1/9"
+          },
+          {
+            "label": "Upper bound",
+            "value": "≈ 0.1111"
+          }
         ],
-        explanation: "Chebyshev: P(|X−μ|≥k) ≤ σ²/k² = 25/225 = 1/9 ≈ 11.11%.",
+        "explanation": "Chebyshev: P(|X−μ|≥k) ≤ σ²/k² = 25/225 = 1/9 ≈ 11.11%."
       },
       {
-        id: 'qh50', type: 'numeric',
-        title: 'GBM Log Return Std Dev',
-        description: 'Stock follows GBM with μ = <strong>0.15</strong>, σ = <strong>0.25</strong>. Over T = <strong>4</strong> years, what is the <strong>standard deviation</strong> of the log return ln(S_T/S_0)?',
-        unit: '',
-        answer: 0.5,
-        tolerance: 0.001,
-        steps: [
-          { label: 'ln(S_T/S_0) ~ N((μ−σ²/2)T, σ²T)', value: '' },
-          { label: 'Std dev = σ√T = 0.25 × √4', value: '= 0.25 × 2' },
-          { label: 'Std dev', value: '= 0.50' },
+        "id": "qh50",
+        "type": "numeric",
+        "title": "GBM Log Return Std Dev",
+        "description": "Stock follows GBM with μ = <strong>0.15</strong>, σ = <strong>0.25</strong>. Over T = <strong>4</strong> years, what is the <strong>standard deviation</strong> of the log return ln(S<sub>T</sub>/S<sub>0</sub>)?",
+        "unit": "",
+        "answer": 0.5,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "ln(S<sub>T</sub>/S<sub>0</sub>) ~ N((μ−σ²/2)T, σ²T)"
+          },
+          {
+            "label": "Std dev = σ√T = 0.25 × √4",
+            "value": "= 0.25 × 2"
+          },
+          {
+            "label": "Std dev",
+            "value": "= 0.50"
+          }
         ],
-        explanation: 'Under GBM, log returns are N((μ−σ²/2)T, σ²T). Std dev = σ√T. With σ=0.25, T=4: 0.25×2 = 0.50.',
+        "explanation": "Under GBM, log returns are N((μ−σ²/2)T, σ²T). Std dev = σ√T. With σ=0.25, T=4: 0.25×2 = 0.50."
       },
       {
-        id: 'qh51', type: 'numeric',
-        title: 'Order Statistics: Expected Minimum',
-        description: 'Draw <strong>4 observations</strong> from Uniform[0, 10]. What is the expected value of the <strong>minimum</strong>?',
-        unit: '',
-        answer: 2,
-        tolerance: 0.01,
-        steps: [
-          { label: 'E[X_(1:n)] = a + (b−a)/(n+1) for Uniform[a,b]', value: '' },
-          { label: 'n=4, Uniform[0,10]', value: 'E[min] = 0 + 10/(4+1)' },
-          { label: 'E[min]', value: '= 10/5 = 2' },
+        "id": "qh51",
+        "type": "numeric",
+        "title": "Order Statistics: Expected Minimum",
+        "description": "Draw <strong>4 observations</strong> from Uniform[0, 10]. What is the expected value of the <strong>minimum</strong>?",
+        "unit": "",
+        "answer": 2,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "E[X_(1:n)] = a + (b−a)/(n+1) for Uniform[a,b]"
+          },
+          {
+            "label": "n=4, Uniform[0,10]",
+            "value": "E[min] = 0 + 10/(4+1)"
+          },
+          {
+            "label": "E[min]",
+            "value": "= 10/5 = 2"
+          }
         ],
-        explanation: 'For n i.i.d. Uniform[a,b], E[minimum] = a+(b−a)/(n+1) = 10/5 = 2. The 5 expected segments divide [0,10] equally.',
+        "explanation": "For n i.i.d. Uniform[a,b], E[minimum] = a+(b−a)/(n+1) = 10/5 = 2. The 5 expected segments divide [0,10] equally."
       },
       {
-        id: 'qh52', type: 'numeric',
-        title: 'Delta-Gamma Approximation',
-        description: 'An option has delta = <strong>0.60</strong> and gamma = <strong>0.04</strong>. The stock moves by <strong>$3</strong>. What is the approximate change in option value (delta-gamma approximation)?',
-        unit: '$',
-        answer: 1.98,
-        tolerance: 0.01,
-        steps: [
-          { label: 'ΔC ≈ Δ×ΔS + (1/2)×Γ×(ΔS)²', value: '' },
-          { label: '= 0.60×3 + 0.5×0.04×9', value: '= 1.80 + 0.18' },
-          { label: 'ΔC', value: '≈ $1.98' },
+        "id": "qh52",
+        "type": "numeric",
+        "title": "Delta-Gamma Approximation",
+        "description": "An option has delta = <strong>0.60</strong> and gamma = <strong>0.04</strong>. The stock moves by <strong>$3</strong>. What is the approximate change in option value (delta-gamma approximation)?",
+        "unit": "$",
+        "answer": 1.98,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "ΔC ≈ Δ×ΔS + (1/2)×Γ×(ΔS)²"
+          },
+          {
+            "label": "= 0.60×3 + 0.5×0.04×9",
+            "value": "= 1.80 + 0.18"
+          },
+          {
+            "label": "ΔC",
+            "value": "≈ $1.98"
+          }
         ],
-        explanation: 'Delta-gamma approximation: ΔC ≈ Δ·ΔS + (1/2)Γ·(ΔS)² = 0.6(3) + 0.02(9) = 1.80 + 0.18 = $1.98.',
+        "explanation": "Delta-gamma approximation: ΔC ≈ Δ·ΔS + (1/2)Γ·(ΔS)² = 0.6(3) + 0.02(9) = 1.80 + 0.18 = $1.98."
       },
       {
-        id: 'qh53', type: 'numeric',
-        title: 'Variance of a Product',
-        description: 'X and Y are independent. E[X]=2, Var(X)=1, E[Y]=3, Var(Y)=4. What is <strong>Var(XY)</strong>?',
-        unit: '',
-        answer: 29,
-        tolerance: 0,
-        steps: [
-          { label: 'Var(XY) = E[X²]E[Y²] − (E[X])²(E[Y])²', value: '' },
-          { label: 'E[X²] = 1+4=5; E[Y²] = 4+9=13', value: '' },
-          { label: 'Var(XY) = 5×13 − 4×9', value: '= 65 − 36 = 29' },
+        "id": "qh53",
+        "type": "numeric",
+        "title": "Variance of a Product",
+        "description": "X and Y are independent. E[X]=2, Var(X)=1, E[Y]=3, Var(Y)=4. What is <strong>Var(XY)</strong>?",
+        "unit": "",
+        "answer": 29,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Var(XY) = E[X²]E[Y²] − (E[X])²(E[Y])²"
+          },
+          {
+            "label": "Formula",
+            "value": "E[X²] = 1+4=5; E[Y²] = 4+9=13"
+          },
+          {
+            "label": "Var(XY) = 5×13 − 4×9",
+            "value": "= 65 − 36 = 29"
+          }
         ],
-        explanation: 'For independent X,Y: E[X²Y²]=E[X²]E[Y²]=5×13=65; (E[XY])²=(2×3)²=36. Var(XY)=65−36=29.',
+        "explanation": "For independent X,Y: E[X²Y²]=E[X²]E[Y²]=5×13=65; (E[XY])²=(2×3)²=36. Var(XY)=65−36=29."
       },
       {
-        id: 'qh54', type: 'numeric',
-        title: 'Stopping Time: E[W_τ²]',
-        description: 'Standard BM W_t is stopped at τ = inf{t : W_t = 3 or W_t = −2}. What is <strong>E[W_τ²]</strong>?\n\nHint: W_t² − t is a martingale.',
-        unit: '',
-        answer: 6,
-        tolerance: 0.01,
-        steps: [
-          { label: "Gambler's ruin: P(hit +3) = 2/(2+3) = 2/5", value: '' },
-          { label: 'E[W_τ²] = 9×(2/5) + 4×(3/5)', value: '= 18/5 + 12/5 = 30/5' },
-          { label: 'E[W_τ²]', value: '= 6' },
+        "id": "qh54",
+        "type": "numeric",
+        "title": "Stopping Time: E[W<sub>τ</sub>²]",
+        "description": "Standard BM W<sub>t</sub> is stopped at τ = inf{t : W<sub>t</sub> = 3 or W<sub>t</sub> = −2}. What is <strong>E[W<sub>τ</sub>²]</strong>?\n\nHint: W<sub>t</sub>² − t is a martingale.",
+        "unit": "",
+        "answer": 6,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Gambler's ruin: P(hit +3) = 2/(2+3) = 2/5"
+          },
+          {
+            "label": "E[W<sub>τ</sub>²] = 9×(2/5) + 4×(3/5)",
+            "value": "= 18/5 + 12/5 = 30/5"
+          },
+          {
+            "label": "E[W<sub>τ</sub>²]",
+            "value": "= 6"
+          }
         ],
-        explanation: 'P(hit+3) = 2/5 (gambler\'s ruin starting 2 steps from −2, total span 5). E[W_τ²] = 3²×(2/5)+(−2)²×(3/5) = 18/5+12/5 = 6. Also E[τ]=6 since W_t²−t is a martingale.',
+        "explanation": "P(hit+3) = 2/5 (gambler's ruin starting 2 steps from −2, total span 5). E[W<sub>τ</sub>²] = 3²×(2/5)+(−2)²×(3/5) = 18/5+12/5 = 6. Also E[τ]=6 since W<sub>t</sub>²−t is a martingale."
       },
       {
-        id: 'qh55', type: 'numeric',
-        title: 'MGF of Exponential Distribution',
-        description: 'X ~ Exponential(λ=2). What is the MGF M(t) at t = <strong>1</strong>?',
-        unit: '',
-        answer: 2,
-        tolerance: 0.001,
-        steps: [
-          { label: 'MGF of Exp(λ): M(t) = λ/(λ−t) for t < λ', value: '' },
-          { label: 'M(1) = 2/(2−1)', value: '= 2/1 = 2' },
+        "id": "qh55",
+        "type": "numeric",
+        "title": "MGF of Exponential Distribution",
+        "description": "X ~ Exponential(λ=2). What is the MGF M(t) at t = <strong>1</strong>?",
+        "unit": "",
+        "answer": 2,
+        "tolerance": 0.001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "MGF of Exp(λ): M(t) = λ/(λ−t) for t < λ"
+          },
+          {
+            "label": "M(1) = 2/(2−1)",
+            "value": "= 2/1 = 2"
+          }
         ],
-        explanation: 'M(t) = λ/(λ−t) for t<λ. At t=1, λ=2: M(1) = 2/1 = 2. The MGF diverges as t→λ, reflecting the exponential\'s heavy tail.',
+        "explanation": "M(t) = λ/(λ−t) for t<λ. At t=1, λ=2: M(1) = 2/1 = 2. The MGF diverges as t→λ, reflecting the exponential's heavy tail."
       },
       {
-        id: 'qh56', type: 'numeric',
-        title: 'Digital Option Pricing',
-        description: 'Stock = <strong>$50</strong>, up to <strong>$65</strong> or down to <strong>$40</strong>. Risk-free = <strong>0%</strong>. Price a digital call paying <strong>$1</strong> if S > $55, else $0.',
-        unit: '$',
-        answer: 0.4,
-        tolerance: 0.005,
-        steps: [
-          { label: 'q = (S−dS)/(uS−dS) = (50−40)/(65−40)', value: '= 10/25 = 0.4' },
-          { label: 'Payoff: $1 in up state (65>55), $0 in down state', value: '' },
-          { label: 'Price = e^0 × (0.4×1 + 0.6×0)', value: '= $0.40' },
+        "id": "qh56",
+        "type": "numeric",
+        "title": "Digital Option Pricing",
+        "description": "Stock = <strong>$50</strong>, up to <strong>$65</strong> or down to <strong>$40</strong>. Risk-free = <strong>0%</strong>. Price a digital call paying <strong>$1</strong> if S > $55, else $0.",
+        "unit": "$",
+        "answer": 0.4,
+        "tolerance": 0.005,
+        "steps": [
+          {
+            "label": "q = (S−dS)/(uS−dS) = (50−40)/(65−40)",
+            "value": "= 10/25 = 0.4"
+          },
+          {
+            "label": "Formula",
+            "value": "Payoff: $1 in up state (65>55), $0 in down state"
+          },
+          {
+            "label": "Price = e^0 × (0.4×1 + 0.6×0)",
+            "value": "= $0.40"
+          }
         ],
-        explanation: 'With r=0, risk-neutral q=(50−40)/(65−40)=0.4. Digital pays $1 only in up state. Price = 0.4×1+0.6×0 = $0.40.',
+        "explanation": "With r=0, risk-neutral q=(50−40)/(65−40)=0.4. Digital pays $1 only in up state. Price = 0.4×1+0.6×0 = $0.40."
       },
       {
-        id: 'qh57', type: 'numeric',
-        title: 'Quadratic Variation of BM',
-        description: 'What is the quadratic variation [W, W]_t of standard Brownian motion over [0, <strong>5</strong>]?',
-        unit: '',
-        answer: 5,
-        tolerance: 0,
-        steps: [
-          { label: '[W, W]_t = t (a.s.)', value: 'Fundamental property of BM' },
-          { label: '[W, W]_5', value: '= 5' },
+        "id": "qh57",
+        "type": "numeric",
+        "title": "Quadratic Variation of BM",
+        "description": "What is the quadratic variation [W, W]_t of standard Brownian motion over [0, <strong>5</strong>]?",
+        "unit": "",
+        "answer": 5,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "[W, W]_t = t (a.s.)",
+            "value": "Fundamental property of BM"
+          },
+          {
+            "label": "[W, W]_5",
+            "value": "= 5"
+          }
         ],
-        explanation: 'BM has quadratic variation [W,W]_t = t a.s. This is why (dW)² = dt in Itô calculus. Unlike smooth functions (QV=0), BM is rough enough to have non-zero QV.',
+        "explanation": "BM has quadratic variation [W,W]_t = t a.s. This is why (dW)² = dt in Itô calculus. Unlike smooth functions (QV=0), BM is rough enough to have non-zero QV."
       },
       {
-        id: 'qh58', type: 'numeric',
-        title: 'Black-Scholes Vega',
-        description: 'Vega = S√T × φ(d₁). With S = <strong>$100</strong>, T = <strong>0.25</strong>, d₁ = <strong>0.20</strong>.\n\nUse φ(0.20) ≈ 0.3910. What is vega?',
-        unit: '$',
-        answer: 19.55,
-        tolerance: 0.05,
-        steps: [
-          { label: 'ν = S × √T × φ(d₁)', value: '' },
-          { label: '√T = √0.25 = 0.5', value: '' },
-          { label: 'ν = 100 × 0.5 × 0.3910', value: '= $19.55' },
+        "id": "qh58",
+        "type": "numeric",
+        "title": "Black-Scholes Vega",
+        "description": "Vega = S√T × φ(d₁). With S = <strong>$100</strong>, T = <strong>0.25</strong>, d₁ = <strong>0.20</strong>.\n\nUse φ(0.20) ≈ 0.3910. What is vega?",
+        "unit": "$",
+        "answer": 19.55,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "ν = S × √T × φ(d₁)"
+          },
+          {
+            "label": "Formula",
+            "value": "√T = √0.25 = 0.5"
+          },
+          {
+            "label": "ν = 100 × 0.5 × 0.3910",
+            "value": "= $19.55"
+          }
         ],
-        explanation: 'Vega = S√T·φ(d₁) = 100×0.5×0.391 = $19.55. A 1% vol increase (Δσ=0.01) raises the call by ~$0.1955.',
+        "explanation": "Vega = S√T·φ(d₁) = 100×0.5×0.391 = $19.55. A 1% vol increase (Δσ=0.01) raises the call by ~$0.1955."
       },
       {
-        id: 'qh59', type: 'numeric',
-        title: 'Brownian Bridge Expectation',
-        description: 'Standard BM with W_0=0, W_4 = <strong>2</strong>. What is <strong>E[W_1 | W_4=2]</strong>?',
-        unit: '',
-        answer: 0.5,
-        tolerance: 0.01,
-        steps: [
-          { label: 'Brownian bridge: E[W_t | W_T=b] = (t/T)×b', value: '' },
-          { label: 't=1, T=4, b=2', value: 'E[W_1 | W_4=2] = (1/4)×2' },
-          { label: 'E[W_1 | W_4=2]', value: '= 0.5' },
+        "id": "qh59",
+        "type": "numeric",
+        "title": "Brownian Bridge Expectation",
+        "description": "Standard BM with W<sub>0</sub>=0, W<sub>4</sub> = <strong>2</strong>. What is <strong>E[W<sub>1</sub> | W<sub>4</sub>=2]</strong>?",
+        "unit": "",
+        "answer": 0.5,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Brownian bridge: E[W<sub>t</sub> | W<sub>T</sub>=b] = (t/T)×b"
+          },
+          {
+            "label": "t=1, T=4, b=2",
+            "value": "E[W<sub>1</sub> | W<sub>4</sub>=2] = (1/4)×2"
+          },
+          {
+            "label": "E[W<sub>1</sub> | W<sub>4</sub>=2]",
+            "value": "= 0.5"
+          }
         ],
-        explanation: 'For a Brownian bridge (BM conditioned on endpoint): E[W_t|W_T=b] = (t/T)b. At t=1, T=4, b=2: E = 0.5.',
+        "explanation": "For a Brownian bridge (BM conditioned on endpoint): E[W<sub>t</sub>|W<sub>T</sub>=b] = (t/T)b. At t=1, T=4, b=2: E = 0.5."
       },
       {
-        id: 'qh60', type: 'numeric',
-        title: "Jensen's Inequality: E[X²] Bound",
-        description: 'X is a random variable with <strong>E[X] = 4</strong>. What is the lower bound on <strong>E[X²]</strong> from Jensen\'s inequality?',
-        unit: '',
-        answer: 16,
-        tolerance: 0,
-        steps: [
-          { label: "Jensen's (convex f): E[f(X)] ≥ f(E[X])", value: '' },
-          { label: 'f(x) = x² is convex', value: 'E[X²] ≥ (E[X])²' },
-          { label: 'Lower bound', value: '= 4² = 16' },
+        "id": "qh60",
+        "type": "numeric",
+        "title": "Jensen's Inequality: E[X²] Bound",
+        "description": "X is a random variable with <strong>E[X] = 4</strong>. What is the lower bound on <strong>E[X²]</strong> from Jensen's inequality?",
+        "unit": "",
+        "answer": 16,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Jensen's (convex f): E[f(X)] ≥ f(E[X])"
+          },
+          {
+            "label": "f(x) = x² is convex",
+            "value": "E[X²] ≥ (E[X])²"
+          },
+          {
+            "label": "Lower bound",
+            "value": "= 4² = 16"
+          }
         ],
-        explanation: "Jensen's: E[X²] ≥ (E[X])² = 16. The gap is Var(X) ≥ 0.",
+        "explanation": "Jensen's: E[X²] ≥ (E[X])² = 16. The gap is Var(X) ≥ 0."
       },
       {
-        id: 'qh61', type: 'numeric',
-        title: 'Itô Integral Expectation',
-        description: 'For standard BM W_t, what is <strong>E[∫₀ᵀ W_t dW_t]</strong>?',
-        unit: '',
-        answer: 0,
-        tolerance: 0,
-        steps: [
-          { label: 'Itô integrals are martingales starting at 0', value: '' },
-          { label: 'E[∫₀ᵀ W_t dW_t]', value: '= 0' },
+        "id": "qh61",
+        "type": "numeric",
+        "title": "Itô Integral Expectation",
+        "description": "For standard BM W<sub>t</sub>, what is <strong>E[∫₀ᵀ W<sub>t</sub> dW<sub>t</sub>]</strong>?",
+        "unit": "",
+        "answer": 0,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Itô integrals are martingales starting at 0"
+          },
+          {
+            "label": "E[∫₀ᵀ W<sub>t</sub> dW<sub>t</sub>]",
+            "value": "= 0"
+          }
         ],
-        explanation: 'Itô integral ∫φ dW is a martingale → expectation 0. Alternatively: ∫₀ᵀ W_t dW_t = (W_T²−T)/2, so E = (T−T)/2 = 0.',
+        "explanation": "Itô integral ∫φ dW is a martingale → expectation 0. Alternatively: ∫₀ᵀ W<sub>t</sub> dW<sub>t</sub> = (W<sub>T</sub>²−T)/2, so E = (T−T)/2 = 0."
       },
       {
-        id: 'qh62', type: 'numeric',
-        title: 'Antithetic Variates Variance Reduction',
-        description: "X has Var(X) = <strong>100</strong>. Its antithetic twin X' has Corr(X, X') = <strong>−0.6</strong> and Var(X') = 100. What is <strong>Var((X + X')/2)</strong>?",
-        unit: '',
-        answer: 20,
-        tolerance: 0.01,
-        steps: [
-          { label: "Var((X+X')/2) = (1/4)(Var(X)+Var(X')+2Cov(X,X'))", value: '' },
-          { label: 'Cov = ρ×σ×σ = −0.6×100 = −60', value: '' },
-          { label: '(1/4)(100+100−120)', value: '= 80/4 = 20' },
+        "id": "qh62",
+        "type": "numeric",
+        "title": "Antithetic Variates Variance Reduction",
+        "description": "X has Var(X) = <strong>100</strong>. Its antithetic twin X' has Corr(X, X') = <strong>−0.6</strong> and Var(X') = 100. What is <strong>Var((X + X')/2)</strong>?",
+        "unit": "",
+        "answer": 20,
+        "tolerance": 0.01,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Var((X+X')/2) = (1/4)(Var(X)+Var(X')+2Cov(X,X'))"
+          },
+          {
+            "label": "Formula",
+            "value": "Cov = ρ×σ×σ = −0.6×100 = −60"
+          },
+          {
+            "label": "(1/4)(100+100−120)",
+            "value": "= 80/4 = 20"
+          }
         ],
-        explanation: 'Antithetic variates reduce variance via negative correlation. Var = (100+100+2(−60))/4 = 80/4 = 20. Reduction factor of 5×.',
+        "explanation": "Antithetic variates reduce variance via negative correlation. Var = (100+100+2(−60))/4 = 80/4 = 20. Reduction factor of 5×."
       },
       {
-        id: 'qh63', type: 'numeric',
-        title: 'Log Return Variance Under GBM',
-        description: 'Under GBM with σ = <strong>0.20</strong>, what is the <strong>variance</strong> of ln(S_T/S_t) over an interval of length <strong>0.25</strong> years?',
-        unit: '',
-        answer: 0.01,
-        tolerance: 0.0001,
-        steps: [
-          { label: 'Var(ln S_T − ln S_t) = σ²×(T−t)', value: '' },
-          { label: '= (0.20)² × 0.25', value: '= 0.04 × 0.25' },
-          { label: 'Variance', value: '= 0.01' },
+        "id": "qh63",
+        "type": "numeric",
+        "title": "Log Return Variance Under GBM",
+        "description": "Under GBM with σ = <strong>0.20</strong>, what is the <strong>variance</strong> of ln(S<sub>T</sub>/S<sub>t</sub>) over an interval of length <strong>0.25</strong> years?",
+        "unit": "",
+        "answer": 0.01,
+        "tolerance": 0.0001,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Var(ln S<sub>T</sub> − ln S<sub>t</sub>) = σ²×(T−t)"
+          },
+          {
+            "label": "= (0.20)² × 0.25",
+            "value": "= 0.04 × 0.25"
+          },
+          {
+            "label": "Variance",
+            "value": "= 0.01"
+          }
         ],
-        explanation: 'Under GBM, log returns ~ N((μ−σ²/2)Δt, σ²Δt). Variance = σ²Δt = 0.04×0.25 = 0.01. Std dev = 0.10 = 10%.',
+        "explanation": "Under GBM, log returns ~ N((μ−σ²/2)Δt, σ²Δt). Variance = σ²Δt = 0.04×0.25 = 0.01. Std dev = 0.10 = 10%."
       },
       {
-        id: 'qh64', type: 'numeric',
-        title: 'Two-Period Binomial Put',
-        description: 'Stock = <strong>$100</strong>, u = <strong>1.1</strong>, d = <strong>0.9</strong>, r = <strong>2%</strong> per period (continuous). Price a European put with strike <strong>$100</strong> over <strong>2 periods</strong>.',
-        unit: '$',
-        answer: 3.37,
-        tolerance: 0.15,
-        steps: [
-          { label: 'q = (e^0.02−0.9)/(1.1−0.9) = (1.0202−0.9)/0.2', value: '≈ 0.601' },
-          { label: 'Payoffs: P_uu=0, P_ud=1, P_dd=19', value: '' },
-          { label: 'P = e^(−0.04)[2(0.601)(0.399)×1+(0.399)²×19]', value: '≈ 0.9608×3.506 ≈ $3.37' },
+        "id": "qh64",
+        "type": "numeric",
+        "title": "Two-Period Binomial Put",
+        "description": "Stock = <strong>$100</strong>, u = <strong>1.1</strong>, d = <strong>0.9</strong>, r = <strong>2%</strong> per period (continuous). Price a European put with strike <strong>$100</strong> over <strong>2 periods</strong>.",
+        "unit": "$",
+        "answer": 3.37,
+        "tolerance": 0.15,
+        "steps": [
+          {
+            "label": "q = (e^0.02−0.9)/(1.1−0.9) = (1.0202−0.9)/0.2",
+            "value": "≈ 0.601"
+          },
+          {
+            "label": "Formula",
+            "value": "Payoffs: P<sub>uu</sub>=0, P<sub>ud</sub>=1, P<sub>dd</sub>=19"
+          },
+          {
+            "label": "P = e^(−0.04)[2(0.601)(0.399)×1+(0.399)²×19]",
+            "value": "≈ 0.9608×3.506 ≈ $3.37"
+          }
         ],
-        explanation: 'q≈0.601, 1−q≈0.399. P = e^(−2×0.02)[2q(1−q)×1+(1−q)²×19] = e^(−0.04)[0.480+3.027] ≈ 0.9608×3.507 ≈ $3.37.',
+        "explanation": "q≈0.601, 1−q≈0.399. P = e^(−2×0.02)[2q(1−q)×1+(1−q)²×19] = e^(−0.04)[0.480+3.027] ≈ 0.9608×3.507 ≈ $3.37."
       },
       {
-        id: 'qh65', type: 'numeric',
-        title: 'Variance of Sum of Correlated Variables',
-        description: 'X and Y with Var(X)=Var(Y)=<strong>100</strong> and Cov(X,Y)=<strong>30</strong>. What is <strong>Var(X+Y)</strong>?',
-        unit: '',
-        answer: 260,
-        tolerance: 0,
-        steps: [
-          { label: 'Var(X+Y) = Var(X)+Var(Y)+2Cov(X,Y)', value: '' },
-          { label: '= 100+100+2(30)', value: '= 200+60' },
-          { label: 'Var(X+Y)', value: '= 260' },
+        "id": "qh65",
+        "type": "numeric",
+        "title": "Variance of Sum of Correlated Variables",
+        "description": "X and Y with Var(X)=Var(Y)=<strong>100</strong> and Cov(X,Y)=<strong>30</strong>. What is <strong>Var(X+Y)</strong>?",
+        "unit": "",
+        "answer": 260,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "Var(X+Y) = Var(X)+Var(Y)+2Cov(X,Y)"
+          },
+          {
+            "label": "= 100+100+2(30)",
+            "value": "= 200+60"
+          },
+          {
+            "label": "Var(X+Y)",
+            "value": "= 260"
+          }
         ],
-        explanation: 'Var(X+Y) = Var(X)+Var(Y)+2Cov(X,Y) = 100+100+60 = 260. Without correlation: Var = 200. Positive correlation increases portfolio variance.',
+        "explanation": "Var(X+Y) = Var(X)+Var(Y)+2Cov(X,Y) = 100+100+60 = 260. Without correlation: Var = 200. Positive correlation increases portfolio variance."
       },
       {
         id: 'qh66', type: 'numeric',
@@ -13737,145 +15361,246 @@ const QUESTIONS = {
       },
     ],
   },
-
-  ib: {
-    easy: [
+  "ib": {
+    "easy": [
       {
-        id: 'ibe1', type: 'numeric',
-        title: 'Equity Value Bridge',
-        description: 'A company has:\n• EBITDA of <strong>$100M</strong>\n• Trades at <strong>8.0x EV/EBITDA</strong>\n• <strong>$300M</strong> in total debt\n• <strong>$50M</strong> in cash\n\nWhat is the <strong>equity value</strong> in millions of dollars?',
-        unit: '$M',
-        answer: 550,
-        tolerance: 1,
-        steps: [
-          { label: 'Enterprise Value', value: '$100M × 8.0x = $800M' },
-          { label: 'Net Debt', value: '$300M debt − $50M cash = $250M' },
-          { label: 'Equity Value', value: 'EV − Net Debt = $800M − $250M = $550M' },
+        "id": "ibe1",
+        "type": "numeric",
+        "title": "Equity Value Bridge",
+        "description": "A company has:\n• EBITDA of <strong>$100M</strong>\n• Trades at <strong>8.0x EV/EBITDA</strong>\n• <strong>$300M</strong> in total debt\n• <strong>$50M</strong> in cash\n\nWhat is the <strong>equity value</strong> in millions of dollars?",
+        "unit": "$M",
+        "answer": 550,
+        "tolerance": 1,
+        "steps": [
+          {
+            "label": "Enterprise Value",
+            "value": "$100M × 8.0x = $800M"
+          },
+          {
+            "label": "Net Debt",
+            "value": "$300M debt − $50M cash = $250M"
+          },
+          {
+            "label": "Equity Value",
+            "value": "EV − Net Debt = $800M − $250M = $550M"
+          }
         ],
-        explanation: 'Equity Value = EV − Net Debt. EV = EBITDA × multiple = $800M. Net Debt = Debt − Cash = $250M. Equity Value = $550M.',
+        "explanation": "Equity Value = EV − Net Debt. EV = EBITDA × multiple = $800M. Net Debt = Debt − Cash = $250M. Equity Value = $550M."
       },
       {
-        id: 'ibe2', type: 'numeric',
-        title: 'Year 1 Interest Expense',
-        description: 'A private equity firm acquires a company for <strong>$500M enterprise value</strong>.\n\nThe deal is financed with <strong>60% debt</strong> at an interest rate of <strong>8%</strong>.\n\nWhat is the Year 1 interest expense in millions of dollars?',
-        unit: '$M',
-        answer: 24,
-        tolerance: 0.1,
-        steps: [
-          { label: 'Debt amount', value: '60% × $500M = $300M' },
-          { label: 'Interest expense', value: '$300M × 8% = $24M' },
+        "id": "ibe2",
+        "type": "numeric",
+        "title": "Year 1 Interest Expense",
+        "description": "A private equity firm acquires a company for <strong>$500M enterprise value</strong>.\n\nThe deal is financed with <strong>60% debt</strong> at an interest rate of <strong>8%</strong>.\n\nWhat is the Year 1 interest expense in millions of dollars?",
+        "unit": "$M",
+        "answer": 24,
+        "tolerance": 0.1,
+        "steps": [
+          {
+            "label": "Debt amount",
+            "value": "60% × $500M = $300M"
+          },
+          {
+            "label": "Interest expense",
+            "value": "$300M × 8% = $24M"
+          }
         ],
-        explanation: 'Debt = 60% × $500M = $300M. Interest = $300M × 8% = $24M per year.',
+        "explanation": "Debt = 60% × $500M = $300M. Interest = $300M × 8% = $24M per year."
       },
       {
-        id: 'ibe3', type: 'numeric',
-        title: 'Operating Cash Flow',
-        description: 'A company reports:\n• Net Income: <strong>$80M</strong>\n• Depreciation & Amortization: <strong>$20M</strong>\n• Increase in Working Capital: <strong>$10M</strong>\n• Capital Expenditures: <strong>$15M</strong>\n\nWhat is <strong>Free Cash Flow</strong> in millions of dollars?',
-        unit: '$M',
-        answer: 75,
-        tolerance: 0.5,
-        steps: [
-          { label: 'Start with Net Income', value: '$80M' },
-          { label: '+ D&A (non-cash)', value: '+$20M' },
-          { label: '− Increase in Working Capital', value: '−$10M (cash used)' },
-          { label: '− Capex', value: '−$15M' },
-          { label: 'Free Cash Flow', value: '$80M + $20M − $10M − $15M = $75M' },
+        "id": "ibe3",
+        "type": "numeric",
+        "title": "Operating Cash Flow",
+        "description": "A company reports:\n• Net Income: <strong>$80M</strong>\n• Depreciation & Amortization: <strong>$20M</strong>\n• Increase in Working Capital: <strong>$10M</strong>\n• Capital Expenditures: <strong>$15M</strong>\n\nWhat is <strong>Free Cash Flow</strong> in millions of dollars?",
+        "unit": "$M",
+        "answer": 75,
+        "tolerance": 0.5,
+        "steps": [
+          {
+            "label": "Start with Net Income",
+            "value": "$80M"
+          },
+          {
+            "label": "+ D&A (non-cash)",
+            "value": "+$20M"
+          },
+          {
+            "label": "− Increase in Working Capital",
+            "value": "−$10M (cash used)"
+          },
+          {
+            "label": "− Capex",
+            "value": "−$15M"
+          },
+          {
+            "label": "Free Cash Flow",
+            "value": "$80M + $20M − $10M − $15M = $75M"
+          }
         ],
-        explanation: 'FCF = Net Income + D&A − ΔWorking Capital − Capex. D&A is added back (non-cash charge). Working capital increase uses cash. Capex is an investment outflow.',
-      },
+        "explanation": "FCF = Net Income + D&A − ΔWorking Capital − Capex. D&A is added back (non-cash charge). Working capital increase uses cash. Capex is an investment outflow."
+      }
     ],
-    medium: [
+    "medium": [
       {
-        id: 'ibm1', type: 'numeric',
-        title: 'WACC Calculation',
-        description: 'Calculate the Weighted Average Cost of Capital (WACC):\n\n• Capital structure: <strong>40% equity</strong>, <strong>60% debt</strong>\n• Cost of equity: <strong>12%</strong>\n• Pre-tax cost of debt: <strong>6%</strong>\n• Tax rate: <strong>30%</strong>\n\nEnter WACC as a percentage (e.g. <code>8.52</code>).',
-        unit: '%',
-        answer: 7.32,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Cost of Equity component', value: '40% × 12% = 4.80%' },
-          { label: 'After-tax Cost of Debt', value: '6% × (1 − 30%) = 4.20%' },
-          { label: 'Debt component', value: '60% × 4.20% = 2.52%' },
-          { label: 'WACC', value: '4.80% + 2.52% = 7.32%' },
+        "id": "ibm1",
+        "type": "numeric",
+        "title": "WACC Calculation",
+        "description": "Calculate the Weighted Average Cost of Capital (WACC):\n\n• Capital structure: <strong>40% equity</strong>, <strong>60% debt</strong>\n• Cost of equity: <strong>12%</strong>\n• Pre-tax cost of debt: <strong>6%</strong>\n• Tax rate: <strong>30%</strong>\n\nEnter WACC as a percentage (e.g. <code>8.52</code>).",
+        "unit": "%",
+        "answer": 7.32,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Cost of Equity component",
+            "value": "40% × 12% = 4.80%"
+          },
+          {
+            "label": "After-tax Cost of Debt",
+            "value": "6% × (1 − 30%) = 4.20%"
+          },
+          {
+            "label": "Debt component",
+            "value": "60% × 4.20% = 2.52%"
+          },
+          {
+            "label": "WACC",
+            "value": "4.80% + 2.52% = 7.32%"
+          }
         ],
-        explanation: 'WACC = Ke×(E/V) + Kd×(1−t)×(D/V). Debt has a tax shield because interest is deductible. The after-tax cost of debt = 6%×(1−0.30) = 4.2%. WACC = 0.40×12% + 0.60×4.2% = 7.32%.',
+        "explanation": "WACC = Ke×(E/V) + Kd×(1−t)×(D/V). Debt has a tax shield because interest is deductible. The after-tax cost of debt = 6%×(1−0.30) = 4.2%. WACC = 0.40×12% + 0.60×4.2% = 7.32%."
       },
       {
-        id: 'ibm2', type: 'numeric',
-        title: 'Cash Conversion Cycle',
-        description: 'Calculate the Cash Conversion Cycle (CCC):\n\n• Days Sales Outstanding (DSO): <strong>45 days</strong>\n• Days Inventory Outstanding (DIO): <strong>60 days</strong>\n• Days Payable Outstanding (DPO): <strong>30 days</strong>\n\nWhat is the CCC in days?',
-        unit: 'days',
-        answer: 75,
-        tolerance: 0,
-        steps: [
-          { label: 'Formula', value: 'CCC = DSO + DIO − DPO' },
-          { label: 'Substitute', value: '45 + 60 − 30 = 75 days' },
+        "id": "ibm2",
+        "type": "numeric",
+        "title": "Cash Conversion Cycle",
+        "description": "Calculate the Cash Conversion Cycle (CCC):\n\n• Days Sales Outstanding (DSO): <strong>45 days</strong>\n• Days Inventory Outstanding (DIO): <strong>60 days</strong>\n• Days Payable Outstanding (DPO): <strong>30 days</strong>\n\nWhat is the CCC in days?",
+        "unit": "days",
+        "answer": 75,
+        "tolerance": 0,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "CCC = DSO + DIO − DPO"
+          },
+          {
+            "label": "Substitute",
+            "value": "45 + 60 − 30 = 75 days"
+          }
         ],
-        explanation: 'CCC = DSO + DIO − DPO = 45 + 60 − 30 = 75 days. This means the company has cash tied up in operations for 75 days. Lower CCC = more efficient working capital management.',
+        "explanation": "CCC = DSO + DIO − DPO = 45 + 60 − 30 = 75 days. This means the company has cash tied up in operations for 75 days. Lower CCC = more efficient working capital management."
       },
       {
-        id: 'ibm3', type: 'numeric',
-        title: 'LBO Equity Return (MOIC)',
-        description: 'A PE firm:\n• Buys a company for <strong>$1,000M</strong> EV at entry\n• Uses <strong>60% debt</strong> ($600M), <strong>40% equity</strong> ($400M)\n• Grows EBITDA from $100M to <strong>$150M</strong> over 5 years\n• Exits at the same <strong>10x EV/EBITDA</strong> multiple\n• Assume all debt is repaid by exit\n\nWhat is the <strong>Money-on-Money Multiple (MOIC)</strong>? Enter to 2 decimal places.',
-        unit: 'x',
-        answer: 3.75,
-        tolerance: 0.05,
-        steps: [
-          { label: 'Exit EV', value: '$150M × 10x = $1,500M' },
-          { label: 'Exit Equity (debt repaid)', value: '$1,500M − $0 = $1,500M' },
-          { label: 'MOIC', value: '$1,500M ÷ $400M = 3.75x' },
+        "id": "ibm3",
+        "type": "numeric",
+        "title": "LBO Equity Return (MOIC)",
+        "description": "A PE firm:\n• Buys a company for <strong>$1,000M</strong> EV at entry\n• Uses <strong>60% debt</strong> ($600M), <strong>40% equity</strong> ($400M)\n• Grows EBITDA from $100M to <strong>$150M</strong> over 5 years\n• Exits at the same <strong>10x EV/EBITDA</strong> multiple\n• Assume all debt is repaid by exit\n\nWhat is the <strong>Money-on-Money Multiple (MOIC)</strong>? Enter to 2 decimal places.",
+        "unit": "x",
+        "answer": 3.75,
+        "tolerance": 0.05,
+        "steps": [
+          {
+            "label": "Exit EV",
+            "value": "$150M × 10x = $1,500M"
+          },
+          {
+            "label": "Exit Equity (debt repaid)",
+            "value": "$1,500M − $0 = $1,500M"
+          },
+          {
+            "label": "MOIC",
+            "value": "$1,500M ÷ $400M = 3.75x"
+          }
         ],
-        explanation: 'Exit EV = $150M × 10x = $1,500M. With all debt repaid, exit equity = $1,500M. MOIC = $1,500M / $400M entry equity = 3.75x. This drives ~30% IRR over 5 years.',
-      },
+        "explanation": "Exit EV = $150M × 10x = $1,500M. With all debt repaid, exit equity = $1,500M. MOIC = $1,500M / $400M entry equity = 3.75x. This drives ~30% IRR over 5 years."
+      }
     ],
-    hard: [
+    "hard": [
       {
-        id: 'ibh1', type: 'numeric',
-        title: 'DCF Terminal Value',
-        description: 'You are building a DCF model:\n• Year 5 Free Cash Flow: <strong>$50M</strong>\n• Terminal growth rate: <strong>3%</strong>\n• WACC: <strong>9%</strong>\n\nUsing the <strong>Gordon Growth Model</strong>, what is the terminal value (at end of Year 5) in millions of dollars?\n\nRound to 1 decimal place.',
-        unit: '$M',
-        answer: 858.3,
-        tolerance: 1,
-        steps: [
-          { label: 'Formula', value: 'TV = FCF₅ × (1+g) / (WACC − g)' },
-          { label: 'Numerator', value: '$50M × 1.03 = $51.5M' },
-          { label: 'Denominator', value: '9% − 3% = 6%' },
-          { label: 'Terminal Value', value: '$51.5M / 0.06 = $858.3M' },
+        "id": "ibh1",
+        "type": "numeric",
+        "title": "DCF Terminal Value",
+        "description": "You are building a DCF model:\n• Year 5 Free Cash Flow: <strong>$50M</strong>\n• Terminal growth rate: <strong>3%</strong>\n• WACC: <strong>9%</strong>\n\nUsing the <strong>Gordon Growth Model</strong>, what is the terminal value (at end of Year 5) in millions of dollars?\n\nRound to 1 decimal place.",
+        "unit": "$M",
+        "answer": 858.3,
+        "tolerance": 1,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "TV = FCF₅ × (1+g) / (WACC − g)"
+          },
+          {
+            "label": "Numerator",
+            "value": "$50M × 1.03 = $51.5M"
+          },
+          {
+            "label": "Denominator",
+            "value": "9% − 3% = 6%"
+          },
+          {
+            "label": "Terminal Value",
+            "value": "$51.5M / 0.06 = $858.3M"
+          }
         ],
-        explanation: 'TV = FCF₅ × (1+g) / (WACC−g) = $50M × 1.03 / 0.06 = $51.5M / 0.06 = $858.3M. TV typically represents 60–80% of DCF value — the terminal growth rate assumption is therefore critical.',
+        "explanation": "TV = FCF₅ × (1+g) / (WACC−g) = $50M × 1.03 / 0.06 = $51.5M / 0.06 = $858.3M. TV typically represents 60–80% of DCF value — the terminal growth rate assumption is therefore critical."
       },
       {
-        id: 'ibh2', type: 'numeric',
-        title: 'Levered Beta',
-        description: 'Re-lever a comparable company\'s beta to your target:\n\n• Unlevered beta (βᵤ) of comparable: <strong>0.90</strong>\n• Your target company: D/E ratio = <strong>0.75</strong>, tax rate = <strong>25%</strong>\n\nWhat is the <strong>levered beta (βₗ)</strong>? Round to 2 decimal places.',
-        unit: '',
-        answer: 1.41,
-        tolerance: 0.02,
-        steps: [
-          { label: 'Formula', value: 'βₗ = βᵤ × [1 + (1−t) × D/E]' },
-          { label: 'Substitute', value: 'βₗ = 0.90 × [1 + (1−0.25) × 0.75]' },
-          { label: 'Bracket', value: '[1 + 0.75 × 0.75] = [1 + 0.5625] = 1.5625' },
-          { label: 'βₗ', value: '0.90 × 1.5625 = 1.41' },
+        "id": "ibh2",
+        "type": "numeric",
+        "title": "Levered Beta",
+        "description": "Re-lever a comparable company's beta to your target:\n\n• Unlevered beta (βᵤ) of comparable: <strong>0.90</strong>\n• Your target company: D/E ratio = <strong>0.75</strong>, tax rate = <strong>25%</strong>\n\nWhat is the <strong>levered beta (βₗ)</strong>? Round to 2 decimal places.",
+        "unit": "",
+        "answer": 1.41,
+        "tolerance": 0.02,
+        "steps": [
+          {
+            "label": "Formula",
+            "value": "βₗ = βᵤ × [1 + (1−t) × D/E]"
+          },
+          {
+            "label": "Substitute",
+            "value": "βₗ = 0.90 × [1 + (1−0.25) × 0.75]"
+          },
+          {
+            "label": "Bracket",
+            "value": "[1 + 0.75 × 0.75] = [1 + 0.5625] = 1.5625"
+          },
+          {
+            "label": "βₗ",
+            "value": "0.90 × 1.5625 = 1.41"
+          }
         ],
-        explanation: 'Hamada equation: βₗ = βᵤ × [1 + (1−t) × D/E]. Leverage amplifies equity risk. An unlevered beta of 0.90 becomes 1.41 with 75% debt-to-equity — more financial risk means more equity volatility relative to the market.',
+        "explanation": "Hamada equation: βₗ = βᵤ × [1 + (1−t) × D/E]. Leverage amplifies equity risk. An unlevered beta of 0.90 becomes 1.41 with 75% debt-to-equity — more financial risk means more equity volatility relative to the market."
       },
       {
-        id: 'ibh3', type: 'numeric',
-        title: 'Accretion/Dilution: EPS Impact',
-        description: 'Acquirer details:\n• Net Income: <strong>$200M</strong>, shares outstanding: <strong>100M</strong>\n• Acquirer EPS: $2.00, stock price: $40 (P/E = 20x)\n\nTarget details:\n• Purchase price: <strong>$500M</strong>, all-stock deal\n• Target Net Income: <strong>$30M</strong>\n• Assume no synergies\n\nWhat is the acquirer\'s <strong>new EPS</strong> post-acquisition? Round to 2 decimal places.',
-        unit: '$',
-        answer: 2.04,
-        tolerance: 0.02,
-        steps: [
-          { label: 'New shares issued', value: '$500M ÷ $40/share = 12.5M shares' },
-          { label: 'Total shares post-deal', value: '100M + 12.5M = 112.5M shares' },
-          { label: 'Combined Net Income', value: '$200M + $30M = $230M' },
-          { label: 'New EPS', value: '$230M ÷ 112.5M ≈ $2.04' },
+        "id": "ibh3",
+        "type": "numeric",
+        "title": "Accretion/Dilution: EPS Impact",
+        "description": "Acquirer details:\n• Net Income: <strong>$200M</strong>, shares outstanding: <strong>100M</strong>\n• Acquirer EPS: $2.00, stock price: $40 (P/E = 20x)\n\nTarget details:\n• Purchase price: <strong>$500M</strong>, all-stock deal\n• Target Net Income: <strong>$30M</strong>\n• Assume no synergies\n\nWhat is the acquirer's <strong>new EPS</strong> post-acquisition? Round to 2 decimal places.",
+        "unit": "$",
+        "answer": 2.04,
+        "tolerance": 0.02,
+        "steps": [
+          {
+            "label": "New shares issued",
+            "value": "$500M ÷ $40/share = 12.5M shares"
+          },
+          {
+            "label": "Total shares post-deal",
+            "value": "100M + 12.5M = 112.5M shares"
+          },
+          {
+            "label": "Combined Net Income",
+            "value": "$200M + $30M = $230M"
+          },
+          {
+            "label": "New EPS",
+            "value": "$230M ÷ 112.5M ≈ $2.04"
+          }
         ],
-        explanation: 'New shares = $500M / $40 = 12.5M. Total = 112.5M. Combined NI = $230M. New EPS = $230/112.5 ≈ $2.04. The deal is accretive (+$0.04/share) because the acquirer P/E (20x) exceeds the implied acquisition P/E ($500M / $30M NI ≈ 16.7x). Accretion occurs when acquirer P/E > deal P/E.',
-      },
-    ],
-  },
+        "explanation": "New shares = $500M / $40 = 12.5M. Total = 112.5M. Combined NI = $230M. New EPS = $230/112.5 ≈ $2.04. The deal is accretive (+$0.04/share) because the acquirer P/E (20x) exceeds the implied acquisition P/E ($500M / $30M NI ≈ 16.7x). Accretion occurs when acquirer P/E > deal P/E."
+      }
+    ]
+  }
 };
 
 function getRandomQuestion(category, difficulty) {
