@@ -598,7 +598,7 @@ function renderNumericGame(q) {
         <div class="answer-label">Your Answer</div>
         <div class="answer-input-row">
           ${q.unit && q.unit !== '' && !['%','days','rolls','x'].includes(q.unit) ? `<span class="answer-prefix">${q.unit}</span>` : ''}
-          <input type="text" inputmode="decimal" id="numeric-input" class="answer-input" placeholder="0.00 or 3/4"
+          <input type="text" inputmode="decimal" id="numeric-input" class="answer-input" placeholder=""
             onkeydown="if(event.key==='Enter') checkNumeric()" />
           ${q.unit && ['%','days','rolls','x'].includes(q.unit) ? `<span class="answer-suffix">${q.unit}</span>` : ''}
         </div>
