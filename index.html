@@ -64,7 +64,10 @@
     --glass-bg-strong: rgba(255,255,255,0.8);
     --glass-border: rgba(15,23,42,0.08);
   }
-  body { background: var(--bg); }
+  /* body is a flex column: the (naturally-sized) intro sits above the app shell, which takes
+     all remaining vertical space via flex:1 — so the 3-pane layout keeps scrolling internally
+     per-column regardless of how tall the intro text ends up being. */
+  body { background: var(--bg); display: flex; flex-direction: column; height: 100vh; padding-top: 64px; overflow: hidden; }
   /* A few shared style.css rules hardcode dark-mode colors instead of using variables — override them here */
   nav { background: rgba(255,255,255,0.75); border-bottom: 1px solid rgba(15,23,42,0.06); }
   body::before, body::after { display: none; }
@@ -72,20 +75,22 @@
   .btn-outline:hover { background: rgba(15,23,42,0.04); }
 
   /* ── SEO INTRO — real crawlable content above the app shell, not just an sr-only fallback ── */
-  .seo-intro { max-width: 860px; margin: 0 auto; padding: 80px 40px 8px; }
+  .seo-intro { max-width: 860px; margin: 0 auto; padding: 16px 40px 8px; flex-shrink: 0; }
   .seo-intro h1 { font-size: 0.92rem; font-weight: 600; color: var(--t2); line-height: 1.6; letter-spacing: 0; margin-bottom: 0; }
 
   /* ── LAYOUT ── */
   .problems-layout {
     display: grid;
     grid-template-columns: 280px 380px 1fr;
-    min-height: calc(100vh - 64px);
+    flex: 1;
+    min-height: 0;
   }
 
   /* ── LEFT SIDEBAR ── */
   .sidebar {
     border-right: 1px solid var(--border);
     overflow-y: auto;
+    min-height: 0;
     background: var(--bg2);
     display: flex;
     flex-direction: column;
@@ -151,6 +156,7 @@
   .problems-list-panel {
     border-right: 1px solid var(--border);
     overflow-y: auto;
+    min-height: 0;
     background: var(--bg);
   }
   .list-header {
@@ -186,6 +192,7 @@
   /* ── PROBLEM DETAIL ── */
   .problem-detail-panel {
     overflow-y: auto;
+    min-height: 0;
     background: var(--bg);
     display: flex;
     flex-direction: column;
@@ -349,9 +356,9 @@
   .problem-detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
   @media (max-width: 900px) {
-    .seo-intro { padding: 88px 20px 20px; }
-    body { overflow: auto; }
-    .problems-layout { grid-template-columns: 1fr; height: auto; min-height: 0; }
+    .seo-intro { padding: 16px 20px 12px; }
+    body { overflow: auto; height: auto; }
+    .problems-layout { grid-template-columns: 1fr; flex: none; height: auto; min-height: 0; }
     .problems-list-panel, .problem-detail-panel { border-right: none; }
     .problem-detail-panel { border-top: 1px solid var(--border); }
     .detail-content { padding: 20px; }
@@ -563,6 +570,7 @@ function selectProblem(id) {
   if (!q) return;
   const panel = document.getElementById('problem-detail-panel');
   panel.innerHTML = q.type === 'code' ? renderCodeDetail(q) : renderNumericDetail(q);
+  panel.scrollTop = 0;
 }
 
 function showEmpty() {
