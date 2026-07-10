@@ -609,7 +609,7 @@ function renderNumericDetail(q) {
       <div class="answer-label-row">Your Answer</div>
       <div class="answer-input-row">
         ${hasPrefix ? `<span class="answer-prefix">${q.unit}</span>` : ''}
-        <input type="number" id="num-input" class="answer-input" placeholder="0.00" step="any"
+        <input type="text" inputmode="decimal" id="num-input" class="answer-input" placeholder="0.00 or 3/4"
           onkeydown="if(event.key==='Enter') checkAnswer('${q.id}')" />
         ${hasSuffix ? `<span class="answer-suffix">${q.unit}</span>` : ''}
       </div>
@@ -700,12 +700,40 @@ function toggleHint(i) {
   if (arrow) arrow.textContent = open ? '▲' : '▼';
 }
 
+function parseAnswerValue(str) {
+  if (str == null) return NaN;
+  str = String(str).trim();
+  if (str === '') return NaN;
+
+  // mixed number, e.g. "1 1/2" or "-1 1/2"
+  const mixed = str.match(/^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+  if (mixed) {
+    const whole = parseFloat(mixed[1]);
+    const num = parseFloat(mixed[2]);
+    const den = parseFloat(mixed[3]);
+    if (!den) return NaN;
+    const sign = whole < 0 ? -1 : 1;
+    return whole + sign * (num / den);
+  }
+
+  // simple fraction, e.g. "3/4" or "-3/4"
+  const frac = str.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+  if (frac) {
+    const num = parseFloat(frac[1]);
+    const den = parseFloat(frac[2]);
+    if (!den) return NaN;
+    return num / den;
+  }
+
+  return parseFloat(str);
+}
+
 function checkAnswer(qId) {
   const q = flatList.find(x => x.id === qId);
   const input = document.getElementById('num-input');
   const feedback = document.getElementById('num-feedback');
   if (!q || !input || !feedback) return;
-  const val = parseFloat(input.value);
+  const val = parseAnswerValue(input.value);
   if (isNaN(val)) { feedback.innerHTML = '<span style="color:var(--red)">Enter a number first.</span>'; return; }
   const correct = Math.abs(val - q.answer) <= (q.tolerance ?? 0.01);
   feedback.innerHTML = correct
