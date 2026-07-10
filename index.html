@@ -609,7 +609,7 @@ function renderNumericDetail(q) {
       <div class="answer-label-row">Your Answer</div>
       <div class="answer-input-row">
         ${hasPrefix ? `<span class="answer-prefix">${q.unit}</span>` : ''}
-        <input type="text" inputmode="decimal" id="num-input" class="answer-input" placeholder="0.00 or 3/4"
+        <input type="text" inputmode="decimal" id="num-input" class="answer-input" placeholder=""
           onkeydown="if(event.key==='Enter') checkAnswer('${q.id}')" />
         ${hasSuffix ? `<span class="answer-suffix">${q.unit}</span>` : ''}
       </div>
