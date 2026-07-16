@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QuantBattle | Games — Mental Math &amp; Speed Drills</title>
+<meta name="description" content="Practice mental math speed tests used by top trading firms, like the Optiver 80 in 8. Free, no account needed." />
+<link rel="canonical" href="https://www.quantbattle.net/games.html" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="QuantBattle" />
+<meta property="og:title" content="QuantBattle | Games — Mental Math &amp; Speed Drills" />
+<meta property="og:description" content="Practice mental math speed tests used by top trading firms, like the Optiver 80 in 8." />
+<meta property="og:url" content="https://www.quantbattle.net/games.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="QuantBattle | Games — Mental Math &amp; Speed Drills" />
+<meta name="twitter:description" content="Practice mental math speed tests used by top trading firms, like the Optiver 80 in 8." />
+<link rel="stylesheet" href="style.css" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  body { background: var(--bg); }
+  #app { min-height: calc(100vh - 64px); padding-top: 64px; }
+
+  /* MENU */
+  .games-container { max-width: 880px; margin: 0 auto; padding: 56px 24px; }
+  .games-header { margin-bottom: 40px; }
+  .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .game-card {
+    background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border); border-radius: var(--r2);
+    padding: 24px; cursor: pointer; transition: all 0.2s; text-align: left;
+  }
+  .game-card:hover, .game-card:focus-visible { border-color: rgba(139,92,246,0.4); background: var(--glass-bg-strong); transform: translateY(-2px); }
+  .game-card-icon { font-size: 2rem; margin-bottom: 10px; }
+  .game-card-name { font-weight: 800; font-size: 1.05rem; margin-bottom: 6px; }
+  .game-card-sub { font-size: 0.85rem; color: var(--t2); line-height: 1.6; margin-bottom: 12px; }
+  .game-card-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .game-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 9px; border-radius: 100px; background: rgba(139,92,246,0.15); color: var(--purple-l, #a78bfa); }
+  .game-card.coming-soon { opacity: 0.5; cursor: default; }
+  .game-card.coming-soon:hover { transform: none; border-color: var(--glass-border); background: var(--glass-bg); }
+
+  /* MENTAL MATH GAME */
+  .mm-setup { max-width: 640px; margin: 0 auto; padding: 56px 24px; text-align: center; }
+  .mm-setup h1 { margin-bottom: 12px; }
+  .mm-setup p { color: var(--t2); font-size: 0.95rem; line-height: 1.7; margin-bottom: 28px; }
+  .mm-rules { text-align: left; background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 24px; margin-bottom: 28px; }
+  .mm-rules li { color: var(--t2); font-size: 0.88rem; line-height: 1.9; }
+  .mm-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 24px; background: var(--card); border-bottom: 1px solid var(--border);
+  }
+  .mm-progress { font-size: 0.85rem; font-weight: 700; color: var(--t2); font-variant-numeric: tabular-nums; }
+  .mm-timer { font-size: 1.6rem; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1; }
+  .mm-timer.low { color: var(--red); }
+  .mm-score { font-size: 0.85rem; font-weight: 700; color: var(--green); font-variant-numeric: tabular-nums; }
+  .mm-game-area {
+    min-height: calc(100vh - 64px - 54px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 24px; gap: 28px;
+  }
+  .mm-question { font-size: 3rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; text-align: center; }
+  .mm-input-row { display: flex; gap: 10px; align-items: center; }
+  .mm-input {
+    width: 220px; padding: 16px 18px; font-size: 1.6rem; font-weight: 700;
+    background: var(--card); border: 2px solid var(--border); border-radius: var(--r);
+    color: var(--t1); outline: none; text-align: center; font-family: 'JetBrains Mono', monospace;
+    transition: border-color 0.2s;
+  }
+  .mm-input:focus { border-color: var(--purple); }
+  .mm-input.flash-correct { border-color: var(--green); background: rgba(16,185,129,0.08); }
+  .mm-input.flash-wrong { border-color: var(--red); background: rgba(239,68,68,0.08); }
+  .mm-hint { font-size: 0.78rem; color: var(--t3); }
+
+  /* RESULT */
+  .mm-result { max-width: 640px; margin: 0 auto; padding: 56px 24px; text-align: center; }
+  .mm-result-score { font-size: 4rem; font-weight: 900; font-family: 'JetBrains Mono', monospace; margin: 12px 0; }
+  .mm-result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 28px 0; }
+  .mm-stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 10px; }
+  .mm-stat-value { font-size: 1.4rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .mm-stat-label { font-size: 0.72rem; color: var(--t3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  .mm-result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  @media (max-width: 640px) {
+    .mm-question { font-size: 2.2rem; }
+    .mm-input { width: 160px; font-size: 1.3rem; }
+    .mm-result-grid { grid-template-columns: 1fr; }
+  }
+</style>
+<script>window.__SENTRY_DSN__ = 'https://7759a09b911029a3b03db100273fa56f@o4511330884714496.ingest.us.sentry.io/4511330890809344';</script>
+<script src="sentry.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4l16 16M20 4L4 20"/>
+        <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
+      </svg>
+    </div>
+    <span>QuantBattle</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Practice</a>
+    <a href="games.html" class="active">Games</a>
+    <a href="play.html">Battle</a>
+  </div>
+  <div class="nav-actions">
+    <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
+      onclick="showAuthModal(user => { currentUser = user; updateNavUser(); })">Log In / Sign Up</button>
+    <div style="position:relative" id="nav-profile-wrap">
+      <button id="nav-username" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleProfileMenu()">?</button>
+      <div id="profile-menu" class="nav-menu">
+        <div class="nav-menu-header" id="profile-menu-user">
+          <div class="nav-menu-name" id="profile-menu-name">—</div>
+          <div class="nav-menu-elo" id="profile-menu-elo">— ELO</div>
+        </div>
+        <a href="#" class="nav-menu-logout" onclick="event.preventDefault();Auth.logout()">Log Out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<h1 class="sr-only">Games — Mental Math &amp; Speed Drills</h1>
+
+<script>
+function toggleProfileMenu() {
+  const menu = document.getElementById('profile-menu');
+  if (!menu) return;
+  const open = menu.style.display !== 'block';
+  menu.style.display = open ? 'block' : 'none';
+  document.getElementById('nav-username')?.setAttribute('aria-expanded', String(open));
+}
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('nav-profile-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    const menu = document.getElementById('profile-menu');
+    if (menu) menu.style.display = 'none';
+    document.getElementById('nav-username')?.setAttribute('aria-expanded', 'false');
+  }
+});
+</script>
+
+<div id="app"></div>
+
+<script src="auth.js"></script>
+<script src="games.js"></script>
+</body>
+</html>
