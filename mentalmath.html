@@ -4,17 +4,17 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>QuantBattle | Mental Math Challenge — Arcade Speed Math</title>
-<meta name="description" content="Arcade-style 60-second mental math challenge with Easy, Medium, and Hard tiers, streak multipliers, and saved high scores." />
+<meta name="description" content="Arcade-style 2-minute mental math challenge with Easy, Medium, and Hard tiers and saved high scores." />
 <link rel="canonical" href="https://www.quantbattle.net/mentalmath.html" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="QuantBattle" />
 <meta property="og:title" content="QuantBattle | Mental Math Challenge — Arcade Speed Math" />
-<meta property="og:description" content="Arcade-style 60-second mental math challenge with Easy, Medium, and Hard tiers, streak multipliers, and saved high scores." />
+<meta property="og:description" content="Arcade-style 2-minute mental math challenge with Easy, Medium, and Hard tiers and saved high scores." />
 <meta property="og:url" content="https://www.quantbattle.net/mentalmath.html" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="QuantBattle | Mental Math Challenge — Arcade Speed Math" />
-<meta name="twitter:description" content="Arcade-style 60-second mental math challenge with Easy, Medium, and Hard tiers, streak multipliers, and saved high scores." />
+<meta name="twitter:description" content="Arcade-style 2-minute mental math challenge with Easy, Medium, and Hard tiers and saved high scores." />
 <link rel="stylesheet" href="style.css" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -68,18 +68,8 @@
   .mmc-ring-fg.warn { stroke: var(--red); }
   .mmc-ring-time { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; font-variant-numeric: tabular-nums; }
 
-  .mmc-streak-badge {
-    display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 100px;
-    font-size: 0.82rem; font-weight: 700; color: var(--t3); border: 1px solid var(--border); transition: all 0.25s;
-  }
-  .mmc-streak-badge.fire {
-    color: #fff; border-color: transparent; background: linear-gradient(135deg, #f59e0b, #ef4444);
-    box-shadow: 0 0 24px rgba(245,158,11,0.5); animation: mmc-pulse 0.9s ease-in-out infinite;
-  }
-  @keyframes mmc-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-
   .mmc-question { font-size: 3rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; text-align: center; letter-spacing: 1px; transition: transform 0.15s; }
-  .mmc-form { display: flex; gap: 10px; align-items: center; }
+  .mmc-input-row { display: flex; gap: 10px; align-items: center; }
   .mmc-input {
     width: 220px; padding: 16px 18px; font-size: 1.6rem; font-weight: 700;
     background: var(--card); border: 2px solid var(--border); border-radius: var(--r);
@@ -88,12 +78,6 @@
   }
   .mmc-input:focus { border-color: var(--purple); }
   .mmc-input.correct { border-color: var(--green); background: rgba(16,185,129,0.1); }
-  .mmc-input.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); }
-  .mmc-shake { animation: mmc-shake 0.4s ease-in-out; }
-  @keyframes mmc-shake {
-    10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); }
-    30%, 50%, 70% { transform: translateX(-6px); } 40%, 60% { transform: translateX(6px); }
-  }
 
   .mmc-quit { position: absolute; top: 14px; right: 20px; }
 

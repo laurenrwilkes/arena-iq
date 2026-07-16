@@ -71,10 +71,10 @@ function renderMenu() {
       <a class="game-card lift-hover" href="mentalmath.html" aria-label="Mental Math Challenge — difficulty-tiered arcade math game" style="text-decoration:none;color:inherit;display:block">
         <div class="game-card-icon">🔥</div>
         <div class="game-card-name">Mental Math Challenge</div>
-        <div class="game-card-sub">Arcade-style 60-second sprint with Easy, Medium, and Hard tiers, streak multipliers, and saved high scores.</div>
+        <div class="game-card-sub">Arcade-style 2-minute sprint with Easy, Medium, and Hard tiers and saved high scores.</div>
         <div class="game-card-meta">
           <span class="game-tag">Mental Math</span>
-          <span class="game-tag">0:60</span>
+          <span class="game-tag">2:00</span>
           <span class="game-tag">3 Difficulties</span>
         </div>
       </a>

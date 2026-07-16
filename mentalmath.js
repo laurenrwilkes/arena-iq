@@ -1,4 +1,4 @@
-const GAME_DURATION = 60;
+const GAME_DURATION = 120;
 const RING_RADIUS = 52;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
@@ -6,17 +6,17 @@ let currentUser = null;
 let audioCtx = null;
 
 const DIFFICULTY_META = {
-  easy: { name: 'Easy', icon: '🌱', points: 10, desc: 'Two-digit addition/subtraction and simple multiplication/division.' },
-  medium: { name: 'Medium', icon: '🎯', points: 15, desc: 'Everything in Easy, plus 2-digit × 2-digit and trickier subtraction.' },
-  hard: { name: 'Hard', icon: '🔥', points: 20, desc: 'Everything in Medium, plus decimals and percentages.' },
+  easy: { name: 'Easy', icon: '🌱', desc: 'Two-digit addition/subtraction and simple multiplication/division.' },
+  medium: { name: 'Medium', icon: '🎯', desc: 'Everything in Easy, plus 2-digit × 2-digit and trickier subtraction.' },
+  hard: { name: 'Hard', icon: '🔥', desc: 'Everything in Medium, plus decimals and percentages.' },
 };
 
 const MOCK_LEADERBOARD = [
-  { name: 'Ada_Lovelace', score: 240 },
-  { name: 'ByteSized', score: 180 },
-  { name: 'QuantumLeap', score: 155 },
-  { name: 'MentalGiant', score: 95 },
-  { name: 'CalcKid', score: 60 },
+  { name: 'Ada_Lovelace', score: 55 },
+  { name: 'ByteSized', score: 42 },
+  { name: 'QuantumLeap', score: 35 },
+  { name: 'MentalGiant', score: 22 },
+  { name: 'CalcKid', score: 14 },
 ];
 
 const STATE = {
@@ -26,10 +26,6 @@ const STATE = {
   selectedDifficulty: null,
   problem: null,
   score: 0,
-  streak: 0,
-  bestStreak: 0,
-  attempted: 0,
-  correct: 0,
   timeLeft: GAME_DURATION,
   timerInterval: null,
   isNewHighScore: false,
@@ -183,13 +179,6 @@ function generateProblem(difficulty) {
   return pool[randInt(0, pool.length - 1)]();
 }
 
-function getMultiplier(streak) {
-  if (streak >= 10) return 4;
-  if (streak >= 6) return 3;
-  if (streak >= 3) return 2;
-  return 1;
-}
-
 // ── AUDIO ─────────────────────────────────────────────────────────────────────
 function getAudioCtx() {
   if (!audioCtx) {
@@ -217,13 +206,8 @@ function beep(freq, dur, type, vol) {
   } catch {}
 }
 
-function playCorrectSound(streak) {
+function playCorrectSound() {
   beep(660, 0.09, 'sine', 0.12);
-  if (streak >= 3) setTimeout(() => beep(880, 0.12, 'sine', 0.12), 90);
-}
-
-function playWrongSound() {
-  beep(180, 0.22, 'sawtooth', 0.12);
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
@@ -267,7 +251,7 @@ function renderSelect() {
     if (currentUser) {
       const hs = getHighScore(d);
       hsHtml = hs > 0
-        ? `<div class="diff-highscore">🏆 High Score: ${hs}</div>`
+        ? `<div class="diff-highscore">🏆 High Score: ${hs} correct</div>`
         : `<div class="diff-highscore none">No high score yet</div>`;
     } else {
       hsHtml = `<div class="diff-highscore none">Log in to save high scores</div>`;
@@ -288,7 +272,7 @@ function renderSelect() {
     <div class="mmc-header">
       <div class="section-tag">Mental Math Challenge</div>
       <h1 style="margin-bottom:8px">Pick your difficulty</h1>
-      <p style="color:var(--t2);font-size:0.9rem">60 seconds on the clock. Chain correct answers for a streak multiplier.${currentUser ? '' : ' Log in from the nav above to save your high scores.'}</p>
+      <p style="color:var(--t2);font-size:0.9rem">2 minutes on the clock. Type the answer — get it right and you'll move on automatically. Your score is just the number you get correct.${currentUser ? '' : ' Log in from the nav above to save your high scores.'}</p>
     </div>
     <div class="diff-grid">${cards}</div>
     <div style="text-align:center">
@@ -305,8 +289,6 @@ function selectDifficulty(d) {
 function renderPlaying() {
   const q = STATE.problem;
   const meta = DIFFICULTY_META[STATE.difficulty];
-  const mult = getMultiplier(STATE.streak);
-  const streakLabel = STATE.streak >= 3 ? `🔥 ${STATE.streak} streak · ${mult}×` : `${STATE.streak} streak`;
   return `
   <div style="position:relative">
     <div class="mmc-topbar">
@@ -315,12 +297,8 @@ function renderPlaying() {
         <div class="mmc-topbar-value">${meta.icon} ${meta.name}</div>
       </div>
       <div class="mmc-topbar-stat">
-        <div class="mmc-topbar-label">Score</div>
+        <div class="mmc-topbar-label">Correct</div>
         <div class="mmc-topbar-value" id="mmc-score-value">${STATE.score}</div>
-      </div>
-      <div class="mmc-topbar-stat">
-        <div class="mmc-topbar-label">Streak</div>
-        <div id="mmc-streak-badge" class="mmc-streak-badge${STATE.streak >= 3 ? ' fire' : ''}">${streakLabel}</div>
       </div>
     </div>
     <button class="btn btn-ghost mmc-quit" onclick="quitGame()" aria-label="Quit challenge">✕ Quit</button>
@@ -331,21 +309,21 @@ function renderPlaying() {
           <circle id="mmc-ring-fg" class="mmc-ring-fg" cx="60" cy="60" r="${RING_RADIUS}"
             stroke-dasharray="${RING_CIRCUMFERENCE}" stroke-dashoffset="0"></circle>
         </svg>
-        <div id="mmc-ring-time" class="mmc-ring-time">${STATE.timeLeft}</div>
+        <div id="mmc-ring-time" class="mmc-ring-time">${formatTime(STATE.timeLeft)}</div>
       </div>
       <div class="mmc-question">${q.text} = ?</div>
-      <form class="mmc-form" onsubmit="submitAnswer(event)">
-        <input type="text" inputmode="decimal" id="mmc-input" class="mmc-input" autocomplete="off" oninput="sanitizeInput(this)" />
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-      <div style="font-size:0.78rem;color:var(--t3)">Press Enter to submit</div>
+      <div class="mmc-input-row">
+        <input type="text" inputmode="decimal" id="mmc-input" class="mmc-input" autocomplete="off" oninput="checkLiveAnswer(this)" />
+      </div>
+      <div style="font-size:0.78rem;color:var(--t3)">Type the answer — it advances automatically when correct</div>
     </div>
   </div>`;
 }
 
 function renderGameOver() {
   const meta = DIFFICULTY_META[STATE.difficulty];
-  const accuracy = STATE.attempted > 0 ? Math.round((STATE.correct / STATE.attempted) * 100) : 0;
+  const timeUsed = GAME_DURATION - Math.max(0, STATE.timeLeft);
+  const avgSec = STATE.score > 0 ? (timeUsed / STATE.score).toFixed(1) : '—';
   const badge = STATE.isNewHighScore ? `<div class="mmc-badge-new">🏆 New High Score!</div>` : '';
   const saveNote = currentUser ? '' : `<p style="color:var(--t3);font-size:0.82rem;margin-bottom:16px">Log in from the nav above to save this score.</p>`;
   return `
@@ -354,10 +332,10 @@ function renderGameOver() {
     ${badge}
     <h1>Time's up!</h1>
     <div class="mmc-result-score">${STATE.score}</div>
+    <div style="color:var(--t3);font-size:0.82rem;margin-top:-18px;margin-bottom:8px">correct answers</div>
     <div class="mmc-stat-grid">
-      <div class="mmc-stat"><div class="mmc-stat-value">${STATE.correct}/${STATE.attempted}</div><div class="mmc-stat-label">Correct</div></div>
-      <div class="mmc-stat"><div class="mmc-stat-value">${accuracy}%</div><div class="mmc-stat-label">Accuracy</div></div>
-      <div class="mmc-stat"><div class="mmc-stat-value">${STATE.bestStreak}</div><div class="mmc-stat-label">Best Streak</div></div>
+      <div class="mmc-stat"><div class="mmc-stat-value">${formatTime(timeUsed)}</div><div class="mmc-stat-label">Time Used</div></div>
+      <div class="mmc-stat"><div class="mmc-stat-value">${avgSec}s</div><div class="mmc-stat-label">Avg / Question</div></div>
     </div>
     ${saveNote}
     <div class="mmc-result-actions">
@@ -423,15 +401,18 @@ function renderStatsView() {
 }
 
 // ── GAME LOOP ─────────────────────────────────────────────────────────────────
+function formatTime(totalSeconds) {
+  const s = Math.max(0, totalSeconds);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, '0')}`;
+}
+
 function startGame(difficulty) {
   if (!difficulty) return;
   STATE.difficulty = difficulty;
   STATE.problem = generateProblem(difficulty);
   STATE.score = 0;
-  STATE.streak = 0;
-  STATE.bestStreak = 0;
-  STATE.attempted = 0;
-  STATE.correct = 0;
   STATE.timeLeft = GAME_DURATION;
   STATE.isNewHighScore = false;
   STATE.view = 'playing';
@@ -452,7 +433,7 @@ function updateRingDom() {
   const fraction = Math.max(0, STATE.timeLeft) / GAME_DURATION;
   fg.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - fraction));
   fg.classList.toggle('warn', STATE.timeLeft <= 10);
-  timeText.textContent = String(Math.max(0, STATE.timeLeft));
+  timeText.textContent = formatTime(STATE.timeLeft);
 }
 
 function sanitizeInput(el) {
@@ -463,54 +444,28 @@ function sanitizeInput(el) {
   el.value = v;
 }
 
-function updateTopbarDom() {
-  const scoreEl = document.getElementById('mmc-score-value');
-  if (scoreEl) scoreEl.textContent = STATE.score;
-  const streakBadge = document.getElementById('mmc-streak-badge');
-  if (streakBadge) {
-    const mult = getMultiplier(STATE.streak);
-    streakBadge.className = 'mmc-streak-badge' + (STATE.streak >= 3 ? ' fire' : '');
-    streakBadge.textContent = STATE.streak >= 3 ? `🔥 ${STATE.streak} streak · ${mult}×` : `${STATE.streak} streak`;
-  }
-}
-
-function submitAnswer(e) {
-  if (e) e.preventDefault();
-  const input = document.getElementById('mmc-input');
-  if (!input || input.disabled) return;
-  const raw = input.value.trim();
-  if (raw === '') return;
+function checkLiveAnswer(el) {
+  sanitizeInput(el);
+  const raw = el.value.trim();
+  if (raw === '' || raw === '-' || raw === '.') return;
 
   const val = parseFloat(raw);
-  const correct = !isNaN(val) && Math.abs(val - STATE.problem.answer) < 0.005;
+  if (isNaN(val)) return;
+  if (Math.abs(val - STATE.problem.answer) >= 0.005) return;
 
-  STATE.attempted++;
-  if (correct) {
-    STATE.streak++;
-    STATE.bestStreak = Math.max(STATE.bestStreak, STATE.streak);
-    STATE.correct++;
-    STATE.score += DIFFICULTY_META[STATE.difficulty].points * getMultiplier(STATE.streak);
-    playCorrectSound(STATE.streak);
-    input.classList.add('correct');
-  } else {
-    STATE.streak = 0;
-    playWrongSound();
-    input.classList.add('wrong');
-    const form = input.closest('form');
-    if (form) {
-      form.classList.add('mmc-shake');
-      setTimeout(() => form.classList.remove('mmc-shake'), 400);
-    }
-  }
+  STATE.score++;
+  playCorrectSound();
+  el.classList.add('correct');
+  el.disabled = true;
 
-  updateTopbarDom();
-  input.disabled = true;
+  const scoreEl = document.getElementById('mmc-score-value');
+  if (scoreEl) scoreEl.textContent = STATE.score;
 
   setTimeout(() => {
     if (STATE.view !== 'playing') return;
     STATE.problem = generateProblem(STATE.difficulty);
     render();
-  }, 260);
+  }, 200);
 }
 
 function quitGame() {
