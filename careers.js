@@ -6,19 +6,39 @@ const MAJOR_SUGGESTIONS = [
   'Electrical Engineering', 'Operations Research', 'Actuarial Science',
 ];
 
+const DEFAULT_PROFILE = {
+  degreeLevel: 'B.S.',
+  major: '',
+  yearInSchool: 'Junior',
+  gradMonthValue: '', // "YYYY-MM" from <input type="month">
+  status: 'In Progress',
+};
+
 const STATE = {
-  profile: {
-    degreeLevel: 'B.S.',
-    major: '',
-    yearInSchool: 'Junior',
-    gradMonthValue: '', // "YYYY-MM" from <input type="month">
-    status: 'In Progress',
-  },
+  view: 'discover', // discover | tracker
+  profile: { ...DEFAULT_PROFILE },
   search: '',
   activeCategory: null, // 'research' | 'trading' | 'developer' | null
   phdOnlyFilter: false,
   openJobId: null,
+  applications: {}, // jobId -> application record (see loadProfile/saveProfile)
+  expandedAppId: null,
 };
+
+const OUTCOME_OPTIONS = ['Pending', 'Accepted', 'Denied'];
+const INTERVIEW_ROUNDS = [
+  'Online Assessment (OA) / Codesignal',
+  'First Round / Phone Screen',
+  'Technical Interview (Math/Coding/Brainteasers)',
+  'Superday / Final Round',
+];
+const PIPELINE_COLUMNS = [
+  { key: 'todo', label: 'To Do', icon: '📋' },
+  { key: 'applied', label: 'Applied', icon: '📨' },
+  { key: 'interviewing', label: 'Interviewing', icon: '🎤' },
+  { key: 'offer', label: 'Offer', icon: '🎉' },
+  { key: 'denied', label: 'Denied', icon: '❌' },
+];
 
 // ── JOB DATA ──────────────────────────────────────────────────────────────────
 const JOBS = [
@@ -296,14 +316,20 @@ function profileKey() {
 }
 
 function loadProfile() {
+  STATE.profile = { ...DEFAULT_PROFILE };
+  STATE.applications = {};
   try {
     const raw = localStorage.getItem(profileKey());
-    if (raw) STATE.profile = { ...STATE.profile, ...JSON.parse(raw) };
+    if (raw) {
+      const { applications, ...profileFields } = JSON.parse(raw);
+      STATE.profile = { ...DEFAULT_PROFILE, ...profileFields };
+      STATE.applications = (applications && typeof applications === 'object') ? applications : {};
+    }
   } catch {}
 }
 
 function saveProfile() {
-  try { localStorage.setItem(profileKey(), JSON.stringify(STATE.profile)); } catch {}
+  try { localStorage.setItem(profileKey(), JSON.stringify({ ...STATE.profile, applications: STATE.applications })); } catch {}
 }
 
 function updateProfileField(field, value) {
@@ -376,6 +402,28 @@ function render() {
   const app = document.getElementById('app');
   if (!app) return;
   app.innerHTML = `
+    ${renderViewTabs()}
+    ${STATE.view === 'tracker' ? renderTrackerView() : renderDiscoverView()}
+  `;
+}
+
+function setView(v) {
+  STATE.view = v;
+  STATE.expandedAppId = null;
+  render();
+}
+
+function renderViewTabs() {
+  const count = Object.keys(STATE.applications).length;
+  return `
+  <div class="cr-view-tabs">
+    <button class="cr-tag-btn ${STATE.view === 'discover' ? 'active' : ''}" onclick="setView('discover')">🔍 Discover Board</button>
+    <button class="cr-tag-btn ${STATE.view === 'tracker' ? 'active' : ''}" onclick="setView('tracker')">📌 My Tracker${count ? ` (${count})` : ''}</button>
+  </div>`;
+}
+
+function renderDiscoverView() {
+  return `
     <div class="cr-layout">
       <div class="cr-header">
         <div class="section-tag">Careers</div>
@@ -477,7 +525,10 @@ function renderJobCard(job, status) {
   <div class="cr-card ${dimmed}" role="button" tabindex="0" aria-label="${job.firm} — ${job.role}"
     onclick="openJob('${job.id}')" onkeydown="if(event.key==='Enter')openJob('${job.id}')">
     ${meta ? `<div class="cr-status-pill ${meta.cls}">${meta.label}</div>` : ''}
-    <div class="cr-card-firm">${job.firm}</div>
+    <div class="cr-card-top-row">
+      <button class="cr-save-btn ${isSaved(job.id) ? 'saved' : ''}" onclick="toggleSaveJob('${job.id}', event)" aria-label="${isSaved(job.id) ? 'Remove from tracker' : 'Save to tracker'}">${isSaved(job.id) ? '🔖' : '📑'}</button>
+      <div class="cr-card-firm">${job.firm}</div>
+    </div>
     <div class="cr-card-role">${job.role}</div>
     <div class="cr-card-row">🎓 ${gradRange}</div>
     <div class="cr-card-row">📍 ${job.location}</div>
@@ -524,7 +575,10 @@ function renderSlideoverContent(job) {
         <div>${step}</div>
       </div>`).join('')}
 
-    <a class="btn btn-primary btn-lg cr-apply-btn" href="${applyUrl}" target="_blank" rel="noopener noreferrer">Apply Now →</a>
+    <div class="cr-so-actions">
+      <button class="btn btn-outline" id="cr-save-slideover-btn" onclick="toggleSaveJob('${job.id}')">${isSaved(job.id) ? '🔖 Saved to Tracker' : '📑 Save to Tracker'}</button>
+      <a class="btn btn-primary cr-apply-btn" href="${applyUrl}" target="_blank" rel="noopener noreferrer">Apply Now →</a>
+    </div>
   `;
 }
 
@@ -543,6 +597,41 @@ function toggleCategory(cat) {
 function togglePhdFilter() {
   STATE.phdOnlyFilter = !STATE.phdOnlyFilter;
   render();
+}
+
+function isSaved(jobId) {
+  return !!STATE.applications[jobId];
+}
+
+function toggleSaveJob(jobId, e) {
+  if (e) e.stopPropagation(); // don't also trigger the card's onclick (openJob)
+  if (STATE.applications[jobId]) {
+    delete STATE.applications[jobId];
+  } else {
+    const job = JOBS.find(j => j.id === jobId);
+    if (!job) return;
+    STATE.applications[jobId] = {
+      jobId,
+      company: job.firm,
+      role: `${job.role} (${job.cycle})`,
+      status: 'To Do',
+      outcome: null,
+      interviewReceived: false,
+      currentRound: null,
+      notes: '',
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  saveProfile();
+  render();
+
+  // If the slide-over is open for this exact job, refresh it too — it lives
+  // outside #app so the render() above doesn't touch it.
+  if (STATE.openJobId === jobId) {
+    const job = JOBS.find(j => j.id === jobId);
+    const slideover = document.getElementById('cr-slideover');
+    if (job && slideover) slideover.innerHTML = renderSlideoverContent(job);
+  }
 }
 
 function openJob(id) {
@@ -571,6 +660,221 @@ function closeJob() {
   if (slideover) slideover.classList.remove('open');
   if (backdrop) backdrop.classList.remove('open');
   document.body.style.overflow = '';
+}
+
+// ── TRACKER ───────────────────────────────────────────────────────────────────
+function relativeTime(iso) {
+  if (!iso) return 'never';
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const min = Math.floor(diffMs / 60000);
+  if (min < 1) return 'just now';
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  if (day < 30) return `${day}d ago`;
+  return `${Math.floor(day / 30)}mo ago`;
+}
+
+function computeColumn(a) {
+  if (a.status === 'To Do') return 'todo';
+  if (a.outcome === 'Accepted') return 'offer';
+  if (a.outcome === 'Denied') return 'denied';
+  if (a.interviewReceived) return 'interviewing';
+  return 'applied';
+}
+
+function renderTrackerView() {
+  const apps = Object.values(STATE.applications);
+  const guestNote = currentUser ? '' : `<p style="color:var(--t3);font-size:0.82rem;margin-bottom:20px">Log in from the nav above to keep your tracker saved across visits.</p>`;
+  return `
+  <div class="cr-layout" style="grid-template-columns:1fr">
+    <div class="cr-header">
+      <div class="section-tag">My Tracker</div>
+      <h1 style="margin-bottom:6px">Your application pipeline</h1>
+      <p style="color:var(--t2);font-size:0.9rem">Track every internship from first interest through offer.</p>
+      ${guestNote}
+    </div>
+    ${renderMetricsBar(apps)}
+    ${renderAddCustomForm()}
+    ${renderPipelineBoard(apps)}
+  </div>`;
+}
+
+function renderMetricsBar(apps) {
+  const totalSaved = apps.filter(a => a.status === 'To Do').length;
+  const appliedApps = apps.filter(a => a.status === 'Applied');
+  const active = appliedApps.filter(a => a.outcome === 'Pending').length;
+  const interviews = apps.filter(a => a.interviewReceived).length;
+  const interviewRate = appliedApps.length ? Math.round((interviews / appliedApps.length) * 100) : 0;
+  const offers = apps.filter(a => a.outcome === 'Accepted').length;
+  return `
+  <div class="cr-metrics-bar">
+    <div class="cr-metric">
+      <div class="cr-metric-value">${totalSaved}</div>
+      <div class="cr-metric-label">Total Saved</div>
+    </div>
+    <div class="cr-metric">
+      <div class="cr-metric-value">${active}</div>
+      <div class="cr-metric-label">Active Applications</div>
+    </div>
+    <div class="cr-metric">
+      <div class="cr-metric-value">${interviews}<span class="cr-metric-sub">${interviewRate}%</span></div>
+      <div class="cr-metric-label">Interviews Secured</div>
+    </div>
+    <div class="cr-metric offer">
+      <div class="cr-metric-value">${offers}</div>
+      <div class="cr-metric-label">Offers</div>
+    </div>
+  </div>`;
+}
+
+function renderAddCustomForm() {
+  return `
+  <div class="cr-add-custom">
+    <input id="cr-custom-company" class="cr-input" placeholder="Company" />
+    <input id="cr-custom-role" class="cr-input" placeholder="Role" />
+    <button class="btn btn-outline" onclick="addCustomApplication()">+ Add Application</button>
+  </div>`;
+}
+
+function addCustomApplication() {
+  const companyEl = document.getElementById('cr-custom-company');
+  const roleEl = document.getElementById('cr-custom-role');
+  const company = (companyEl?.value || '').trim();
+  const role = (roleEl?.value || '').trim();
+  if (!company || !role) { window.alert('Enter both a company and a role.'); return; }
+  const jobId = `custom-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  STATE.applications[jobId] = {
+    jobId, company, role,
+    status: 'To Do', outcome: null, interviewReceived: false, currentRound: null,
+    notes: '', updatedAt: new Date().toISOString(),
+  };
+  saveProfile();
+  render();
+}
+
+function renderPipelineBoard(apps) {
+  if (!apps.length) {
+    return `<div class="cr-empty" style="margin-top:4px">No saved applications yet. Head to the Discover Board and save an internship, or add a custom one above, to start tracking it here.</div>`;
+  }
+  const byColumn = {};
+  PIPELINE_COLUMNS.forEach(c => { byColumn[c.key] = []; });
+  apps.forEach(a => byColumn[computeColumn(a)].push(a));
+
+  return `
+  <div class="cr-board">
+    ${PIPELINE_COLUMNS.map(col => `
+      <div class="cr-board-col">
+        <div class="cr-board-col-header">${col.icon} ${col.label} <span class="cr-board-col-count">${byColumn[col.key].length}</span></div>
+        <div class="cr-board-col-body">
+          ${byColumn[col.key].length ? byColumn[col.key].map(a => renderAppCard(a)).join('') : `<div class="cr-board-empty">—</div>`}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderAppCard(a) {
+  const expanded = STATE.expandedAppId === a.jobId;
+  const roundBadge = a.interviewReceived && a.currentRound ? `<div class="cr-app-round">${a.currentRound}</div>` : '';
+  return `
+  <div class="cr-app-card ${expanded ? 'expanded' : ''}">
+    <div class="cr-app-card-head" onclick="toggleExpandApp('${a.jobId}')">
+      <div>
+        <div class="cr-app-company">${a.company}</div>
+        <div class="cr-app-role">${a.role}</div>
+        ${roundBadge}
+      </div>
+      <div class="cr-app-chevron">${expanded ? '▲' : '▼'}</div>
+    </div>
+    ${expanded ? renderAppCardBody(a) : ''}
+  </div>`;
+}
+
+function renderAppCardBody(a) {
+  return `
+  <div class="cr-app-card-body">
+    <div class="cr-app-row">
+      <label class="cr-label">Status</label>
+      <div class="cr-toggle-row">
+        <button class="cr-toggle-btn ${a.status === 'To Do' ? 'active' : ''}" onclick="updateAppField('${a.jobId}','status','To Do')">To Do</button>
+        <button class="cr-toggle-btn ${a.status === 'Applied' ? 'active' : ''}" onclick="updateAppField('${a.jobId}','status','Applied')">Applied</button>
+      </div>
+    </div>
+    ${a.status === 'Applied' ? `
+      <div class="cr-app-row">
+        <label class="cr-label">Application Outcome</label>
+        <select class="cr-select" onchange="updateAppField('${a.jobId}','outcome', this.value)">
+          ${OUTCOME_OPTIONS.map(o => `<option value="${o}" ${a.outcome === o ? 'selected' : ''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div class="cr-app-row">
+        <label class="cr-label">Interview Received?</label>
+        <div class="cr-toggle-row">
+          <button class="cr-toggle-btn ${a.interviewReceived ? 'active' : ''}" onclick="updateAppField('${a.jobId}','interviewReceived', true)">Yes</button>
+          <button class="cr-toggle-btn ${!a.interviewReceived ? 'active' : ''}" onclick="updateAppField('${a.jobId}','interviewReceived', false)">No</button>
+        </div>
+      </div>
+      ${a.interviewReceived ? `
+        <div class="cr-app-row">
+          <label class="cr-label">Interview Round</label>
+          <select class="cr-select" onchange="updateAppField('${a.jobId}','currentRound', this.value)">
+            ${INTERVIEW_ROUNDS.map(r => `<option value="${r}" ${a.currentRound === r ? 'selected' : ''}>${r}</option>`).join('')}
+          </select>
+        </div>` : ''}
+    ` : ''}
+    <div class="cr-app-row">
+      <label class="cr-label">Notes</label>
+      <textarea class="cr-notes" oninput="updateNotes('${a.jobId}', this.value)" placeholder="Quick prep notes, recruiter contacts, deadlines...">${escapeAttr(a.notes || '')}</textarea>
+      <div class="cr-notes-updated" id="app-updated-${a.jobId}">Last updated ${relativeTime(a.updatedAt)}</div>
+    </div>
+    <button class="cr-remove-btn" onclick="removeApplication('${a.jobId}')">🗑 Remove from Tracker</button>
+  </div>`;
+}
+
+function toggleExpandApp(jobId) {
+  STATE.expandedAppId = STATE.expandedAppId === jobId ? null : jobId;
+  render();
+}
+
+function updateAppField(jobId, field, value) {
+  const a = STATE.applications[jobId];
+  if (!a) return;
+  a[field] = value;
+  if (field === 'status' && value === 'To Do') {
+    a.outcome = null; a.interviewReceived = false; a.currentRound = null;
+  }
+  if (field === 'status' && value === 'Applied' && !a.outcome) {
+    a.outcome = 'Pending';
+  }
+  if (field === 'interviewReceived' && value === false) {
+    a.currentRound = null;
+  }
+  a.updatedAt = new Date().toISOString();
+  saveProfile();
+  render();
+}
+
+let notesDebounceTimer = null;
+function updateNotes(jobId, value) {
+  const a = STATE.applications[jobId];
+  if (!a) return;
+  a.notes = value;
+  clearTimeout(notesDebounceTimer);
+  notesDebounceTimer = setTimeout(() => {
+    a.updatedAt = new Date().toISOString();
+    saveProfile();
+    const ts = document.getElementById(`app-updated-${jobId}`);
+    if (ts) ts.textContent = `Last updated ${relativeTime(a.updatedAt)}`;
+  }, 600);
+}
+
+function removeApplication(jobId) {
+  if (!window.confirm('Remove this application from your tracker? This cannot be undone.')) return;
+  delete STATE.applications[jobId];
+  if (STATE.expandedAppId === jobId) STATE.expandedAppId = null;
+  saveProfile();
+  render();
 }
 
 document.addEventListener('keydown', e => {
