@@ -70,10 +70,20 @@ function getUserStats() {
     const raw = localStorage.getItem(statsKey());
     if (!raw) return blank;
     const parsed = JSON.parse(raw);
-    return {
-      gamesPlayed: parsed.gamesPlayed || 0,
-      highScores: { easy: 0, medium: 0, hard: 0, ...(parsed.highScores || {}) },
-    };
+    const highScores = { easy: 0, medium: 0, hard: 0, ...(parsed.highScores || {}) };
+
+    // One-time migration: high scores saved under the old points+multiplier
+    // system are implausibly large for a plain count of correct answers in a
+    // 2-minute run (no realistic run gets 100+ right). Wipe those out so old
+    // scores don't linger as unbeatable "high scores" under the new system.
+    let migrated = false;
+    for (const d of ['easy', 'medium', 'hard']) {
+      if (highScores[d] > 99) { highScores[d] = 0; migrated = true; }
+    }
+
+    const stats = { gamesPlayed: parsed.gamesPlayed || 0, highScores };
+    if (migrated) saveUserStats(stats);
+    return stats;
   } catch {
     return blank;
   }
