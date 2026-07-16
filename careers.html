@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QuantBattle | Careers — Quant Finance Internship Matcher</title>
+<meta name="description" content="Match your academic profile against real Summer 2027 quant research, trading, and developer internships at top firms." />
+<link rel="canonical" href="https://www.quantbattle.net/careers.html" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="QuantBattle" />
+<meta property="og:title" content="QuantBattle | Careers — Quant Finance Internship Matcher" />
+<meta property="og:description" content="Match your academic profile against real Summer 2027 quant research, trading, and developer internships at top firms." />
+<meta property="og:url" content="https://www.quantbattle.net/careers.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="QuantBattle | Careers — Quant Finance Internship Matcher" />
+<meta name="twitter:description" content="Match your academic profile against real Summer 2027 quant research, trading, and developer internships at top firms." />
+<link rel="stylesheet" href="style.css" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  body { background: var(--bg); }
+  #app { min-height: calc(100vh - 64px); padding-top: 64px; }
+
+  .cr-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 28px 24px 56px; align-items: start; }
+  .cr-header { grid-column: 1 / -1; margin-bottom: 8px; }
+
+  /* PROFILE PANEL */
+  .cr-profile {
+    position: sticky; top: 84px;
+    background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border); border-radius: var(--r2); padding: 22px;
+  }
+  .cr-field { margin-bottom: 16px; }
+  .cr-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--t3); margin-bottom: 7px; display: block; }
+  .cr-input, .cr-select {
+    width: 100%; padding: 10px 12px; font-size: 0.88rem; font-weight: 600;
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--t1); outline: none; transition: border-color 0.15s; font-family: inherit;
+  }
+  .cr-input:focus, .cr-select:focus { border-color: var(--purple); }
+  .cr-grad-preview { font-size: 0.78rem; color: var(--purple-l); margin-top: 6px; font-weight: 600; }
+  .cr-toggle-row { display: flex; gap: 8px; }
+  .cr-toggle-btn {
+    flex: 1; padding: 9px 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 700;
+    border: 1px solid var(--border); background: var(--card); color: var(--t2); cursor: pointer; transition: all 0.15s;
+  }
+  .cr-toggle-btn.active { background: rgba(139,92,246,0.18); border-color: var(--purple); color: var(--purple-l); }
+  .cr-profile-note { font-size: 0.78rem; color: var(--t3); line-height: 1.6; margin-top: 4px; }
+
+  /* DASHBOARD */
+  .cr-dash-top { margin-bottom: 16px; }
+  .cr-search { position: relative; margin-bottom: 12px; }
+  .cr-search input {
+    width: 100%; padding: 12px 16px; font-size: 0.9rem; font-weight: 600;
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
+    color: var(--t1); outline: none; transition: border-color 0.15s;
+  }
+  .cr-search input:focus { border-color: var(--purple); }
+  .cr-tag-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cr-tag-btn {
+    padding: 7px 15px; border-radius: 100px; font-size: 0.8rem; font-weight: 700;
+    border: 1px solid var(--border); background: transparent; color: var(--t2); cursor: pointer; transition: all 0.15s;
+  }
+  .cr-tag-btn:hover { color: var(--t1); border-color: var(--border2); }
+  .cr-tag-btn.active { background: rgba(139,92,246,0.18); border-color: var(--purple); color: var(--purple-l); }
+  .cr-tag-btn.phd.active { background: rgba(239,68,68,0.16); border-color: var(--red); color: #fca5a5; }
+  .cr-count { font-size: 0.8rem; color: var(--t3); margin: 14px 2px 12px; }
+
+  /* JOB CARDS */
+  .cr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .cr-card {
+    background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border); border-radius: var(--r2);
+    padding: 20px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative;
+  }
+  .cr-card:hover { border-color: rgba(139,92,246,0.4); background: var(--glass-bg-strong); transform: translateY(-2px); }
+  .cr-card.dimmed { opacity: 0.55; }
+  .cr-status-pill {
+    position: absolute; top: 16px; right: 16px; font-size: 0.66rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.4px; padding: 3px 9px; border-radius: 100px;
+  }
+  .cr-status-pill.perfect { background: rgba(16,185,129,0.18); color: var(--green); }
+  .cr-status-pill.reach { background: rgba(245,158,11,0.18); color: var(--gold); }
+  .cr-status-pill.mismatch { background: rgba(148,163,184,0.18); color: var(--t2); }
+  .cr-status-pill.blocked { background: rgba(239,68,68,0.18); color: #fca5a5; }
+  .cr-card-firm { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--purple-l); margin-bottom: 4px; }
+  .cr-card-role { font-weight: 800; font-size: 1.02rem; margin-bottom: 10px; padding-right: 70px; }
+  .cr-card-row { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--t2); margin-bottom: 6px; }
+  .cr-card-perks { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 10px; }
+  .cr-perk-badge { font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 100px; background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+  .cr-card-skills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cr-skill-chip { font-size: 0.68rem; font-weight: 600; padding: 3px 9px; border-radius: 6px; background: var(--card2); color: var(--t2); }
+  .cr-empty { grid-column: 1 / -1; text-align: center; padding: 48px 24px; color: var(--t3); background: var(--card); border-radius: var(--r); border: 1px solid var(--border); }
+
+  /* SLIDE-OVER */
+  .cr-backdrop {
+    position: fixed; inset: 0; background: rgba(4,6,14,0.6); z-index: 200;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .cr-backdrop.open { opacity: 1; pointer-events: auto; }
+  .cr-slideover {
+    position: fixed; top: 0; right: 0; height: 100vh; width: min(520px, 100vw);
+    background: var(--bg2); border-left: 1px solid var(--border); z-index: 201;
+    transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    overflow-y: auto; padding: 28px;
+  }
+  .cr-slideover.open { transform: translateX(0); }
+  .cr-slideover-close {
+    position: absolute; top: 20px; right: 20px; width: 34px; height: 34px; border-radius: 50%;
+    background: var(--card); border: 1px solid var(--border); color: var(--t2); cursor: pointer; font-size: 1rem;
+  }
+  .cr-slideover-close:hover { color: var(--t1); }
+  .cr-so-firm { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--purple-l); margin-bottom: 4px; }
+  .cr-so-role { font-size: 1.4rem; font-weight: 800; margin-bottom: 14px; padding-right: 40px; }
+  .cr-so-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px; font-size: 0.85rem; color: var(--t2); }
+  .cr-so-section-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--t3); margin: 22px 0 10px; }
+  .cr-so-desc { font-size: 0.88rem; color: var(--t2); line-height: 1.8; }
+  .cr-timeline-step { display: flex; gap: 12px; margin-bottom: 12px; }
+  .cr-timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--purple); margin-top: 5px; flex-shrink: 0; }
+  .cr-timeline-phase { font-weight: 700; font-size: 0.85rem; margin-bottom: 2px; }
+  .cr-timeline-detail { font-size: 0.82rem; color: var(--t2); line-height: 1.6; }
+  .cr-interview-step { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--t2); }
+  .cr-interview-step:last-child { border-bottom: none; }
+  .cr-interview-num { width: 22px; height: 22px; border-radius: 50%; background: var(--card2); color: var(--t1); font-size: 0.72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cr-apply-btn { display: flex; margin-top: 26px; }
+
+  @media (max-width: 900px) {
+    .cr-layout { grid-template-columns: 1fr; }
+    .cr-profile { position: static; }
+  }
+  @media (max-width: 560px) {
+    .cr-slideover { width: 100vw; padding: 22px; }
+  }
+</style>
+<script>window.__SENTRY_DSN__ = 'https://7759a09b911029a3b03db100273fa56f@o4511330884714496.ingest.us.sentry.io/4511330890809344';</script>
+<script src="sentry.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4l16 16M20 4L4 20"/>
+        <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
+      </svg>
+    </div>
+    <span>QuantBattle</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Practice</a>
+    <a href="games.html">Games</a>
+    <a href="play.html">Battle</a>
+    <a href="careers.html" class="active">Careers</a>
+  </div>
+  <div class="nav-actions">
+    <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
+      onclick="showAuthModal(user => { currentUser = user; updateNavUser(); onAuthChanged(); })">Log In / Sign Up</button>
+    <div style="position:relative" id="nav-profile-wrap">
+      <button id="nav-username" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleProfileMenu()">?</button>
+      <div id="profile-menu" class="nav-menu">
+        <div class="nav-menu-header" id="profile-menu-user">
+          <div class="nav-menu-name" id="profile-menu-name">—</div>
+          <div class="nav-menu-elo" id="profile-menu-elo">— ELO</div>
+        </div>
+        <a href="#" class="nav-menu-logout" onclick="event.preventDefault();Auth.logout()">Log Out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<h1 class="sr-only">Careers — Quant Finance Internship Matcher</h1>
+
+<script>
+function toggleProfileMenu() {
+  const menu = document.getElementById('profile-menu');
+  if (!menu) return;
+  const open = menu.style.display !== 'block';
+  menu.style.display = open ? 'block' : 'none';
+  document.getElementById('nav-username')?.setAttribute('aria-expanded', String(open));
+}
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('nav-profile-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    const menu = document.getElementById('profile-menu');
+    if (menu) menu.style.display = 'none';
+    document.getElementById('nav-username')?.setAttribute('aria-expanded', 'false');
+  }
+});
+</script>
+
+<div id="app"></div>
+
+<div class="cr-backdrop" id="cr-backdrop" onclick="closeJob()"></div>
+<div class="cr-slideover" id="cr-slideover"></div>
+
+<script src="auth.js"></script>
+<script src="careers.js"></script>
+</body>
+</html>
