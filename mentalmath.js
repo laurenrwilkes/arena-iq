@@ -8,7 +8,8 @@ let audioCtx = null;
 const DIFFICULTY_META = {
   easy: { name: 'Easy', icon: '🌱', desc: 'Two-digit addition/subtraction and simple multiplication/division.' },
   medium: { name: 'Medium', icon: '🎯', desc: 'Everything in Easy, plus 2-digit × 2-digit and trickier subtraction.' },
-  hard: { name: 'Hard', icon: '🔥', desc: 'Everything in Medium, plus decimals and percentages.' },
+  hard: { name: 'Hard', icon: '🔥', desc: '3-digit addition/subtraction, 2-digit × 2-digit multiplication, and multi-digit division.' },
+  special: { name: 'Specialty', icon: '🧮', desc: 'A dedicated mixed-skills challenge: fractions, decimals, and percentages.' },
 };
 
 const MOCK_LEADERBOARD = [
@@ -64,7 +65,7 @@ function statsKey() {
 }
 
 function getUserStats() {
-  const blank = { gamesPlayed: 0, highScores: { easy: 0, medium: 0, hard: 0 } };
+  const blank = { gamesPlayed: 0, highScores: { easy: 0, medium: 0, hard: 0, special: 0 } };
   if (!currentUser) return blank;
   try {
     const raw = localStorage.getItem(statsKey());
@@ -72,7 +73,7 @@ function getUserStats() {
     const parsed = JSON.parse(raw);
     return {
       gamesPlayed: parsed.gamesPlayed || 0,
-      highScores: { easy: 0, medium: 0, hard: 0, ...(parsed.highScores || {}) },
+      highScores: { easy: 0, medium: 0, hard: 0, special: 0, ...(parsed.highScores || {}) },
     };
   } catch {
     return blank;
@@ -137,11 +138,27 @@ function genSubAdvanced() {
   return { text: `${a} − ${b}`, answer: a - b };
 }
 
+// ── HARD MODE: 3-digit ± 3-digit, 2x2 multiplication (reuses genMul2x2), ────
+// and 3-to-4-digit ÷ 2-digit-divisor (always a clean integer answer).
+function genHard3DigitAddSub() {
+  const op = Math.random() < 0.5 ? '+' : '−';
+  let a = randInt(100, 999), b = randInt(100, 999);
+  if (op === '−' && b > a) { const t = a; a = b; b = t; }
+  const answer = op === '+' ? a + b : a - b;
+  return { text: `${a} ${op} ${b}`, answer };
+}
+
+function genHardDiv() {
+  const x = randInt(10, 99), y = randInt(10, 99);
+  const z = x * y; // always 100–9801, i.e. always 3 or 4 digits
+  return { text: `${z} ÷ ${x}`, answer: y };
+}
+
+// ── SPECIALTY MODE: fractions, decimals, percentages ────────────────────────
 function niceDecimal() {
   const whole = randInt(1, 20);
-  const fracs = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.25, 0.75];
-  const frac = fracs[randInt(0, fracs.length - 1)];
-  return Math.round((whole + frac) * 100) / 100;
+  const cents = randInt(0, 99); // hundredths, so values land on up to 2 decimal places
+  return Math.round((whole + cents / 100) * 100) / 100;
 }
 
 function genDecimalAddSub() {
@@ -153,14 +170,6 @@ function genDecimalAddSub() {
   return { text: `${fmtNum(a)} ${op} ${fmtNum(b)}`, answer };
 }
 
-function genDecimalMul() {
-  const fracs = [0.5, 0.25, 0.75, 0.1, 0.2, 0.4, 0.6, 0.8];
-  const decimalNum = Math.round((randInt(1, 9) + fracs[randInt(0, fracs.length - 1)]) * 100) / 100;
-  const multiplier = randInt(2, 9);
-  const answer = Math.round(decimalNum * multiplier * 100) / 100;
-  return { text: `${fmtNum(decimalNum)} × ${multiplier}`, answer };
-}
-
 function genPercent() {
   const percents = [5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90];
   const pct = percents[randInt(0, percents.length - 1)];
@@ -168,10 +177,21 @@ function genPercent() {
   return { text: `${pct}% of ${base}`, answer: (pct * base) / 100 };
 }
 
+function genFraction() {
+  const denominators = [2, 3, 4, 5, 6, 8, 10];
+  const d = denominators[randInt(0, denominators.length - 1)];
+  const op = Math.random() < 0.5 ? '+' : '−';
+  let n1 = randInt(1, d - 1), n2 = randInt(1, d - 1);
+  if (op === '−' && n2 > n1) { const t = n1; n1 = n2; n2 = t; }
+  const answer = op === '+' ? (n1 + n2) / d : (n1 - n2) / d;
+  return { text: `${n1}/${d} ${op} ${n2}/${d}`, answer };
+}
+
 const GENERATORS = {
   easy: [genAdd, genSub, genMul, genDiv],
   medium: [genAdd, genSub, genMul, genDiv, genMul2x2, genSubAdvanced],
-  hard: [genAdd, genSub, genMul, genDiv, genMul2x2, genSubAdvanced, genDecimalAddSub, genDecimalMul, genPercent],
+  hard: [genHard3DigitAddSub, genMul2x2, genHardDiv],
+  special: [genFraction, genDecimalAddSub, genPercent],
 };
 
 function generateProblem(difficulty) {
@@ -243,7 +263,7 @@ function renderTabs() {
 }
 
 function renderSelect() {
-  const diffs = ['easy', 'medium', 'hard'];
+  const diffs = ['easy', 'medium', 'hard', 'special'];
   const cards = diffs.map(d => {
     const meta = DIFFICULTY_META[d];
     const selected = STATE.selectedDifficulty === d ? 'selected' : '';
@@ -313,9 +333,13 @@ function renderPlaying() {
       </div>
       <div class="mmc-question">${q.text} = ?</div>
       <div class="mmc-input-row">
-        <input type="text" inputmode="decimal" id="mmc-input" class="mmc-input" autocomplete="off" oninput="checkLiveAnswer(this)" />
+        <input type="text" inputmode="${STATE.difficulty === 'special' ? 'text' : 'decimal'}" id="mmc-input" class="mmc-input" autocomplete="off" oninput="checkLiveAnswer(this)" />
       </div>
-      <div style="font-size:0.78rem;color:var(--t3)">Type the answer — it advances automatically when correct</div>
+      <div style="font-size:0.78rem;color:var(--t3)">
+        ${STATE.difficulty === 'special'
+          ? 'Type the answer as a decimal or fraction (e.g. 0.75 or 3/4) — it advances automatically when correct'
+          : 'Type the answer — it advances automatically when correct'}
+      </div>
     </div>
   </div>`;
 }
@@ -361,8 +385,8 @@ function renderStatsView() {
   }
 
   const stats = getUserStats();
-  const diffs = ['easy', 'medium', 'hard'];
-  const diffColor = { easy: 'var(--green)', medium: 'var(--gold)', hard: 'var(--red)' };
+  const diffs = ['easy', 'medium', 'hard', 'special'];
+  const diffColor = { easy: 'var(--green)', medium: 'var(--gold)', hard: 'var(--red)', special: 'var(--purple-l)' };
   const hsCards = diffs.map(d => {
     const meta = DIFFICULTY_META[d];
     return `
@@ -372,7 +396,7 @@ function renderStatsView() {
       </div>`;
   }).join('');
 
-  const bestOverall = Math.max(stats.highScores.easy || 0, stats.highScores.medium || 0, stats.highScores.hard || 0);
+  const bestOverall = Math.max(stats.highScores.easy || 0, stats.highScores.medium || 0, stats.highScores.hard || 0, stats.highScores.special || 0);
   const board = [...MOCK_LEADERBOARD, { name: currentUser.username, score: bestOverall, you: true }]
     .sort((a, b) => b.score - a.score);
   const lbRows = board.map((row, i) => `
@@ -437,19 +461,34 @@ function updateRingDom() {
 }
 
 function sanitizeInput(el) {
-  let v = el.value.replace(/[^0-9.\-]/g, '');
+  let v = el.value.replace(/[^0-9./\-]/g, '');
   v = v.replace(/(?!^)-/g, '');
+  const slash = v.indexOf('/');
+  if (slash !== -1) v = v.slice(0, slash + 1) + v.slice(slash + 1).replace(/\//g, '');
   const dot = v.indexOf('.');
   if (dot !== -1) v = v.slice(0, dot + 1) + v.slice(dot + 1).replace(/\./g, '');
   el.value = v;
 }
 
+// Accepts plain decimals ("0.75") as well as fraction strings ("3/4") — any
+// fraction mathematically equivalent to the answer (e.g. "6/8") passes too,
+// since both sides are compared as plain numbers.
+function parseAnswerInput(raw) {
+  if (raw.includes('/')) {
+    const [numStr, denStr] = raw.split('/');
+    const num = parseFloat(numStr), den = parseFloat(denStr);
+    if (isNaN(num) || isNaN(den) || den === 0) return NaN;
+    return num / den;
+  }
+  return parseFloat(raw);
+}
+
 function checkLiveAnswer(el) {
   sanitizeInput(el);
   const raw = el.value.trim();
-  if (raw === '' || raw === '-' || raw === '.') return;
+  if (raw === '' || raw === '-' || raw === '.' || raw === '/') return;
 
-  const val = parseFloat(raw);
+  const val = parseAnswerInput(raw);
   if (isNaN(val)) return;
   if (Math.abs(val - STATE.problem.answer) >= 0.005) return;
 
