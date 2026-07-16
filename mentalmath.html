@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QuantBattle | Mental Math Challenge — Arcade Speed Math</title>
+<meta name="description" content="Arcade-style 60-second mental math challenge with Easy, Medium, and Hard tiers, streak multipliers, and saved high scores." />
+<link rel="canonical" href="https://www.quantbattle.net/mentalmath.html" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="QuantBattle" />
+<meta property="og:title" content="QuantBattle | Mental Math Challenge — Arcade Speed Math" />
+<meta property="og:description" content="Arcade-style 60-second mental math challenge with Easy, Medium, and Hard tiers, streak multipliers, and saved high scores." />
+<meta property="og:url" content="https://www.quantbattle.net/mentalmath.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="QuantBattle | Mental Math Challenge — Arcade Speed Math" />
+<meta name="twitter:description" content="Arcade-style 60-second mental math challenge with Easy, Medium, and Hard tiers, streak multipliers, and saved high scores." />
+<link rel="stylesheet" href="style.css" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  body { background: var(--bg); }
+  #app { min-height: calc(100vh - 64px); padding-top: 64px; }
+
+  .mmc-back { max-width: 880px; margin: 20px auto 0; padding: 0 24px; }
+  .mmc-back a { color: var(--t3); font-size: 0.82rem; text-decoration: none; }
+  .mmc-back a:hover { color: var(--t1); }
+
+  .mmc-tabs { max-width: 880px; margin: 16px auto 0; padding: 0 24px; display: flex; gap: 8px; }
+  .mmc-tab-btn {
+    padding: 9px 18px; border-radius: 100px; font-size: 0.85rem; font-weight: 700;
+    border: 1px solid var(--border); background: transparent; color: var(--t2); cursor: pointer; transition: all 0.15s;
+  }
+  .mmc-tab-btn:hover { color: var(--t1); border-color: var(--border2); }
+  .mmc-tab-btn.active { background: rgba(139,92,246,0.18); border-color: var(--purple); color: var(--purple-l); }
+
+  /* DIFFICULTY SELECT */
+  .mmc-container { max-width: 880px; margin: 0 auto; padding: 28px 24px 56px; }
+  .mmc-header { margin-bottom: 32px; }
+  .diff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .diff-card {
+    background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 2px solid var(--glass-border); border-radius: var(--r2);
+    padding: 24px; cursor: pointer; transition: all 0.2s; text-align: left;
+  }
+  .diff-card:hover { border-color: rgba(139,92,246,0.35); background: var(--glass-bg-strong); }
+  .diff-card.selected { border-color: var(--purple); background: rgba(139,92,246,0.14); box-shadow: 0 0 0 1px var(--purple), 0 0 20px rgba(139,92,246,0.15); }
+  .diff-icon { font-size: 1.9rem; margin-bottom: 10px; }
+  .diff-name { font-weight: 800; font-size: 1.05rem; margin-bottom: 6px; }
+  .diff-sub { font-size: 0.82rem; color: var(--t2); line-height: 1.6; margin-bottom: 14px; min-height: 40px; }
+  .diff-highscore { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; color: var(--gold); }
+  .diff-highscore.none { color: var(--t3); font-weight: 500; }
+
+  /* PLAY SCREEN */
+  .mmc-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px; background: var(--card); border-bottom: 1px solid var(--border);
+  }
+  .mmc-topbar-stat { text-align: center; }
+  .mmc-topbar-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--t3); font-weight: 700; }
+  .mmc-topbar-value { font-size: 1.15rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  .mmc-play-area { min-height: calc(100vh - 64px - 58px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; gap: 28px; }
+  .mmc-ring-wrap { position: relative; width: 120px; height: 120px; }
+  .mmc-ring-wrap svg { transform: rotate(-90deg); }
+  .mmc-ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+  .mmc-ring-fg { fill: none; stroke: var(--purple); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.3s linear, stroke 0.3s; }
+  .mmc-ring-fg.warn { stroke: var(--red); }
+  .mmc-ring-time { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+
+  .mmc-streak-badge {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 100px;
+    font-size: 0.82rem; font-weight: 700; color: var(--t3); border: 1px solid var(--border); transition: all 0.25s;
+  }
+  .mmc-streak-badge.fire {
+    color: #fff; border-color: transparent; background: linear-gradient(135deg, #f59e0b, #ef4444);
+    box-shadow: 0 0 24px rgba(245,158,11,0.5); animation: mmc-pulse 0.9s ease-in-out infinite;
+  }
+  @keyframes mmc-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+  .mmc-question { font-size: 3rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; text-align: center; letter-spacing: 1px; transition: transform 0.15s; }
+  .mmc-form { display: flex; gap: 10px; align-items: center; }
+  .mmc-input {
+    width: 220px; padding: 16px 18px; font-size: 1.6rem; font-weight: 700;
+    background: var(--card); border: 2px solid var(--border); border-radius: var(--r);
+    color: var(--t1); outline: none; text-align: center; font-family: 'JetBrains Mono', monospace;
+    transition: border-color 0.15s;
+  }
+  .mmc-input:focus { border-color: var(--purple); }
+  .mmc-input.correct { border-color: var(--green); background: rgba(16,185,129,0.1); }
+  .mmc-input.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); }
+  .mmc-shake { animation: mmc-shake 0.4s ease-in-out; }
+  @keyframes mmc-shake {
+    10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-6px); } 40%, 60% { transform: translateX(6px); }
+  }
+
+  .mmc-quit { position: absolute; top: 14px; right: 20px; }
+
+  /* GAME OVER */
+  .mmc-result { max-width: 640px; margin: 0 auto; padding: 48px 24px; text-align: center; }
+  .mmc-result-score { font-size: 4rem; font-weight: 900; font-family: 'JetBrains Mono', monospace; margin: 10px 0; color: var(--green); }
+  .mmc-badge-new {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 100px;
+    background: rgba(245,158,11,0.16); border: 1px solid rgba(245,158,11,0.4); color: var(--gold);
+    font-weight: 700; font-size: 0.85rem; margin-bottom: 16px;
+  }
+  .mmc-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0 28px; }
+  .mmc-stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 10px; }
+  .mmc-stat-value { font-size: 1.35rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .mmc-stat-label { font-size: 0.7rem; color: var(--t3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  .mmc-result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* CONFETTI */
+  .mmc-confetti-piece {
+    position: fixed; top: -20px; width: 8px; height: 14px; opacity: 0.9;
+    animation: mmc-confetti-fall linear forwards; z-index: 999; pointer-events: none;
+  }
+  @keyframes mmc-confetti-fall {
+    to { transform: translateY(105vh) rotate(720deg); opacity: 0.2; }
+  }
+
+  /* STATS TAB */
+  .mmc-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .mmc-bigstat { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; text-align: center; }
+  .mmc-bigstat-value { font-size: 1.8rem; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
+  .mmc-bigstat-label { font-size: 0.72rem; color: var(--t3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 6px; }
+  .mmc-hs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 32px; }
+  .mmc-hs-card { border-radius: var(--r); padding: 18px; border: 1px solid var(--border); background: var(--card); }
+  .mmc-hs-diff { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .mmc-hs-score { font-size: 1.7rem; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
+  .mmc-lb-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; border-radius: 10px; font-size: 0.88rem; margin-bottom: 6px; background: var(--card2); }
+  .mmc-lb-row.you { background: rgba(139,92,246,0.16); border: 1px solid var(--purple); font-weight: 700; }
+  .mmc-lb-rank { color: var(--t3); font-weight: 700; width: 28px; }
+  .mmc-lb-name { flex: 1; padding: 0 8px; }
+  .mmc-lb-score { font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .mmc-guest-note { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; text-align: center; color: var(--t2); font-size: 0.9rem; margin-bottom: 24px; }
+  .mmc-section-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--t3); margin-bottom: 12px; }
+
+  @media (max-width: 640px) {
+    .mmc-question { font-size: 2.1rem; }
+    .mmc-input { width: 160px; font-size: 1.3rem; }
+    .mmc-stat-grid, .mmc-result-grid { grid-template-columns: 1fr; }
+    .mmc-topbar { flex-wrap: wrap; gap: 10px; }
+  }
+</style>
+<script>window.__SENTRY_DSN__ = 'https://7759a09b911029a3b03db100273fa56f@o4511330884714496.ingest.us.sentry.io/4511330890809344';</script>
+<script src="sentry.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4l16 16M20 4L4 20"/>
+        <path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/>
+      </svg>
+    </div>
+    <span>QuantBattle</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Practice</a>
+    <a href="games.html" class="active">Games</a>
+    <a href="play.html">Battle</a>
+  </div>
+  <div class="nav-actions">
+    <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
+      onclick="showAuthModal(user => { currentUser = user; updateNavUser(); onAuthChanged(); })">Log In / Sign Up</button>
+    <div style="position:relative" id="nav-profile-wrap">
+      <button id="nav-username" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleProfileMenu()">?</button>
+      <div id="profile-menu" class="nav-menu">
+        <div class="nav-menu-header" id="profile-menu-user">
+          <div class="nav-menu-name" id="profile-menu-name">—</div>
+          <div class="nav-menu-elo" id="profile-menu-elo">— ELO</div>
+        </div>
+        <a href="#" class="nav-menu-logout" onclick="event.preventDefault();Auth.logout()">Log Out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<h1 class="sr-only">Mental Math Challenge — Arcade Speed Math</h1>
+
+<script>
+function toggleProfileMenu() {
+  const menu = document.getElementById('profile-menu');
+  if (!menu) return;
+  const open = menu.style.display !== 'block';
+  menu.style.display = open ? 'block' : 'none';
+  document.getElementById('nav-username')?.setAttribute('aria-expanded', String(open));
+}
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('nav-profile-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    const menu = document.getElementById('profile-menu');
+    if (menu) menu.style.display = 'none';
+    document.getElementById('nav-username')?.setAttribute('aria-expanded', 'false');
+  }
+});
+</script>
+
+<div class="mmc-back"><a href="games.html">← Back to Games</a></div>
+
+<div id="app"></div>
+
+<script src="auth.js"></script>
+<script src="mentalmath.js"></script>
+</body>
+</html>
