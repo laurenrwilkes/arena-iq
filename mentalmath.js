@@ -324,7 +324,7 @@ function renderPlaying() {
     <button class="btn btn-ghost mmc-quit" onclick="quitGame()" aria-label="Quit challenge">✕ Quit</button>
     <div class="mmc-play-area">
       <div class="mmc-ring-wrap">
-        <svg width="120" height="120" viewBox="0 0 120 120">
+        <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
           <circle class="mmc-ring-bg" cx="60" cy="60" r="${RING_RADIUS}"></circle>
           <circle id="mmc-ring-fg" class="mmc-ring-fg" cx="60" cy="60" r="${RING_RADIUS}"
             stroke-dasharray="${RING_CIRCUMFERENCE}" stroke-dashoffset="0"></circle>
