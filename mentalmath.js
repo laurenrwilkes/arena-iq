@@ -291,7 +291,7 @@ function renderSelect() {
   <div class="mmc-container">
     <div class="mmc-header">
       <div class="section-tag">Mental Math Challenge</div>
-      <h1 style="margin-bottom:8px">Pick your difficulty</h1>
+      <h2 style="margin-bottom:8px">Pick your difficulty</h2>
       <p style="color:var(--t2);font-size:0.9rem">2 minutes on the clock. Type the answer — get it right and you'll move on automatically. Your score is just the number you get correct.${currentUser ? '' : ' Log in from the nav above to save your high scores.'}</p>
     </div>
     <div class="diff-grid">${cards}</div>
@@ -354,7 +354,7 @@ function renderGameOver() {
   <div class="mmc-result">
     <div class="section-tag" style="justify-content:center;display:flex">${meta.icon} ${meta.name} — Complete</div>
     ${badge}
-    <h1>Time's up!</h1>
+    <h2>Time's up!</h2>
     <div class="mmc-result-score">${STATE.score}</div>
     <div style="color:var(--t3);font-size:0.82rem;margin-top:-18px;margin-bottom:8px">correct answers</div>
     <div class="mmc-stat-grid">
@@ -375,7 +375,7 @@ function renderStatsView() {
     <div class="mmc-container">
       <div class="mmc-header">
         <div class="section-tag">Profile &amp; Stats</div>
-        <h1 style="margin-bottom:8px">Track your progress</h1>
+        <h2 style="margin-bottom:8px">Track your progress</h2>
       </div>
       <div class="mmc-guest-note">
         You're playing as a guest — scores aren't saved.<br/>
@@ -410,7 +410,7 @@ function renderStatsView() {
   <div class="mmc-container">
     <div class="mmc-header">
       <div class="section-tag">Profile &amp; Stats</div>
-      <h1 style="margin-bottom:8px">${currentUser.username}'s progress</h1>
+      <h2 style="margin-bottom:8px">${currentUser.username}'s progress</h2>
     </div>
     <div class="mmc-stats-grid">
       <div class="mmc-bigstat"><div class="mmc-bigstat-value">${stats.gamesPlayed}</div><div class="mmc-bigstat-label">Games Played</div></div>

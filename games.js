@@ -55,7 +55,7 @@ function renderMenu() {
   <div class="games-container">
     <div class="games-header">
       <div class="section-tag">Games</div>
-      <h1 style="margin-bottom:8px">Speed drills &amp; mental math</h1>
+      <h2 style="margin-bottom:8px">Speed drills &amp; mental math</h2>
       <p style="color:var(--t2);font-size:0.9rem">Practice the timed mental math tests used in real trading-firm interviews. Free, no account needed.</p>
     </div>
     <div class="game-grid">
@@ -91,7 +91,7 @@ function renderRules() {
   return `
   <div class="mm-setup">
     <div class="section-tag" style="justify-content:center;display:flex">Optiver 80 in 8</div>
-    <h1>80 questions. 8 minutes. No calculator.</h1>
+    <h2>80 questions. 8 minutes. No calculator.</h2>
     <p>A single continuous mental math sprint — answer as many of the 80 questions as you can before the clock runs out. Press Enter to submit and move to the next question.</p>
     <div class="mm-rules">
       <ul>
@@ -134,7 +134,7 @@ function renderResult() {
   return `
   <div class="mm-result">
     <div class="section-tag" style="justify-content:center;display:flex">Test Complete</div>
-    <h1>Optiver 80 in 8 — Results</h1>
+    <h2>Optiver 80 in 8 — Results</h2>
     <div class="mm-result-score" style="color:var(--green)">${STATE.correct}<span style="color:var(--t3);font-size:2rem">/${TOTAL_QUESTIONS}</span></div>
     <div class="mm-result-grid">
       <div class="mm-stat"><div class="mm-stat-value">${STATE.answered}</div><div class="mm-stat-label">Answered</div></div>
