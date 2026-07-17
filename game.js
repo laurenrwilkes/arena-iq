@@ -27,6 +27,24 @@ const STATE = {
   myScore: 0,
   oppSubmitted: 0,
   hintUsed: false,
+
+  // Quant battle: two-phase (Blitz → Tactical)
+  isQuantBattle: false,
+  battlePhase: 'blitz', // blitz | tactical
+  blitzQuestion: null,
+  blitzScore: 0,
+  blitzOppScore: 0,
+  blitzDuration: 120,
+  blitzTimeLeft: 120,
+  blitzInterval: null,
+  blitzPointWon: false,
+  tacticalQuestions: [],
+  tacticalAnswers: {},
+  tacticalIndex: 0,
+  tacticalTimeLimit: 0,
+  tacticalTimeLeft: 0,
+  tacticalInterval: null,
+  tacticalSubmitted: false,
 };
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -49,14 +67,28 @@ function connectSocket() {
     clearInterval(queueTimer);
     STATE.phase = 'game';
     STATE.gameId = data.gameId;
+    STATE.opponent = data.opponent;
+    STATE.myAnswerCorrect = null;
+    STATE.isQuantBattle = !!data.isQuantBattle;
+
+    if (STATE.isQuantBattle) {
+      STATE.battlePhase = 'blitz';
+      STATE.blitzQuestion = { text: data.blitzQuestion };
+      STATE.blitzScore = 0;
+      STATE.blitzOppScore = 0;
+      STATE.blitzDuration = data.blitzDuration;
+      STATE.blitzTimeLeft = data.blitzDuration;
+      render();
+      startBlitzTimer();
+      return;
+    }
+
     STATE.multiQuestion = data.multiQuestion || false;
     STATE.questions = data.questions || [data.question];
     STATE.questionIndex = 0;
     STATE.question = STATE.questions[0];
     STATE.timeLimit = data.timeLimit;
     STATE.timeLeft = data.timeLimit;
-    STATE.opponent = data.opponent;
-    STATE.myAnswerCorrect = null;
     STATE.myScore = 0;
     STATE.oppSubmitted = 0;
     STATE.hintUsed = false;
@@ -65,6 +97,37 @@ function connectSocket() {
     STATE.numericCheckCorrect = false;
     render();
     startTimer();
+  });
+
+  socket.on('blitz_question', ({ correct, yourScore, question }) => {
+    STATE.blitzScore = yourScore;
+    STATE.blitzQuestion = { text: question };
+    const qEl = document.getElementById('blitz-question');
+    if (qEl) qEl.textContent = `${question} = ?`;
+    const scoreEl = document.getElementById('blitz-score');
+    if (scoreEl) scoreEl.textContent = yourScore;
+    const input = document.getElementById('blitz-input');
+    if (input) { input.value = ''; input.focus(); }
+  });
+
+  socket.on('blitz_opponent_update', ({ opponentScore }) => {
+    STATE.blitzOppScore = opponentScore;
+    const el = document.getElementById('blitz-opp-score');
+    if (el) el.textContent = opponentScore;
+  });
+
+  socket.on('phase2_start', (data) => {
+    clearInterval(STATE.blitzInterval);
+    STATE.battlePhase = 'tactical';
+    STATE.blitzPointWon = !!data.blitzPointWon;
+    STATE.tacticalQuestions = data.questions || [];
+    STATE.tacticalAnswers = {};
+    STATE.tacticalIndex = 0;
+    STATE.tacticalTimeLimit = data.timeLimit;
+    STATE.tacticalTimeLeft = data.timeLimit;
+    STATE.tacticalSubmitted = false;
+    render();
+    startTacticalTimer();
   });
 
   socket.on('opponent_progress', ({ submitted }) => {
@@ -89,6 +152,8 @@ function connectSocket() {
 
   socket.on('game_result', (data) => {
     clearInterval(STATE.timerInterval);
+    clearInterval(STATE.blitzInterval);
+    clearInterval(STATE.tacticalInterval);
     STATE.phase = 'result';
     STATE.resultData = data;
     if (currentUser && data.newElo) currentUser.elo = data.newElo;
@@ -314,8 +379,178 @@ function joinPrivateRoom() {
 
 // ── GAME ──────────────────────────────────────────────────────────────────────
 function renderGame() {
+  if (STATE.isQuantBattle) {
+    return STATE.battlePhase === 'tactical' ? renderTacticalPhase() : renderBlitzPhase();
+  }
   const q = STATE.question;
   return q.type === 'code' ? renderCodeGame(q) : renderNumericGame(q);
+}
+
+// ── QUANT BATTLE PHASE 1: BLITZ ──────────────────────────────────────────────
+function renderBlitzPhase() {
+  return `
+  <div class="game-container">
+    <div class="game-topbar">
+      <div class="game-info">
+        <span class="info-pill" style="border-color:var(--cyan);color:var(--cyan)">📊 Quant Finance</span>
+        <span class="info-pill">${STATE.difficulty}</span>
+        <span class="info-pill" style="border-color:var(--gold);color:var(--gold)">⚡ Phase 1 — Blitz</span>
+      </div>
+      <div class="game-timer-wrap">
+        <div class="game-timer" id="blitz-timer">${formatTime(STATE.blitzTimeLeft)}</div>
+        <div style="font-size:0.7rem;color:var(--t3);text-align:center">time left</div>
+      </div>
+      <div style="font-size:0.8rem;color:var(--t3)">Opponent: <span id="blitz-opp-score" style="color:var(--gold);font-weight:700">${STATE.blitzOppScore}</span> correct</div>
+    </div>
+    <div class="numeric-game-area">
+      <div class="numeric-problem" style="text-align:center">
+        <div class="problem-title">Rapid-Fire Round</div>
+        <div class="problem-desc numeric-desc" style="font-size:0.85rem;color:var(--t3)">Answer as many as you can before time runs out — right or wrong, you'll get a new one immediately.</div>
+      </div>
+      <div class="numeric-answer-box" style="text-align:center">
+        <div class="answer-label">Your Score: <span id="blitz-score" style="color:var(--green)">${STATE.blitzScore}</span> correct</div>
+        <div id="blitz-question" style="font-size:2.2rem;font-weight:800;margin:18px 0;font-family:'JetBrains Mono',monospace">${STATE.blitzQuestion?.text || '...'} = ?</div>
+        <div class="answer-input-row">
+          <input type="text" inputmode="decimal" id="blitz-input" class="answer-input" autocomplete="off"
+            onkeydown="if(event.key==='Enter') submitBlitzAnswer()" />
+        </div>
+        <div class="numeric-actions">
+          <button class="btn btn-primary" style="flex:1" onclick="submitBlitzAnswer()">Submit →</button>
+        </div>
+        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px">Press Enter or click Submit — you'll get a new question either way</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function startBlitzTimer() {
+  clearInterval(STATE.blitzInterval);
+  STATE.blitzInterval = setInterval(() => {
+    STATE.blitzTimeLeft = Math.max(0, STATE.blitzTimeLeft - 1);
+    const el = document.getElementById('blitz-timer');
+    if (el) {
+      el.textContent = formatTime(STATE.blitzTimeLeft);
+      if (STATE.blitzTimeLeft <= 15) el.style.color = 'var(--red)';
+    }
+    if (STATE.blitzTimeLeft <= 0) clearInterval(STATE.blitzInterval);
+  }, 1000);
+}
+
+function submitBlitzAnswer() {
+  const input = document.getElementById('blitz-input');
+  if (!input) return;
+  const value = input.value.trim();
+  if (value === '') return;
+  socket?.emit('submit_blitz_answer', { gameId: STATE.gameId, value });
+}
+
+// ── QUANT BATTLE PHASE 2: TACTICAL ───────────────────────────────────────────
+function renderTacticalPhase() {
+  const total = STATE.tacticalQuestions.length;
+  const q = STATE.tacticalQuestions[STATE.tacticalIndex];
+  const navPills = STATE.tacticalQuestions.map((_, i) => {
+    const answered = STATE.tacticalAnswers[i] !== undefined && STATE.tacticalAnswers[i] !== '';
+    const active = i === STATE.tacticalIndex;
+    const style = active
+      ? 'cursor:pointer;border-color:var(--purple);color:var(--purple-l);background:rgba(139,92,246,0.14)'
+      : answered
+        ? 'cursor:pointer;border-color:var(--green);color:var(--green)'
+        : 'cursor:pointer';
+    return `<button class="info-pill" style="${style}" onclick="goToTacticalQuestion(${i})">${i + 1}</button>`;
+  }).join('');
+
+  const currentVal = (STATE.tacticalAnswers[STATE.tacticalIndex] ?? '').toString().replace(/"/g, '&quot;');
+  const hasPrefix = q.unit && !['%', 'days', 'rolls', 'x', 'years', 'bps', 'contracts'].includes(q.unit);
+  const hasSuffix = q.unit && ['%', 'days', 'rolls', 'x', 'years', 'bps', 'contracts'].includes(q.unit);
+  const backDisabled = STATE.tacticalIndex === 0;
+
+  return `
+  <div class="game-container">
+    <div class="game-topbar">
+      <div class="game-info">
+        <span class="info-pill" style="border-color:var(--cyan);color:var(--cyan)">📊 Quant Finance</span>
+        <span class="info-pill">${STATE.difficulty}</span>
+        <span class="info-pill" style="border-color:var(--purple);color:var(--purple-l)">🧩 Phase 2 — Tactical</span>
+      </div>
+      <div class="game-timer-wrap">
+        <div class="game-timer" id="tactical-timer">${formatTime(STATE.tacticalTimeLeft)}</div>
+        <div style="font-size:0.7rem;color:var(--t3);text-align:center">time left</div>
+      </div>
+      <div style="font-size:0.8rem;color:var(--t3)">${STATE.blitzPointWon ? '🏆 You won the Blitz (+1)' : 'Opponent won the Blitz'}</div>
+    </div>
+    <div class="numeric-game-area">
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${navPills}</div>
+      <div class="numeric-problem">
+        <div class="problem-title">${q.title}</div>
+        <div class="problem-desc numeric-desc">${(q.description || '').replace(/\n/g, '<br/>')}</div>
+      </div>
+      <div class="numeric-answer-box">
+        <div class="answer-label">Question ${STATE.tacticalIndex + 1} of ${total}</div>
+        <div class="answer-input-row">
+          ${hasPrefix ? `<span class="answer-prefix">${q.unit}</span>` : ''}
+          <input type="text" inputmode="decimal" id="tactical-input" class="answer-input" value="${currentVal}"
+            oninput="setTacticalAnswer(this.value)" />
+          ${hasSuffix ? `<span class="answer-suffix">${q.unit}</span>` : ''}
+        </div>
+        <div class="numeric-actions">
+          <button class="btn btn-outline" ${backDisabled ? 'disabled style="opacity:0.4;flex:1"' : 'style="flex:1"'} onclick="goToTacticalQuestion(${STATE.tacticalIndex - 1})">← Back</button>
+          ${STATE.tacticalIndex < total - 1 ? `<button class="btn btn-outline" style="flex:1" onclick="goToTacticalQuestion(${STATE.tacticalIndex + 1})">Next →</button>` : ''}
+          <button class="btn btn-primary" style="flex:2" onclick="submitTacticalResults()">Submit Final Answers →</button>
+        </div>
+        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Navigate freely between questions — nothing locks in until you submit</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function setTacticalAnswer(value) {
+  STATE.tacticalAnswers[STATE.tacticalIndex] = value;
+}
+
+function goToTacticalQuestion(i) {
+  if (i < 0 || i >= STATE.tacticalQuestions.length) return;
+  STATE.tacticalIndex = i;
+  const app = document.getElementById('app');
+  if (app) app.innerHTML = renderTacticalPhase();
+}
+
+function startTacticalTimer() {
+  clearInterval(STATE.tacticalInterval);
+  STATE.tacticalInterval = setInterval(() => {
+    STATE.tacticalTimeLeft = Math.max(0, STATE.tacticalTimeLeft - 1);
+    const el = document.getElementById('tactical-timer');
+    if (el) {
+      el.textContent = formatTime(STATE.tacticalTimeLeft);
+      if (STATE.tacticalTimeLeft <= 30) el.style.color = 'var(--red)';
+      else if (STATE.tacticalTimeLeft <= 60) el.style.color = 'var(--gold)';
+    }
+    if (STATE.tacticalTimeLeft <= 0) {
+      clearInterval(STATE.tacticalInterval);
+      submitTacticalResults();
+    }
+  }, 1000);
+}
+
+function submitTacticalResults() {
+  if (STATE.tacticalSubmitted) return;
+  STATE.tacticalSubmitted = true;
+  clearInterval(STATE.tacticalInterval);
+
+  let correctCount = 0;
+  STATE.tacticalQuestions.forEach((q, i) => {
+    const val = parseAnswerValue(STATE.tacticalAnswers[i]);
+    if (!isNaN(val) && Math.abs(val - q.answer) <= (q.tolerance ?? 0.01)) correctCount++;
+  });
+
+  socket?.emit('submit_tactical_results', { gameId: STATE.gameId, correctCount });
+
+  const app = document.getElementById('app');
+  if (app) app.innerHTML = `
+    <div class="matchmaking-container">
+      <div class="mm-spinner"></div>
+      <h2 style="margin-top:32px">Submitted!</h2>
+      <p style="color:var(--t2);margin-top:8px">You got ${correctCount}/${STATE.tacticalQuestions.length} correct in the Tactical round. Waiting for your opponent to finish...</p>
+    </div>`;
 }
 
 function gameHeader(q) {
@@ -750,7 +985,7 @@ function renderResult() {
   const d = STATE.resultData;
   const q = STATE.question;
   const win = d.youWin;
-  const isDraw = !d.youWin && d.winnerId === null;
+  const isDraw = d.isDraw;
   const eloChange = d.eloChange ?? 0;
   const eloColor = eloChange >= 0 ? 'var(--green)' : 'var(--red)';
 
@@ -761,18 +996,15 @@ function renderResult() {
       <button class="btn btn-primary" onclick="showAuthModal(user => { currentUser = user; updateNavUser(); })">Create Free Account →</button>
     </div>` : '';
 
-  return `
-  <div class="result-container">
-    <div class="result-banner ${isDraw?'draw':win?'win':'loss'}">
-      <div class="result-icon">${isDraw?'🤝':win?'🏆':'💀'}</div>
-      <h2>${isDraw?"Draw!":win?"You Won!":"You Lost"}</h2>
-      <p style="color:var(--t2);margin:8px 0">${isDraw?'Neither solved it correctly.':`${win?'You':'Your opponent'} submitted the correct answer first.`}</p>
-      ${currentUser ? `<div class="elo-change ${eloChange>=0?'pos':'neg'}">${eloChange>=0?'+':''}${eloChange} ELO → ${d.newElo}</div>` : ''}
-    </div>
+  const summaryLine = STATE.isQuantBattle
+    ? (isDraw ? 'Your combined Blitz + Tactical score tied with your opponent\'s.' : `${win?'You':'Your opponent'} scored higher across the Blitz and Tactical rounds.`)
+    : (isDraw ? 'Neither solved it correctly.' : `${win?'You':'Your opponent'} submitted the correct answer first.`);
 
-    ${guestCTA}
-
-    <div class="result-grid">
+  const leftCard = STATE.isQuantBattle ? `
+      <div class="result-card">
+        <div class="panel-label">🧩 Tactical Round</div>
+        ${STATE.tacticalQuestions.map((tq, i) => `<div class="summary-row"><span>${i + 1}. ${tq.title}</span><strong>${(tq.diff || '').charAt(0).toUpperCase()}${(tq.diff || '').slice(1)}</strong></div>`).join('')}
+      </div>` : `
       <div class="result-card">
         <div class="panel-label">💡 Explanation</div>
         <div style="font-size:0.9rem;color:var(--t1);line-height:1.8">${d.explanation || q.explanation}</div>
@@ -781,7 +1013,22 @@ function renderResult() {
             <div class="panel-label">Step-by-step</div>
             ${q.steps.map(s=>`<div class="step-row"><span class="step-label">${s.label}</span><span class="step-value">${s.value}</span></div>`).join('')}
           </div>` : ''}
-      </div>
+      </div>`;
+
+  const rightCard = STATE.isQuantBattle ? `
+      <div class="result-card">
+        <div class="panel-label">📊 Match Stats</div>
+        <div class="summary-row"><span>Blitz round (Phase 1)</span><strong>${d.yourBlitzScore} correct${d.blitzPointWon ? ' 🏆 +1' : ''}</strong></div>
+        <div class="summary-row"><span>Opponent Blitz</span><strong>${d.opponentBlitzScore} correct</strong></div>
+        <div class="summary-row"><span>Tactical round (Phase 2)</span><strong>${d.yourTacticalScore}/${STATE.tacticalQuestions.length} correct</strong></div>
+        <div class="summary-row"><span>Opponent Tactical</span><strong>${d.opponentTacticalScore}/${STATE.tacticalQuestions.length} correct</strong></div>
+        <div class="summary-row"><span>Your final score</span><strong style="color:var(--purple-l)">${d.yourFinalScore}</strong></div>
+        <div class="summary-row"><span>Opponent final score</span><strong>${d.opponentFinalScore}</strong></div>
+        <div class="summary-row"><span>Result</span><strong>${isDraw?'Draw':win?'Win':'Loss'}</strong></div>
+        ${currentUser ? `
+        <div class="summary-row"><span>ELO change</span><strong style="color:${eloColor}">${eloChange>=0?'+':''}${eloChange}</strong></div>
+        <div class="summary-row"><span>New ELO</span><strong>${d.newElo}</strong></div>` : ''}
+      </div>` : `
       <div class="result-card">
         <div class="panel-label">📊 Match Stats</div>
         <div class="summary-row"><span>Problem</span><strong>${q.title}</strong></div>
@@ -790,7 +1037,22 @@ function renderResult() {
         ${currentUser ? `
         <div class="summary-row"><span>ELO change</span><strong style="color:${eloColor}">${eloChange>=0?'+':''}${eloChange}</strong></div>
         <div class="summary-row"><span>New ELO</span><strong>${d.newElo}</strong></div>` : ''}
-      </div>
+      </div>`;
+
+  return `
+  <div class="result-container">
+    <div class="result-banner ${isDraw?'draw':win?'win':'loss'}">
+      <div class="result-icon">${isDraw?'🤝':win?'🏆':'💀'}</div>
+      <h2>${isDraw?"Draw!":win?"You Won!":"You Lost"}</h2>
+      <p style="color:var(--t2);margin:8px 0">${summaryLine}</p>
+      ${currentUser ? `<div class="elo-change ${eloChange>=0?'pos':'neg'}">${eloChange>=0?'+':''}${eloChange} ELO → ${d.newElo}</div>` : ''}
+    </div>
+
+    ${guestCTA}
+
+    <div class="result-grid">
+      ${leftCard}
+      ${rightCard}
     </div>
     <div class="result-actions">
       <button class="btn btn-primary btn-lg" onclick="rematch()">⚔️ Play Again</button>
@@ -820,6 +1082,8 @@ function rematch() {
 function backToSetup() {
   clearInterval(queueTimer);
   clearInterval(STATE.timerInterval);
+  clearInterval(STATE.blitzInterval);
+  clearInterval(STATE.tacticalInterval);
   STATE.phase = 'setup';
   STATE.myAnswerCorrect = null;
   render();
