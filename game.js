@@ -244,14 +244,14 @@ function renderSetup() {
     <div class="setup-step">
       <div class="step-label">2 — Difficulty</div>
       <div class="option-grid" id="diff-grid">
-        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Easy — 5 minute limit" onclick="selectOption('difficulty','easy',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon" style="font-size:1.5rem">🟢</div><div class="opt-name" style="color:var(--green)">Easy</div><div class="opt-sub">5 min limit</div>
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Easy" onclick="selectOption('difficulty','easy',this)" onkeydown="handleOptionKey(event,this)">
+          <div class="opt-icon" style="font-size:1.5rem">🟢</div><div class="opt-name" style="color:var(--green)">Easy</div><div class="opt-sub" id="diff-sub-easy">5 min limit</div>
         </div>
-        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Medium — 8 minute limit" onclick="selectOption('difficulty','medium',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon" style="font-size:1.5rem">🟡</div><div class="opt-name" style="color:var(--gold)">Medium</div><div class="opt-sub">8 min limit</div>
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Medium" onclick="selectOption('difficulty','medium',this)" onkeydown="handleOptionKey(event,this)">
+          <div class="opt-icon" style="font-size:1.5rem">🟡</div><div class="opt-name" style="color:var(--gold)">Medium</div><div class="opt-sub" id="diff-sub-medium">8 min limit</div>
         </div>
-        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Hard — 12 minute limit" onclick="selectOption('difficulty','hard',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon" style="font-size:1.5rem">🔴</div><div class="opt-name" style="color:var(--red)">Hard</div><div class="opt-sub">12 min limit</div>
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Hard" onclick="selectOption('difficulty','hard',this)" onkeydown="handleOptionKey(event,this)">
+          <div class="opt-icon" style="font-size:1.5rem">🔴</div><div class="opt-name" style="color:var(--red)">Hard</div><div class="opt-sub" id="diff-sub-hard">12 min limit</div>
         </div>
       </div>
     </div>
@@ -298,11 +298,27 @@ function handleOptionKey(event, el) {
   if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); el.click(); }
 }
 
+// Quant's timing is now two-phase (fixed 2-min Blitz + a per-difficulty
+// Tactical round); Tech stays a single timed question as before.
+const DIFF_TIME_LABELS = {
+  quant: { easy: '2 min Blitz + 8 min Tactical', medium: '2 min Blitz + 10 min Tactical', hard: '2 min Blitz + 12 min Tactical' },
+  tech: { easy: '5 min limit', medium: '8 min limit', hard: '12 min limit' },
+};
+
+function updateDifficultyLabels() {
+  const labels = DIFF_TIME_LABELS[STATE.category] || DIFF_TIME_LABELS.tech;
+  ['easy', 'medium', 'hard'].forEach(d => {
+    const el = document.getElementById(`diff-sub-${d}`);
+    if (el) el.textContent = labels[d];
+  });
+}
+
 function selectOption(field, val, el) {
   const grids = { category:'cat-grid', difficulty:'diff-grid', mode:'mode-grid' };
   document.querySelectorAll(`#${grids[field]} .option-card`).forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   STATE[field] = val;
+  if (field === 'category') updateDifficultyLabels();
   if (field === 'mode') {
     const sec = document.getElementById('private-room-section');
     const btn = document.getElementById('find-btn');
