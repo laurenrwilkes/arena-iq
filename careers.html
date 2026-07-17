@@ -3,24 +3,36 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>QuantBattle | Careers — Quant Finance Internship Matcher</title>
-<meta name="description" content="Match your academic profile against real Summer 2027 quant research, trading, and developer internships at top firms." />
+<title>Quant Jobs & Internships | Trading, Research & Developer Roles | QuantBattle</title>
+<meta name="description" content="Browse real quant trading, quantitative research, and quant developer internships from leading trading firms and financial companies." />
 <link rel="canonical" href="https://www.quantbattle.net/careers.html" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="QuantBattle" />
-<meta property="og:title" content="QuantBattle | Careers — Quant Finance Internship Matcher" />
-<meta property="og:description" content="Match your academic profile against real Summer 2027 quant research, trading, and developer internships at top firms." />
+<meta property="og:title" content="Quant Jobs & Internships | Trading, Research & Developer Roles | QuantBattle" />
+<meta property="og:description" content="Browse real quant trading, quantitative research, and quant developer internships from leading trading firms and financial companies." />
 <meta property="og:url" content="https://www.quantbattle.net/careers.html" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="QuantBattle | Careers — Quant Finance Internship Matcher" />
-<meta name="twitter:description" content="Match your academic profile against real Summer 2027 quant research, trading, and developer internships at top firms." />
+<meta name="twitter:title" content="Quant Jobs & Internships | Trading, Research & Developer Roles | QuantBattle" />
+<meta name="twitter:description" content="Browse real quant trading, quantitative research, and quant developer internships from leading trading firms and financial companies." />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Quant Jobs & Internships",
+  "url": "https://www.quantbattle.net/careers.html",
+  "description": "Browse real quant trading, quantitative research, and quant developer internships from leading trading firms and financial companies.",
+  "isPartOf": { "@type": "WebSite", "name": "QuantBattle", "url": "https://www.quantbattle.net/" }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" />
 <link rel="stylesheet" href="style.css" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
   body { background: var(--bg); }
-  #app { min-height: calc(100vh - 64px); padding-top: 64px; }
+  #app { min-height: calc(100vh - 64px); }
 
   .cr-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 28px 24px 56px; align-items: start; }
   .cr-header { grid-column: 1 / -1; margin-bottom: 8px; }
@@ -203,10 +215,10 @@
     <span>QuantBattle</span>
   </a>
   <div class="nav-links">
-    <a href="index.html">Practice</a>
-    <a href="games.html">Games</a>
+    <a href="index.html">Questions</a>
     <a href="play.html">Battle</a>
-    <a href="careers.html" class="active">Careers</a>
+    <a href="games.html">Games</a>
+    <a href="careers.html" class="active">Jobs</a>
   </div>
   <div class="nav-actions">
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
@@ -224,7 +236,25 @@
   </div>
 </nav>
 
-<h1 class="sr-only">Careers — Quant Finance Internship Matcher</h1>
+<div class="cr-page-intro">
+  <h1>Quant Jobs &amp; Internships</h1>
+  <p>Real quant trading, research, and developer internships from top firms, matched against your academic profile.</p>
+  <div class="cr-category-links" role="navigation" aria-label="Browse by category">
+    <a href="#trading">Quant Trading Internships</a>
+    <a href="#research">Quant Research Internships</a>
+    <a href="#developer">Quant Developer Internships</a>
+    <a href="careers.html">All Quant Internships</a>
+  </div>
+</div>
+
+<style>
+  .cr-page-intro { max-width: 1280px; margin: 0 auto; padding: 92px 24px 0; }
+  .cr-page-intro h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+  .cr-page-intro p { color: var(--t2); font-size: 0.88rem; margin-bottom: 12px; }
+  .cr-category-links { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  .cr-category-links a { font-size: 0.82rem; font-weight: 600; color: var(--purple-l); text-decoration: none; }
+  .cr-category-links a:hover { text-decoration: underline; }
+</style>
 
 <script>
 function toggleProfileMenu() {

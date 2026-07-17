@@ -15,12 +15,24 @@
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="QuantBattle | Mental Math Challenge — Arcade Speed Math" />
 <meta name="twitter:description" content="Arcade-style 2-minute mental math challenge with Easy, Medium, and Hard tiers and saved high scores." />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Mental Math Challenge — Arcade Speed Math",
+  "url": "https://www.quantbattle.net/mentalmath.html",
+  "description": "Arcade-style 2-minute mental math challenge with Easy, Medium, and Hard tiers and saved high scores.",
+  "isPartOf": { "@type": "WebSite", "name": "QuantBattle", "url": "https://www.quantbattle.net/" }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" />
 <link rel="stylesheet" href="style.css" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
   body { background: var(--bg); }
-  #app { min-height: calc(100vh - 64px); padding-top: 64px; }
+  #app { min-height: calc(100vh - 64px); }
 
   .mmc-back { max-width: 880px; margin: 20px auto 0; padding: 0 24px; }
   .mmc-back a { color: var(--t3); font-size: 0.82rem; text-decoration: none; }
@@ -144,10 +156,10 @@
     <span>QuantBattle</span>
   </a>
   <div class="nav-links">
-    <a href="index.html">Practice</a>
-    <a href="games.html" class="active">Games</a>
+    <a href="index.html">Questions</a>
     <a href="play.html">Battle</a>
-    <a href="careers.html">Careers</a>
+    <a href="games.html" class="active">Games</a>
+    <a href="careers.html">Jobs</a>
   </div>
   <div class="nav-actions">
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
@@ -165,7 +177,10 @@
   </div>
 </nav>
 
-<h1 class="sr-only">Mental Math Challenge — Arcade Speed Math</h1>
+<div style="max-width:640px;margin:0 auto;padding:92px 24px 0">
+  <h1 style="font-size:1.3rem;font-weight:800;margin-bottom:4px">Mental Math Challenge</h1>
+  <p style="color:var(--t2);font-size:0.88rem">Arcade-style 2-minute mental math speed test with Easy, Medium, and Hard tiers.</p>
+</div>
 
 <script>
 function toggleProfileMenu() {

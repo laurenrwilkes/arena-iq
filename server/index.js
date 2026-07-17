@@ -22,6 +22,13 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+
+// Legacy/removed pages — 301 so any residual search-engine indexing or backlinks
+// transfer to the current equivalent instead of dead-ending in a bare 404.
+app.get('/problems.html', (req, res) => res.redirect(301, '/'));
+app.get('/leaderboard.html', (req, res) => res.redirect(301, '/'));
+app.get('/shop.html', (req, res) => res.redirect(301, '/'));
+
 app.use(express.static(path.join(__dirname, '..')));
 
 // ── SEED BOT USERS ───────────────────────────────────────────────────────────

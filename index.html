@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>QuantBattle | Practice Quant & Coding Interview Questions</title>
-<meta name="description" content="QuantBattle lets you practice quant and coding interview questions, then battle other candidates head-to-head in real time." />
+<title>Free Quant Interview Questions | QuantBattle</title>
+<meta name="description" content="Practice free quant interview questions with solutions across probability, statistics, mental math, brainteasers, and quantitative trading." />
 <link rel="canonical" href="https://www.quantbattle.net/" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="QuantBattle" />
-<meta property="og:title" content="QuantBattle | Practice Quant & Coding Interview Questions" />
-<meta property="og:description" content="Practice quant and technical interview questions for free, then battle other candidates head-to-head in real time." />
+<meta property="og:title" content="Free Quant Interview Questions | QuantBattle" />
+<meta property="og:description" content="Practice free quant interview questions with solutions across probability, statistics, mental math, brainteasers, and quantitative trading." />
 <meta property="og:url" content="https://www.quantbattle.net/" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="QuantBattle | Practice Quant & Coding Interview Questions" />
-<meta name="twitter:description" content="Practice quant and technical interview questions for free, then battle other candidates head-to-head in real time." />
+<meta name="twitter:title" content="Free Quant Interview Questions | QuantBattle" />
+<meta name="twitter:description" content="Practice free quant interview questions with solutions across probability, statistics, mental math, brainteasers, and quantitative trading." />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -22,12 +22,14 @@
   "name": "QuantBattle",
   "alternateName": "ArenaIQ",
   "url": "https://www.quantbattle.net/",
-  "description": "Practice quant and coding interview questions, then battle other candidates head-to-head in real time."
+  "description": "Practice free quant interview questions with solutions across probability, statistics, mental math, brainteasers, and quantitative trading."
 }
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" />
 <link rel="stylesheet" href="style.css" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
   /* ── LIGHT THEME — Practice page only; Battle (play.html) keeps the dark theme from style.css.
      Redeclaring :root here overrides the shared dark tokens for every var()-driven element on
@@ -64,10 +66,12 @@
     --glass-bg-strong: rgba(255,255,255,0.8);
     --glass-border: rgba(15,23,42,0.08);
   }
-  /* body is a flex column: the (naturally-sized) intro sits above the app shell, which takes
-     all remaining vertical space via flex:1 — so the 3-pane layout keeps scrolling internally
-     per-column regardless of how tall the intro text ends up being. */
-  body { background: var(--bg); display: flex; flex-direction: column; height: 100vh; padding-top: 64px; overflow: hidden; }
+  /* .app-shell is a flex column capped at one viewport: the (naturally-sized) intro sits above
+     the 3-pane browser, which takes all remaining space via flex:1 and keeps scrolling internally
+     per-column. Content after .app-shell (the feature cards) sits in normal page flow below it,
+     so the page itself scrolls to reveal them without disturbing the app's internal scrolling. */
+  body { background: var(--bg); }
+  .app-shell { display: flex; flex-direction: column; height: 100vh; padding-top: 64px; overflow: hidden; }
   /* A few shared style.css rules hardcode dark-mode colors instead of using variables — override them here */
   nav { background: rgba(255,255,255,0.75); border-bottom: 1px solid rgba(15,23,42,0.06); }
   body::before, body::after { display: none; }
@@ -76,7 +80,8 @@
 
   /* ── SEO INTRO — real crawlable content above the app shell, not just an sr-only fallback ── */
   .seo-intro { max-width: 860px; margin: 0 auto; padding: 16px 40px 8px; flex-shrink: 0; }
-  .seo-intro h1 { font-size: 0.92rem; font-weight: 600; color: var(--t2); line-height: 1.6; letter-spacing: 0; margin-bottom: 0; }
+  .seo-intro h1 { font-size: 1.15rem; font-weight: 800; color: var(--t1); line-height: 1.4; letter-spacing: -0.2px; margin-bottom: 2px; }
+  .seo-intro p { font-size: 0.85rem; font-weight: 500; color: var(--t2); line-height: 1.5; margin: 0; }
 
   /* ── LAYOUT ── */
   .problems-layout {
@@ -369,13 +374,28 @@
   .problems-list-panel::-webkit-scrollbar-thumb,
   .problem-detail-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
+  /* ── FEATURE STRIP — compact cards below the browser, links to the other product surfaces ── */
+  .feature-strip { background: var(--card); border-top: 1px solid var(--border); padding: 36px 40px 48px; }
+  .feature-strip-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .feature-card { display: block; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r2); padding: 20px; text-decoration: none; color: inherit; transition: all 0.2s; }
+  .feature-card:hover, .feature-card:focus-visible { border-color: var(--purple); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .feature-card-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--grad); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .feature-card-icon svg { width: 18px; height: 18px; }
+  .feature-card-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 6px; color: var(--t1); }
+  .feature-card-desc { font-size: 0.8rem; color: var(--t2); line-height: 1.6; margin: 0; }
+
   @media (max-width: 900px) {
     .seo-intro { padding: 16px 20px 12px; }
-    body { overflow: auto; height: auto; }
+    .app-shell { overflow: auto; height: auto; }
     .problems-layout { grid-template-columns: 1fr; flex: none; height: auto; min-height: 0; }
     .problems-list-panel, .problem-detail-panel { border-right: none; }
     .problem-detail-panel { border-top: 1px solid var(--border); }
     .detail-content { padding: 20px; }
+    .feature-strip { padding: 28px 20px 36px; }
+    .feature-strip-inner { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .feature-strip-inner { grid-template-columns: 1fr; }
   }
 </style>
 <script>window.__SENTRY_DSN__ = 'https://7759a09b911029a3b03db100273fa56f@o4511330884714496.ingest.us.sentry.io/4511330890809344';</script>
@@ -394,10 +414,10 @@
     <span>QuantBattle</span>
   </a>
   <div class="nav-links">
-    <a href="index.html" class="active">Practice</a>
-    <a href="games.html">Games</a>
+    <a href="index.html" class="active">Questions</a>
     <a href="play.html">Battle</a>
-    <a href="careers.html">Careers</a>
+    <a href="games.html">Games</a>
+    <a href="careers.html">Jobs</a>
   </div>
   <div class="nav-actions">
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
@@ -414,8 +434,10 @@
   </div>
 </nav>
 
+<div class="app-shell">
 <section class="seo-intro">
-  <h1>QuantBattle — practice quant &amp; coding interview questions, then battle head-to-head in real time.</h1>
+  <h1>Free Quant Interview Questions</h1>
+  <p>Practice free quant interview questions, compete in battle mode, play trading games, and discover quant jobs.</p>
 </section>
 
 <div class="problems-layout">
@@ -468,6 +490,32 @@
     </div>
   </div>
 </div>
+</div>
+
+<section class="feature-strip">
+  <div class="feature-strip-inner">
+    <a href="index.html" class="feature-card">
+      <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+      <h2 class="feature-card-title">Free Interview Questions</h2>
+      <p class="feature-card-desc">200+ quant and coding interview questions with full solutions — probability, statistics, brainteasers, and market making.</p>
+    </a>
+    <a href="play.html" class="feature-card">
+      <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20"/><path d="M4 4l3.2.6M20 4l-3.2.6M4 20l3.2-.6M20 20l-3.2-.6"/></svg></div>
+      <h2 class="feature-card-title">Battle Mode</h2>
+      <p class="feature-card-desc">Challenge another candidate live, 1v1, on a random question. Win to climb the ELO leaderboard.</p>
+    </a>
+    <a href="games.html" class="feature-card">
+      <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h.01M7 12h.01M11 8h6M11 12h6M7 16h10"/></svg></div>
+      <h2 class="feature-card-title">Trading Games</h2>
+      <p class="feature-card-desc">Mental math speed drills used by real trading firms, like the Optiver 80 in 8.</p>
+    </a>
+    <a href="careers.html" class="feature-card">
+      <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+      <h2 class="feature-card-title">Quant Jobs</h2>
+      <p class="feature-card-desc">Browse real quant trading, research, and developer internships from top firms.</p>
+    </a>
+  </div>
+</section>
 
 <script src="auth.js"></script>
 <script>

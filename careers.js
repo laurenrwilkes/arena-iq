@@ -286,8 +286,21 @@ async function init() {
   currentUser = await Auth.fetchMe();
   updateNavUser();
   loadProfile();
+  applyCategoryFromHash();
   render();
 }
+
+function applyCategoryFromHash() {
+  const hashCategory = window.location.hash.slice(1);
+  if (['research', 'trading', 'developer'].includes(hashCategory)) {
+    STATE.view = 'discover';
+    STATE.activeCategory = hashCategory;
+    return;
+  }
+  STATE.activeCategory = null;
+}
+
+window.addEventListener('hashchange', () => { applyCategoryFromHash(); render(); });
 
 function onAuthChanged() {
   loadProfile();
@@ -426,8 +439,8 @@ function renderDiscoverView() {
   return `
     <div class="cr-layout">
       <div class="cr-header">
-        <div class="section-tag">Careers</div>
-        <h1 style="margin-bottom:6px">Quant Finance Internship Matcher</h1>
+        <div class="section-tag">Jobs</div>
+        <h2 style="margin-bottom:6px">Quant Finance Internship Matcher</h2>
         <p style="color:var(--t2);font-size:0.9rem">Fill out your academic profile and instantly see which Summer 2027 quant internships you're eligible for.</p>
       </div>
       ${renderProfilePanel()}
@@ -691,7 +704,7 @@ function renderTrackerView() {
   <div class="cr-layout" style="grid-template-columns:1fr">
     <div class="cr-header">
       <div class="section-tag">My Tracker</div>
-      <h1 style="margin-bottom:6px">Your application pipeline</h1>
+      <h2 style="margin-bottom:6px">Your application pipeline</h2>
       <p style="color:var(--t2);font-size:0.9rem">Track every internship from first interest through offer.</p>
       ${guestNote}
     </div>
