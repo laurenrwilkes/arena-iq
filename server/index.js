@@ -687,6 +687,10 @@ io.on('connection', (socket) => {
   // ── QUANT BATTLE PHASE 1: each player gets their own question stream; the
   // server holds the answer and grades it, so the client can't just read it
   // off the wire and auto-win.
+  // Called on every keystroke (not just Enter/Submit) so it live-checks and
+  // auto-advances exactly like Mental Math — but the answer never leaves the
+  // server, so a wrong/incomplete guess just gets silently ignored and the
+  // player stays on the same question until they actually get it right.
   socket.on('submit_blitz_answer', ({ gameId, value }) => {
     const game = games[gameId];
     if (!game || game.ended || !game.isQuantBattle || game.phase !== 'blitz') return;
@@ -694,11 +698,11 @@ io.on('connection', (socket) => {
     if (!entry) return;
 
     const val = parseFloat(value);
-    const correct = !isNaN(val) && Math.abs(val - entry.question.answer) < 0.005;
-    if (correct) entry.score++;
-    entry.question = generateBlitzQuestion(game.difficulty);
+    if (isNaN(val) || Math.abs(val - entry.question.answer) >= 0.005) return;
 
-    socket.emit('blitz_question', { correct, yourScore: entry.score, question: entry.question.text });
+    entry.score++;
+    entry.question = generateBlitzQuestion(game.difficulty);
+    socket.emit('blitz_question', { yourScore: entry.score, question: entry.question.text });
 
     const opponent = game.p1.id === socket.id ? game.p2 : game.p1;
     if (!opponent.isBot) io.to(opponent.id).emit('blitz_opponent_update', { opponentScore: entry.score });

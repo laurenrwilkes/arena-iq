@@ -2,7 +2,39 @@ const SERVER = window.location.origin;
 let socket = null;
 let currentUser = null;
 let queueTimer = null;
+let audioCtx = null;
 const FLAG_ICON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
+
+// ── AUDIO (Blitz correct-answer cue — same synth beep as Mental Math) ───────
+function getAudioCtx() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    audioCtx = new Ctx();
+  }
+  return audioCtx;
+}
+
+function beep(freq, dur, type, vol) {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+  } catch {}
+}
+
+function playCorrectSound() {
+  beep(660, 0.09, 'sine', 0.12);
+}
 
 const STATE = {
   phase: 'setup',   // setup | matchmaking | game | result
@@ -99,15 +131,28 @@ function connectSocket() {
     startTimer();
   });
 
-  socket.on('blitz_question', ({ correct, yourScore, question }) => {
+  // This only fires once the server has confirmed a correct answer (see
+  // submit_blitz_answer) — flash green, then swap in the next question,
+  // matching Mental Math's exact 200ms flash-then-advance timing.
+  socket.on('blitz_question', ({ yourScore, question }) => {
     STATE.blitzScore = yourScore;
-    STATE.blitzQuestion = { text: question };
-    const qEl = document.getElementById('blitz-question');
-    if (qEl) qEl.textContent = `${question} = ?`;
+    playCorrectSound();
     const scoreEl = document.getElementById('blitz-score');
     if (scoreEl) scoreEl.textContent = yourScore;
     const input = document.getElementById('blitz-input');
-    if (input) { input.value = ''; input.focus(); }
+    if (input) { input.classList.add('correct'); input.disabled = true; }
+
+    setTimeout(() => {
+      STATE.blitzQuestion = { text: question };
+      const qEl = document.getElementById('blitz-question');
+      if (qEl) qEl.textContent = `${question} = ?`;
+      if (input) {
+        input.value = '';
+        input.classList.remove('correct');
+        input.disabled = false;
+        input.focus();
+      }
+    }, 200);
   });
 
   socket.on('blitz_opponent_update', ({ opponentScore }) => {
@@ -338,6 +383,8 @@ function checkSetupReady() {
 }
 
 // ── MATCHMAKING ───────────────────────────────────────────────────────────────
+const BOT_FALLBACK_SECONDS = 3;
+
 function renderMatchmaking() {
   const labels = { tech:'Tech / Coding', quant:'Quant Finance' };
   return `
@@ -346,7 +393,7 @@ function renderMatchmaking() {
     <h2 style="margin-top:32px">Finding your opponent...</h2>
     <p style="color:var(--t2);margin-top:8px">${labels[STATE.category]} · ${STATE.difficulty}</p>
     <p style="color:var(--t3);font-size:0.82rem;margin-top:6px">
-      Matching in <span id="queue-countdown" style="color:var(--purple-l);font-weight:700">10</span>s
+      Matching in <span id="queue-countdown" style="color:var(--purple-l);font-weight:700">${BOT_FALLBACK_SECONDS}</span>s
     </p>
     <button class="btn btn-ghost" style="margin-top:24px" onclick="cancelQueue()">Cancel</button>
   </div>`;
@@ -359,7 +406,7 @@ function findMatch() {
 
   if (socket?.connected) socket.emit('join_queue', { category: STATE.category, difficulty: STATE.difficulty });
 
-  let remaining = 10;
+  let remaining = BOT_FALLBACK_SECONDS;
   queueTimer = setInterval(() => {
     remaining--;
     const el = document.getElementById('queue-countdown');
@@ -421,19 +468,16 @@ function renderBlitzPhase() {
     <div class="numeric-game-area">
       <div class="numeric-problem" style="text-align:center">
         <div class="problem-title">Rapid-Fire Round</div>
-        <div class="problem-desc numeric-desc" style="font-size:0.85rem;color:var(--t3)">Answer as many as you can before time runs out — right or wrong, you'll get a new one immediately.</div>
+        <div class="problem-desc numeric-desc" style="font-size:0.85rem;color:var(--t3)">Answer as many as you can before time runs out.</div>
       </div>
       <div class="numeric-answer-box" style="text-align:center">
         <div class="answer-label">Your Score: <span id="blitz-score" style="color:var(--green)">${STATE.blitzScore}</span> correct</div>
         <div id="blitz-question" style="font-size:2.2rem;font-weight:800;margin:18px 0;font-family:'JetBrains Mono',monospace">${STATE.blitzQuestion?.text || '...'} = ?</div>
         <div class="answer-input-row">
           <input type="text" inputmode="decimal" id="blitz-input" class="answer-input" autocomplete="off"
-            onkeydown="if(event.key==='Enter') submitBlitzAnswer()" />
+            oninput="checkLiveBlitzAnswer(this)" />
         </div>
-        <div class="numeric-actions">
-          <button class="btn btn-primary" style="flex:1" onclick="submitBlitzAnswer()">Submit →</button>
-        </div>
-        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px">Press Enter or click Submit — you'll get a new question either way</div>
+        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px">Type the answer — it advances automatically when correct</div>
       </div>
     </div>
   </div>`;
@@ -452,12 +496,20 @@ function startBlitzTimer() {
   }, 1000);
 }
 
-function submitBlitzAnswer() {
-  const input = document.getElementById('blitz-input');
-  if (!input) return;
-  const value = input.value.trim();
-  if (value === '') return;
-  socket?.emit('submit_blitz_answer', { gameId: STATE.gameId, value });
+function sanitizeBlitzInput(el) {
+  let v = el.value.replace(/[^0-9\-]/g, '');
+  v = v.replace(/(?!^)-/g, '');
+  el.value = v;
+}
+
+// Live-checks on every keystroke and auto-advances the instant it's right —
+// same feel as Mental Math. The server holds the answer, so a wrong or
+// incomplete guess is just silently ignored; nothing to do here but wait.
+function checkLiveBlitzAnswer(el) {
+  sanitizeBlitzInput(el);
+  const raw = el.value.trim();
+  if (raw === '' || raw === '-') return;
+  socket?.emit('submit_blitz_answer', { gameId: STATE.gameId, value: raw });
 }
 
 // ── QUANT BATTLE PHASE 2: TACTICAL ───────────────────────────────────────────
@@ -1083,7 +1135,7 @@ function rematch() {
   STATE.phase = 'matchmaking';
   render();
   if (socket?.connected) socket.emit('join_queue', { category: STATE.category, difficulty: STATE.difficulty });
-  let remaining = 10;
+  let remaining = BOT_FALLBACK_SECONDS;
   queueTimer = setInterval(() => {
     remaining--;
     const el = document.getElementById('queue-countdown');
