@@ -1,4 +1,5 @@
 const GAME_DURATION = 120;
+const VERBAL_QUESTION_SECONDS = 10;
 const RING_RADIUS = 52;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
@@ -10,6 +11,7 @@ const DIFFICULTY_META = {
   medium: { name: 'Medium', icon: '🎯', desc: 'Everything in Easy, plus 2-digit × 2-digit and trickier subtraction.' },
   hard: { name: 'Hard', icon: '🔥', desc: '3-digit addition/subtraction, 2-digit × 2-digit multiplication, and multi-digit division.' },
   special: { name: 'Specialty', icon: '🧮', desc: 'A dedicated mixed-skills challenge: fractions, decimals, and percentages.' },
+  verbal: { name: 'Verbal Interview', icon: '🎤', desc: '5 spoken questions, 10 seconds each — no numbers on screen. Just listen and answer.' },
 };
 
 const MOCK_LEADERBOARD = [
@@ -30,7 +32,17 @@ const STATE = {
   timeLeft: GAME_DURATION,
   timerInterval: null,
   isNewHighScore: false,
+  // Verbal Interview mode — a fixed 5-question sequence, not the continuous timer above.
+  verbalQuestions: [],
+  verbalIndex: 0,
+  verbalAnswers: [],
+  verbalCorrectFlags: [],
+  verbalTimeLeft: VERBAL_QUESTION_SECONDS,
+  verbalInterval: null,
 };
+
+// Speech is disruptive if it keeps talking after the player navigates away.
+window.addEventListener('beforeunload', () => { try { speechSynthesis.cancel(); } catch {} });
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 async function init() {
@@ -65,7 +77,7 @@ function statsKey() {
 }
 
 function getUserStats() {
-  const blank = { gamesPlayed: 0, highScores: { easy: 0, medium: 0, hard: 0, special: 0 } };
+  const blank = { gamesPlayed: 0, highScores: { easy: 0, medium: 0, hard: 0, special: 0, verbal: 0 } };
   if (!currentUser) return blank;
   try {
     const raw = localStorage.getItem(statsKey());
@@ -73,7 +85,7 @@ function getUserStats() {
     const parsed = JSON.parse(raw);
     return {
       gamesPlayed: parsed.gamesPlayed || 0,
-      highScores: { easy: 0, medium: 0, hard: 0, special: 0, ...(parsed.highScores || {}) },
+      highScores: { easy: 0, medium: 0, hard: 0, special: 0, verbal: 0, ...(parsed.highScores || {}) },
     };
   } catch {
     return blank;
@@ -199,6 +211,35 @@ function generateProblem(difficulty) {
   return pool[randInt(0, pool.length - 1)]();
 }
 
+// ── VERBAL INTERVIEW MODE: a fixed 5-question sequence (add/sub, 3x mult, ──
+// percent), spoken aloud instead of shown on screen.
+function genVerbalAddSub3Digit() {
+  const op = Math.random() < 0.5 ? '+' : '−';
+  let a = randInt(100, 999), b = randInt(100, 999);
+  if (op === '−' && b > a) { const t = a; a = b; b = t; }
+  return { text: `${a} ${op} ${b}`, answer: op === '+' ? a + b : a - b };
+}
+
+function genVerbalPercent3Digit() {
+  const percents = [5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90];
+  const pct = percents[randInt(0, percents.length - 1)];
+  const base = randInt(5, 49) * 20; // multiple of 20, 100-980 — keeps the % answer a clean whole number
+  return { text: `${pct}% of ${base}`, answer: (pct * base) / 100 };
+}
+
+function generateVerbalSequence() {
+  return [genVerbalAddSub3Digit(), genMul2x2(), genMul2x2(), genMul2x2(), genVerbalPercent3Digit()];
+}
+
+function toSpokenQuestion(text) {
+  const spoken = text
+    .replace(/×/g, 'times')
+    .replace(/−/g, 'minus')
+    .replace(/\+/g, 'plus')
+    .replace(/%/g, 'percent');
+  return `What is ${spoken}?`;
+}
+
 // ── AUDIO ─────────────────────────────────────────────────────────────────────
 function getAudioCtx() {
   if (!audioCtx) {
@@ -230,6 +271,27 @@ function playCorrectSound() {
   beep(660, 0.09, 'sine', 0.12);
 }
 
+// ── SPEECH (Verbal Interview mode) ───────────────────────────────────────────
+function speakText(text) {
+  if (!('speechSynthesis' in window)) return false;
+  try {
+    speechSynthesis.cancel(); // avoid overlapping queued utterances from a prior question
+    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function speakCurrentVerbalQuestion() {
+  const q = STATE.verbalQuestions[STATE.verbalIndex];
+  if (q) speakText(toSpokenQuestion(q.text));
+}
+
+function replayVerbalAudio() {
+  speakCurrentVerbalQuestion();
+}
+
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function render() {
   const app = document.getElementById('app');
@@ -238,14 +300,14 @@ function render() {
   if (STATE.view !== 'playing') html += renderTabs();
   if (STATE.activeTab === 'stats') html += renderStatsView();
   else if (STATE.view === 'select') html += renderSelect();
-  else if (STATE.view === 'playing') html += renderPlaying();
-  else if (STATE.view === 'gameover') html += renderGameOver();
+  else if (STATE.view === 'playing') html += (STATE.difficulty === 'verbal' ? renderVerbalPlaying() : renderPlaying());
+  else if (STATE.view === 'gameover') html += (STATE.difficulty === 'verbal' ? renderVerbalGameOver() : renderGameOver());
   app.innerHTML = html;
 
   if (STATE.activeTab === 'play' && STATE.view === 'playing') {
     const input = document.getElementById('mmc-input');
     if (input) input.focus();
-    updateRingDom();
+    if (STATE.difficulty === 'verbal') updateVerbalRingDom(); else updateRingDom();
   }
 }
 
@@ -263,7 +325,7 @@ function renderTabs() {
 }
 
 function renderSelect() {
-  const diffs = ['easy', 'medium', 'hard', 'special'];
+  const diffs = ['easy', 'medium', 'hard', 'special', 'verbal'];
   const cards = diffs.map(d => {
     const meta = DIFFICULTY_META[d];
     const selected = STATE.selectedDifficulty === d ? 'selected' : '';
@@ -344,6 +406,162 @@ function renderPlaying() {
   </div>`;
 }
 
+function renderVerbalPlaying() {
+  const q = STATE.verbalQuestions[STATE.verbalIndex];
+  const meta = DIFFICULTY_META.verbal;
+  const total = STATE.verbalQuestions.length;
+  const speechSupported = 'speechSynthesis' in window;
+  const listenLine = speechSupported
+    ? '🔊 Listen carefully — no numbers on screen'
+    : `Speech playback isn't supported here: ${q.text} = ?`;
+  return `
+  <div style="position:relative">
+    <div class="mmc-topbar">
+      <div class="mmc-topbar-stat">
+        <div class="mmc-topbar-label">${meta.icon} Question</div>
+        <div class="mmc-topbar-value">${STATE.verbalIndex + 1} of ${total}</div>
+      </div>
+      <div class="mmc-topbar-stat">
+        <div class="mmc-topbar-label">Correct</div>
+        <div class="mmc-topbar-value" id="mmc-score-value">${STATE.score}</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost mmc-quit" onclick="quitGame()" aria-label="Quit challenge">✕ Quit</button>
+    <div class="mmc-play-area">
+      <div class="mmc-ring-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="mmc-ring-bg" cx="60" cy="60" r="${RING_RADIUS}"></circle>
+          <circle id="mmc-ring-fg" class="mmc-ring-fg" cx="60" cy="60" r="${RING_RADIUS}"
+            stroke-dasharray="${RING_CIRCUMFERENCE}" stroke-dashoffset="0"></circle>
+        </svg>
+        <div id="mmc-ring-time" class="mmc-ring-time">${STATE.verbalTimeLeft}</div>
+      </div>
+      <div class="mmc-question" style="font-size:1.15rem;color:var(--t2)">
+        ${speechSupported ? '' : '⚠️ '}${listenLine}
+      </div>
+      <div class="mmc-input-row">
+        <input type="text" inputmode="decimal" id="mmc-input" class="mmc-input" autocomplete="off"
+          onkeydown="if(event.key==='Enter') submitVerbalAnswer()" />
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-outline" onclick="replayVerbalAudio()">🔁 Replay Audio</button>
+        <button class="btn btn-primary" onclick="submitVerbalAnswer()">Submit</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateVerbalRingDom() {
+  const fg = document.getElementById('mmc-ring-fg');
+  const timeText = document.getElementById('mmc-ring-time');
+  if (!fg || !timeText) return;
+  const fraction = Math.max(0, STATE.verbalTimeLeft) / VERBAL_QUESTION_SECONDS;
+  fg.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - fraction));
+  fg.classList.toggle('warn', STATE.verbalTimeLeft <= 3);
+  timeText.textContent = String(Math.max(0, STATE.verbalTimeLeft));
+}
+
+function startVerbalTimer() {
+  clearInterval(STATE.verbalInterval);
+  STATE.verbalTimeLeft = VERBAL_QUESTION_SECONDS;
+  updateVerbalRingDom();
+  STATE.verbalInterval = setInterval(() => {
+    STATE.verbalTimeLeft--;
+    updateVerbalRingDom();
+    if (STATE.verbalTimeLeft <= 0) recordVerbalAnswer(null);
+  }, 1000);
+}
+
+function submitVerbalAnswer() {
+  const input = document.getElementById('mmc-input');
+  const raw = input ? input.value.trim() : '';
+  recordVerbalAnswer(raw === '' ? null : raw);
+}
+
+function recordVerbalAnswer(raw) {
+  clearInterval(STATE.verbalInterval);
+  const q = STATE.verbalQuestions[STATE.verbalIndex];
+  const val = raw === null ? NaN : parseFloat(raw);
+  const correct = !isNaN(val) && Math.abs(val - q.answer) < 0.005;
+
+  STATE.verbalAnswers.push(raw);
+  STATE.verbalCorrectFlags.push(correct);
+  if (correct) STATE.score++;
+
+  STATE.verbalIndex++;
+  if (STATE.verbalIndex >= STATE.verbalQuestions.length) {
+    endVerbalGame();
+  } else {
+    render();
+    speakCurrentVerbalQuestion();
+    startVerbalTimer();
+  }
+}
+
+function startVerbalGame() {
+  STATE.verbalQuestions = generateVerbalSequence();
+  STATE.verbalIndex = 0;
+  STATE.verbalAnswers = [];
+  STATE.verbalCorrectFlags = [];
+  STATE.score = 0;
+  STATE.view = 'playing';
+  render();
+  speakCurrentVerbalQuestion();
+  startVerbalTimer();
+}
+
+function endVerbalGame() {
+  clearInterval(STATE.verbalInterval);
+  try { speechSynthesis.cancel(); } catch {}
+  STATE.view = 'gameover';
+  if (currentUser) {
+    const stats = getUserStats();
+    stats.gamesPlayed++;
+    const prevBest = stats.highScores.verbal || 0;
+    STATE.isNewHighScore = STATE.score > prevBest;
+    stats.highScores.verbal = Math.max(prevBest, STATE.score);
+    saveUserStats(stats);
+  }
+  render();
+  if (STATE.isNewHighScore) launchConfetti();
+}
+
+function renderVerbalGameOver() {
+  const meta = DIFFICULTY_META.verbal;
+  const total = STATE.verbalQuestions.length;
+  const badge = STATE.isNewHighScore ? `<div class="mmc-badge-new">🏆 New High Score!</div>` : '';
+  const saveNote = currentUser ? '' : `<p style="color:var(--t3);font-size:0.82rem;margin-bottom:16px">Log in from the nav above to save this score.</p>`;
+  const reviewRows = STATE.verbalQuestions.map((q, i) => {
+    const raw = STATE.verbalAnswers[i];
+    const userAnswer = raw === null || raw === undefined ? '(no answer)' : raw;
+    const correct = STATE.verbalCorrectFlags[i];
+    return `
+      <div class="mmc-hs-card" style="text-align:left">
+        <div style="font-size:0.78rem;color:var(--t3);margin-bottom:4px">Question ${i + 1}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-weight:700;margin-bottom:6px">${q.text} = ?</div>
+        <div style="font-size:0.85rem;color:${correct ? 'var(--green)' : 'var(--red)'}">
+          Your answer: ${userAnswer} ${correct ? '✓' : `✗ (correct: ${fmtNum(q.answer)})`}
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+  <div class="mmc-result">
+    <div class="section-tag" style="justify-content:center;display:flex">${meta.icon} ${meta.name} — Complete</div>
+    ${badge}
+    <h2>Interview Complete</h2>
+    <div class="mmc-result-score">${STATE.score}<span style="color:var(--t3);font-size:1.6rem">/${total}</span></div>
+    <div style="color:var(--t3);font-size:0.82rem;margin-top:-18px;margin-bottom:8px">correct answers</div>
+    ${saveNote}
+    <div class="mmc-section-label">Review</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px">${reviewRows}</div>
+    <div class="mmc-result-actions">
+      <button class="btn btn-outline" onclick="backToSelect()">Change Difficulty</button>
+      <button class="btn btn-primary" onclick="startGame('verbal')">Try Again →</button>
+    </div>
+  </div>`;
+}
+
 function renderGameOver() {
   const meta = DIFFICULTY_META[STATE.difficulty];
   const timeUsed = GAME_DURATION - Math.max(0, STATE.timeLeft);
@@ -385,8 +603,8 @@ function renderStatsView() {
   }
 
   const stats = getUserStats();
-  const diffs = ['easy', 'medium', 'hard', 'special'];
-  const diffColor = { easy: 'var(--green)', medium: 'var(--gold)', hard: 'var(--red)', special: 'var(--purple-l)' };
+  const diffs = ['easy', 'medium', 'hard', 'special', 'verbal'];
+  const diffColor = { easy: 'var(--green)', medium: 'var(--gold)', hard: 'var(--red)', special: 'var(--purple-l)', verbal: 'var(--cyan)' };
   const hsCards = diffs.map(d => {
     const meta = DIFFICULTY_META[d];
     return `
@@ -396,7 +614,7 @@ function renderStatsView() {
       </div>`;
   }).join('');
 
-  const bestOverall = Math.max(stats.highScores.easy || 0, stats.highScores.medium || 0, stats.highScores.hard || 0, stats.highScores.special || 0);
+  const bestOverall = Math.max(stats.highScores.easy || 0, stats.highScores.medium || 0, stats.highScores.hard || 0, stats.highScores.special || 0, stats.highScores.verbal || 0);
   const board = [...MOCK_LEADERBOARD, { name: currentUser.username, score: bestOverall, you: true }]
     .sort((a, b) => b.score - a.score);
   const lbRows = board.map((row, i) => `
@@ -435,10 +653,12 @@ function formatTime(totalSeconds) {
 function startGame(difficulty) {
   if (!difficulty) return;
   STATE.difficulty = difficulty;
+  STATE.isNewHighScore = false;
+  if (difficulty === 'verbal') { startVerbalGame(); return; }
+
   STATE.problem = generateProblem(difficulty);
   STATE.score = 0;
   STATE.timeLeft = GAME_DURATION;
-  STATE.isNewHighScore = false;
   STATE.view = 'playing';
   render();
 
@@ -508,7 +728,8 @@ function checkLiveAnswer(el) {
 }
 
 function quitGame() {
-  if (window.confirm('Quit this challenge? Your current run will end.')) endGame();
+  if (!window.confirm('Quit this challenge? Your current run will end.')) return;
+  if (STATE.difficulty === 'verbal') endVerbalGame(); else endGame();
 }
 
 function endGame() {
@@ -527,6 +748,10 @@ function endGame() {
 }
 
 function backToSelect() {
+  if (STATE.difficulty === 'verbal') {
+    clearInterval(STATE.verbalInterval);
+    try { speechSynthesis.cancel(); } catch {}
+  }
   STATE.view = 'select';
   render();
 }
