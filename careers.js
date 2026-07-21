@@ -328,21 +328,47 @@ function profileKey() {
   return `careers_profile_${(currentUser?.username || 'guest').toLowerCase()}`;
 }
 
+function defaultCareerState() {
+  return { ...DEFAULT_PROFILE, applications: {} };
+}
+
 function loadProfile() {
-  STATE.profile = { ...DEFAULT_PROFILE };
-  STATE.applications = {};
+  const defaults = defaultCareerState();
+  
+  if (!currentUser) {
+    STATE.profile = { ...DEFAULT_PROFILE };
+    STATE.applications = {};
+    return;
+  }
+  
+  // Lazy hydrate from localStorage with proper schema validation
   try {
     const raw = localStorage.getItem(profileKey());
-    if (raw) {
-      const { applications, ...profileFields } = JSON.parse(raw);
-      STATE.profile = { ...DEFAULT_PROFILE, ...profileFields };
-      STATE.applications = (applications && typeof applications === 'object') ? applications : {};
+    if (!raw) {
+      STATE.profile = { ...DEFAULT_PROFILE };
+      STATE.applications = {};
+      logProfileEngine(`No saved career profile for user: ${currentUser.username}, using defaults`);
+      return;
     }
-  } catch {}
+    
+    const parsed = JSON.parse(raw);
+    const { applications, ...profileFields } = parsed;
+    
+    // Merge with defaults to handle schema changes
+    STATE.profile = { ...DEFAULT_PROFILE, ...profileFields };
+    STATE.applications = (applications && typeof applications === 'object') ? applications : {};
+    
+    logProfileEngine(`Hydrated career profile for user: ${currentUser.username}`, { applications: Object.keys(STATE.applications).length });
+  } catch (error) {
+    console.error('[Profile Engine] Failed to load career profile:', error);
+    STATE.profile = { ...DEFAULT_PROFILE };
+    STATE.applications = {};
+  }
 }
 
 function saveProfile() {
-  try { localStorage.setItem(profileKey(), JSON.stringify({ ...STATE.profile, applications: STATE.applications })); } catch {}
+  if (!currentUser) return;
+  persistToStorage(profileKey(), { ...STATE.profile, applications: STATE.applications }, defaultCareerState());
 }
 
 function updateProfileField(field, value) {

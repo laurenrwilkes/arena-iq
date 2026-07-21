@@ -518,6 +518,7 @@
 </section>
 
 <script src="auth.js"></script>
+<script src="storageUtils.js"></script>
 <script>
 let currentUser = null;
 let allQuestions = { quant: {}, tech: {} };
@@ -532,34 +533,32 @@ const FLAG_ICON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><pat
 
 // ── PROGRESS TRACKING (points, streak, per-question To Do/Attempted/Solved) ──
 const POINTS_BY_DIFFICULTY = { easy: 10, medium: 20, hard: 30 };
-let progress = { points: 0, currentStreak: 0, lastSolvedTimestamp: null, solvedDates: [], questionHistory: {} };
 
 function progressKey() {
   return `practice_progress_${(currentUser?.username || '').toLowerCase()}`;
 }
-function blankProgress() {
+
+function defaultProgressState() {
   return { points: 0, currentStreak: 0, lastSolvedTimestamp: null, solvedDates: [], questionHistory: {} };
 }
+
+// ── LAZY HYDRATION: Load progress from localStorage on first access, not on page load
+let progress = defaultProgressState();
+
 function loadProgress() {
-  if (!currentUser) { progress = blankProgress(); return; }
-  try {
-    const raw = localStorage.getItem(progressKey());
-    if (!raw) { progress = blankProgress(); return; }
-    const parsed = JSON.parse(raw);
-    progress = {
-      points: parsed.points || 0,
-      currentStreak: parsed.currentStreak || 0,
-      lastSolvedTimestamp: parsed.lastSolvedTimestamp || null,
-      solvedDates: Array.isArray(parsed.solvedDates) ? parsed.solvedDates : [],
-      questionHistory: (parsed.questionHistory && typeof parsed.questionHistory === 'object') ? parsed.questionHistory : {},
-    };
-  } catch {
-    progress = blankProgress();
+  if (!currentUser) { 
+    progress = defaultProgressState();
+    logProfileEngine(`Progress reset for guest user`);
+    return; 
   }
+  
+  const defaults = defaultProgressState();
+  progress = hydrateFromStorage(progressKey(), defaults);
+  logProfileEngine(`Hydrated practice progress for user: ${currentUser.username}`, { points: progress.points, streak: progress.currentStreak });
 }
 function saveProgress() {
   if (!currentUser) return;
-  try { localStorage.setItem(progressKey(), JSON.stringify(progress)); } catch {}
+  persistToStorage(progressKey(), progress, defaultProgressState());
 }
 
 function todayKey(d = new Date()) {

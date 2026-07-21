@@ -76,25 +76,32 @@ function statsKey() {
   return `mm_stats_${(currentUser?.username || '').toLowerCase()}`;
 }
 
+function defaultStatsState() {
+  return { gamesPlayed: 0, highScores: { easy: 0, medium: 0, hard: 0, special: 0, verbal: 0 } };
+}
+
 function getUserStats() {
-  const blank = { gamesPlayed: 0, highScores: { easy: 0, medium: 0, hard: 0, special: 0, verbal: 0 } };
-  if (!currentUser) return blank;
-  try {
-    const raw = localStorage.getItem(statsKey());
-    if (!raw) return blank;
-    const parsed = JSON.parse(raw);
-    return {
-      gamesPlayed: parsed.gamesPlayed || 0,
-      highScores: { easy: 0, medium: 0, hard: 0, special: 0, verbal: 0, ...(parsed.highScores || {}) },
-    };
-  } catch {
-    return blank;
+  const defaults = defaultStatsState();
+  if (!currentUser) return defaults;
+  
+  // Lazy hydrate from localStorage with proper schema validation
+  const stored = hydrateFromStorage(statsKey(), defaults);
+  
+  // Ensure highScores object has all difficulty keys (handles schema migrations)
+  if (!stored.highScores || typeof stored.highScores !== 'object') {
+    stored.highScores = defaults.highScores;
   }
+  for (const diff of ['easy', 'medium', 'hard', 'special', 'verbal']) {
+    if (!(diff in stored.highScores)) stored.highScores[diff] = 0;
+  }
+  
+  logProfileEngine(`Hydrated mental math stats for user: ${currentUser.username}`, { gamesPlayed: stored.gamesPlayed, highScores: stored.highScores });
+  return stored;
 }
 
 function saveUserStats(stats) {
   if (!currentUser) return;
-  try { localStorage.setItem(statsKey(), JSON.stringify(stats)); } catch {}
+  persistToStorage(statsKey(), stats, defaultStatsState());
 }
 
 function getHighScore(difficulty) {
