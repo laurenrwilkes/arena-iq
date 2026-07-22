@@ -5,14 +5,20 @@ const http = require('http');
 const { Server } = require('socket.io');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const cors = require('cors');
 const path = require('path');
 const db = require('./db');
 const { getRandomQuestion, getRandomQuestions } = require('./questions');
+const { Resend } = require('resend');
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.2 });
 }
+
+// Password reset emails are best-effort — if RESEND_API_KEY isn't set (e.g. local dev),
+// the reset token still gets created and logged so the flow can be tested manually.
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const app = express();
 const server = http.createServer(app);
@@ -105,6 +111,58 @@ app.post('/api/login', async (req, res) => {
   if (!ok) return res.status(401).json({ error: 'Invalid email or password' });
   const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
   res.json({ token, user: safeUser(user) });
+});
+
+app.post('/api/forgot-password', async (req, res) => {
+  const email = req.body.email?.trim().toLowerCase();
+  if (!email) return res.status(400).json({ error: 'Email is required' });
+
+  // Always return the same generic response whether or not the email exists,
+  // so this endpoint can't be used to enumerate registered accounts.
+  const genericResponse = { message: 'If an account exists for that email, a reset link has been sent.' };
+  const user = db.getByEmail.get(email);
+  if (!user) return res.json(genericResponse);
+
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
+  db.setResetToken.run(tokenHash, expiresAt, user.id);
+
+  const resetUrl = `${req.protocol}://${req.get('host')}/reset-password.html?token=${rawToken}`;
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: process.env.EMAIL_FROM || 'QuantBattle <onboarding@resend.dev>',
+        to: email,
+        subject: 'Reset your QuantBattle password',
+        html: `<p>Someone requested a password reset for your QuantBattle account.</p>
+               <p><a href="${resetUrl}">Click here to reset your password</a>. This link expires in 1 hour.</p>
+               <p>If you didn't request this, you can safely ignore this email.</p>`,
+      });
+    } catch (e) {
+      console.error('Failed to send password reset email:', e);
+    }
+  } else {
+    console.warn('RESEND_API_KEY not set — skipping email. Reset URL:', resetUrl);
+  }
+
+  res.json(genericResponse);
+});
+
+app.post('/api/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) return res.status(400).json({ error: 'Token and new password are required' });
+  if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
+
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+  const user = db.getByResetTokenHash.get(tokenHash);
+  if (!user || !user.reset_token_expires || new Date(user.reset_token_expires) < new Date()) {
+    return res.status(400).json({ error: 'This reset link is invalid or has expired.' });
+  }
+
+  const hash = await bcrypt.hash(password, 10);
+  db.resetPassword.run(hash, user.id);
+  res.json({ message: 'Your password has been reset. You can now log in.' });
 });
 
 app.get('/api/me', authMiddleware, (req, res) => {

@@ -56,7 +56,8 @@ db.prepare(`
 `).run();
 
 // Safe migrations for existing databases
-['color TEXT DEFAULT \'default\'', 'badge TEXT DEFAULT \'\'', 'shields INTEGER DEFAULT 0', 'owned_badges TEXT DEFAULT \'[]\''].forEach(col => {
+['color TEXT DEFAULT \'default\'', 'badge TEXT DEFAULT \'\'', 'shields INTEGER DEFAULT 0', 'owned_badges TEXT DEFAULT \'[]\'',
+ 'reset_token_hash TEXT', 'reset_token_expires TEXT'].forEach(col => {
   try { db.exec(`ALTER TABLE users ADD COLUMN ${col}`); } catch (_) {}
 });
 
@@ -71,6 +72,10 @@ const setCosmetic    = db.prepare('UPDATE users SET color = ?, badge = ? WHERE i
 const setOwnedBadges = db.prepare('UPDATE users SET owned_badges = ? WHERE id = ?');
 const useShield    = db.prepare('UPDATE users SET shields = MAX(shields - 1, 0) WHERE id = ?');
 const addShields   = db.prepare('UPDATE users SET shields = shields + ? WHERE id = ?');
+
+const setResetToken       = db.prepare('UPDATE users SET reset_token_hash = ?, reset_token_expires = ? WHERE id = ?');
+const getByResetTokenHash = db.prepare('SELECT * FROM users WHERE reset_token_hash = ?');
+const resetPassword       = db.prepare('UPDATE users SET password_hash = ?, reset_token_hash = NULL, reset_token_expires = NULL WHERE id = ?');
 
 const updateElo = db.prepare(`
   UPDATE users SET elo = ?, wins = wins + ?, losses = losses + ?, draws = draws + ? WHERE id = ?
@@ -138,4 +143,4 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   };
 }
 
-module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath };
+module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword };

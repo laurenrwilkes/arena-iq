@@ -93,7 +93,7 @@ function showAuthModal(onSuccess) {
   modal.innerHTML = `
     <div class="modal-overlay" id="modal-overlay">
       <div class="modal-box">
-        <div class="modal-tabs">
+        <div class="modal-tabs" id="modal-tabs">
           <button class="modal-tab active" id="tab-login" onclick="switchAuthTab('login')">Log In</button>
           <button class="modal-tab" id="tab-register" onclick="switchAuthTab('register')">Sign Up</button>
         </div>
@@ -111,6 +111,9 @@ function showAuthModal(onSuccess) {
           <button id="login-btn" type="button" class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitLogin()">Log In →</button>
           <p style="text-align:center;margin-top:16px;font-size:0.82rem;color:var(--t3)">
             No account? <a href="#" onclick="switchAuthTab('register')" style="color:var(--purple-l)">Sign up free</a>
+          </p>
+          <p style="text-align:center;margin-top:8px;font-size:0.82rem">
+            <a href="#" onclick="switchAuthTab('forgot')" style="color:var(--t3)">Forgot password?</a>
           </p>
         </div>
 
@@ -133,6 +136,20 @@ function showAuthModal(onSuccess) {
             Already have an account? <a href="#" onclick="switchAuthTab('login')" style="color:var(--purple-l)">Log in</a>
           </p>
         </div>
+
+        <div id="auth-forgot" style="display:none">
+          <p style="font-size:0.85rem;color:var(--t2);margin-bottom:16px">Enter your email and we'll send you a link to reset your password.</p>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="forgot-email" placeholder="you@example.com" />
+          </div>
+          <div class="auth-error" id="forgot-error"></div>
+          <div class="auth-success" id="forgot-success"></div>
+          <button id="forgot-btn" type="button" class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitForgotPassword()">Send Reset Link →</button>
+          <p style="text-align:center;margin-top:16px;font-size:0.82rem;color:var(--t3)">
+            <a href="#" onclick="switchAuthTab('login')" style="color:var(--purple-l)">← Back to log in</a>
+          </p>
+        </div>
       </div>
     </div>`;
 
@@ -148,6 +165,7 @@ function showAuthModal(onSuccess) {
     .form-group input { width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--t1);font-size:0.9rem;outline:none;transition:border-color 0.2s; }
     .form-group input:focus { border-color:var(--purple); }
     .auth-error { color:var(--red);font-size:0.82rem;margin-bottom:12px;min-height:18px; }
+    .auth-success { color:var(--green);font-size:0.82rem;margin-bottom:12px;min-height:18px; }
   `;
   modal.appendChild(style);
   document.body.appendChild(modal);
@@ -159,10 +177,10 @@ function showAuthModal(onSuccess) {
 
   // Enter key submits
   modal.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      const tab = document.getElementById('tab-login').classList.contains('active');
-      tab ? submitLogin() : submitRegister();
-    }
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('auth-forgot').style.display !== 'none') { submitForgotPassword(); return; }
+    const tab = document.getElementById('tab-login').classList.contains('active');
+    tab ? submitLogin() : submitRegister();
   });
 
   window._authSuccessCallback = onSuccess;
@@ -171,6 +189,8 @@ function showAuthModal(onSuccess) {
 function switchAuthTab(tab) {
   document.getElementById('auth-login').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('auth-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('auth-forgot').style.display = tab === 'forgot' ? 'block' : 'none';
+  document.getElementById('modal-tabs').style.display = tab === 'forgot' ? 'none' : 'flex';
   document.getElementById('tab-login').classList.toggle('active', tab === 'login');
   document.getElementById('tab-register').classList.toggle('active', tab === 'register');
 }
@@ -204,6 +224,29 @@ async function submitLogin() {
       ? `${msg}. &nbsp;<a href="#" onclick="switchAuthTab('register')" style="color:var(--purple-l)">Create an account?</a>`
       : msg);
     setAuthBtn('login-btn', 'Log In →', false);
+  }
+}
+
+async function submitForgotPassword() {
+  const email = (document.getElementById('forgot-email')?.value || '').trim();
+  setAuthError('forgot-error', '');
+  setAuthError('forgot-success', '');
+  if (!email) { setAuthError('forgot-error', 'Please enter your email.'); return; }
+  setAuthBtn('forgot-btn', 'Sending...', true);
+  try {
+    const res = await fetch(`${API}/api/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    setAuthBtn('forgot-btn', 'Send Reset Link →', false);
+    if (!res.ok) { setAuthError('forgot-error', data.error || 'Something went wrong'); return; }
+    document.getElementById('forgot-email').value = '';
+    setAuthError('forgot-success', data.message || 'If an account exists for that email, a reset link has been sent.');
+  } catch (e) {
+    setAuthBtn('forgot-btn', 'Send Reset Link →', false);
+    setAuthError('forgot-error', 'Network error. Please try again.');
   }
 }
 
