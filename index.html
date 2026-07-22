@@ -429,7 +429,7 @@
   </div>
   <div class="nav-actions">
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
-      onclick="showAuthModal(u => { currentUser = u; updateNav(); })">Log In / Sign Up</button>
+      onclick="showAuthModal(u => { currentUser = u; updateNav(); loadProgress(); refreshProgressUI(); })">Log In / Sign Up</button>
     <div style="position:relative" id="nav-profile-wrap">
       <button id="nav-avatar" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleNav()">?</button>
       <div id="nav-menu" class="nav-menu">
