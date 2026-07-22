@@ -1,7 +1,9 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
-const dbFilePath = path.join(__dirname, 'arena.db');
+// DB_PATH lets a persistent volume (mounted outside the app code directory, e.g. /data)
+// hold the SQLite file across deploys. Falls back to the old in-repo location for local dev.
+const dbFilePath = process.env.DB_PATH || path.join(__dirname, 'arena.db');
 const db = new Database(dbFilePath);
 
 db.pragma('journal_mode = WAL');
