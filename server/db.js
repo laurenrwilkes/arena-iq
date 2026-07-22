@@ -36,12 +36,28 @@ db.exec(`
     p2_elo_after  INTEGER,
     created_at    TEXT DEFAULT CURRENT_TIMESTAMP
   );
+
+  -- Single-row persistence canary: if boot_count keeps climbing with the same
+  -- first_seen_at across deploys, the DB file is surviving restarts. If
+  -- first_seen_at keeps resetting to "now", the filesystem is being wiped.
+  CREATE TABLE IF NOT EXISTS meta (
+    id           INTEGER PRIMARY KEY CHECK (id = 1),
+    first_seen_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    boot_count    INTEGER DEFAULT 0
+  );
 `);
+
+db.prepare(`
+  INSERT INTO meta (id, boot_count) VALUES (1, 1)
+  ON CONFLICT(id) DO UPDATE SET boot_count = boot_count + 1
+`).run();
 
 // Safe migrations for existing databases
 ['color TEXT DEFAULT \'default\'', 'badge TEXT DEFAULT \'\'', 'shields INTEGER DEFAULT 0', 'owned_badges TEXT DEFAULT \'[]\''].forEach(col => {
   try { db.exec(`ALTER TABLE users ADD COLUMN ${col}`); } catch (_) {}
 });
+
+const getMeta = db.prepare('SELECT first_seen_at, boot_count FROM meta WHERE id = 1');
 
 const getById      = db.prepare('SELECT * FROM users WHERE id = ?');
 const getByEmail   = db.prepare('SELECT * FROM users WHERE email = ?');
@@ -119,4 +135,4 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   };
 }
 
-module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches };
+module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta };

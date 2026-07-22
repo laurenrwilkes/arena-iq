@@ -819,11 +819,17 @@ app.get('/api/admin/stats', (req, res) => {
   if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
   const todayCutoff = new Date().toISOString().slice(0, 10) + ' 00:00:00';
   const weekCutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+  const meta = db.getMeta.get();
   res.json({
     totalUsers: db.countRealUsers.get().count,
     signupsToday: db.countUsersSince.get(todayCutoff).count,
     signupsThisWeek: db.countUsersSince.get(weekCutoff).count,
     totalMatches: db.countMatches.get().count,
+    // Persistence canary: if dbFirstSeenAt stays the same and dbBootCount keeps
+    // climbing across deploys/restarts, the database file is surviving them.
+    // If dbFirstSeenAt keeps resetting to "now", the filesystem is being wiped.
+    dbFirstSeenAt: meta?.first_seen_at || null,
+    dbBootCount: meta?.boot_count || null,
   });
 });
 
