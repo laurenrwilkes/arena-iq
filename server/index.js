@@ -831,6 +831,7 @@ app.get('/api/admin/stats', (req, res) => {
     // If dbFirstSeenAt keeps resetting to "now", the filesystem is being wiped.
     dbFirstSeenAt: meta?.first_seen_at || null,
     dbBootCount: meta?.boot_count || null,
+    dbFilePath: db.dbFilePath,
   });
 });
 
