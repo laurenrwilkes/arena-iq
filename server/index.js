@@ -1,3 +1,4 @@
+// Deploy-persistence test commit — see /api/admin/stats dbBootCount/dbFirstSeenAt.
 const Sentry = require('@sentry/node');
 const express = require('express');
 const http = require('http');
