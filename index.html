@@ -147,13 +147,13 @@
     letter-spacing: 1.5px; color: var(--t3); margin-bottom: 8px;
   }
   .diff-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
-  .diff-pill, .status-pill {
+  .diff-pill, .status-pill, .favorites-pill {
     padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border);
     font-size: 0.76rem; font-weight: 700; cursor: pointer; background: transparent;
     color: var(--t3); transition: all 0.15s; font-family: inherit;
   }
-  .diff-pill:hover, .status-pill:hover { border-color: var(--purple); color: var(--t2); }
-  .diff-pill.active, .status-pill.active { background: rgba(139,92,246,0.15); border-color: var(--purple); color: var(--purple-l); }
+  .diff-pill:hover, .status-pill:hover, .favorites-pill:hover { border-color: var(--purple); color: var(--t2); }
+  .diff-pill.active, .status-pill.active, .favorites-pill.active { background: rgba(139,92,246,0.15); border-color: var(--purple); color: var(--purple-l); }
   .diff-pill.easy.active { background: rgba(16,185,129,0.12); border-color: var(--green); color: var(--green); }
   .diff-pill.medium.active { background: rgba(245,158,11,0.12); border-color: var(--gold); color: var(--gold); }
   .diff-pill.hard.active { background: rgba(239,68,68,0.12); border-color: var(--red); color: var(--red); }
@@ -210,6 +210,13 @@
   .diff-badge.easy { background: rgba(16,185,129,0.15); color: var(--green); }
   .diff-badge.medium { background: rgba(245,158,11,0.15); color: var(--gold); }
   .diff-badge.hard { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  .favorite-icon {
+    cursor: pointer; font-size: 1rem; opacity: 0.4; transition: opacity 0.2s;
+    flex-shrink: 0; padding: 4px;
+  }
+  .favorite-icon:hover { opacity: 0.7; }
+  .favorite-icon.favorited { opacity: 1; }
 
   .empty-list {
     padding: 60px 24px; text-align: center; color: var(--t3);
@@ -477,6 +484,11 @@
         <button class="status-pill" data-status="attempted" onclick="selectStatus('attempted',this)">Attempted</button>
         <button class="status-pill" data-status="solved" onclick="selectStatus('solved',this)">Solved</button>
       </div>
+      <div class="filter-label">View</div>
+      <div class="diff-pills">
+        <button class="favorites-pill active" data-favorites="false" onclick="selectFavorites(false,this)">All</button>
+        <button class="favorites-pill" data-favorites="true" onclick="selectFavorites(true,this)">⭐ Favorites</button>
+      </div>
       <div class="sidebar-stats" id="sidebar-stats">Loading questions...</div>
     </div>
   </aside>
@@ -533,10 +545,13 @@ let allQuestions = { quant: {}, tech: {} };
 let currentCat = 'quant';
 let currentDiff = 'all';
 let currentStatus = 'all';
+let currentShowFavorites = false;
 let currentLang = 'javascript';
 let selectedId = null;
 let flatList = [];
+let currentFilteredList = [];
 let flaggedSet = new Set();
+let favoriteSet = new Set();
 const FLAG_ICON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
 
 // ── PROGRESS TRACKING (points, streak, per-question To Do/Attempted/Solved) ──
@@ -544,6 +559,10 @@ const POINTS_BY_DIFFICULTY = { easy: 10, medium: 20, hard: 30 };
 
 function progressKey() {
   return `practice_progress_${(currentUser?.username || '').toLowerCase()}`;
+}
+
+function favoritesKey() {
+  return `practice_favorites_${(currentUser?.username || '').toLowerCase()}`;
 }
 
 function defaultProgressState() {
@@ -563,6 +582,47 @@ function loadProgress() {
   const defaults = defaultProgressState();
   progress = hydrateFromStorage(progressKey(), defaults);
   logProfileEngine(`Hydrated practice progress for user: ${currentUser.username}`, { points: progress.points, streak: progress.currentStreak });
+}
+
+function loadFavorites() {
+  if (!currentUser) {
+    favoriteSet = new Set();
+    return;
+  }
+  
+  try {
+    const stored = localStorage.getItem(favoritesKey());
+    if (stored) {
+      const arr = JSON.parse(stored);
+      favoriteSet = new Set(Array.isArray(arr) ? arr : []);
+      logProfileEngine(`Loaded ${favoriteSet.size} favorited questions for user: ${currentUser.username}`);
+    } else {
+      favoriteSet = new Set();
+    }
+  } catch (error) {
+    console.error('[Profile Engine] Failed to load favorites:', error);
+    favoriteSet = new Set();
+  }
+}
+
+function saveFavorites() {
+  if (!currentUser) return;
+  try {
+    localStorage.setItem(favoritesKey(), JSON.stringify(Array.from(favoriteSet)));
+  } catch (error) {
+    console.error('[Profile Engine] Failed to save favorites:', error);
+  }
+}
+
+function toggleFavorite(qId, event) {
+  event.stopPropagation();
+  if (favoriteSet.has(qId)) {
+    favoriteSet.delete(qId);
+  } else {
+    favoriteSet.add(qId);
+  }
+  saveFavorites();
+  applyFilters();
 }
 function saveProgress() {
   if (!currentUser) return;
@@ -651,6 +711,7 @@ async function initAuth() {
   currentUser = await Auth.fetchMe();
   updateNav();
   loadProgress();
+  loadFavorites();
   refreshProgressUI();
 }
 function updateNav() {
@@ -715,6 +776,13 @@ function selectStatus(status, btn) {
   applyFilters();
 }
 
+function selectFavorites(showFav, btn) {
+  currentShowFavorites = showFav;
+  document.querySelectorAll('.favorites-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
 function applyFilters() {
   const search = (document.getElementById('search-input')?.value || '').toLowerCase();
   const catData = allQuestions[currentCat] || {};
@@ -729,11 +797,13 @@ function applyFilters() {
   let filtered = flatList;
   if (currentDiff !== 'all') filtered = filtered.filter(q => q.diff === currentDiff);
   if (currentStatus !== 'all') filtered = filtered.filter(q => getQuestionStatus(q.id) === currentStatus);
+  if (currentShowFavorites) filtered = filtered.filter(q => favoriteSet.has(q.id));
   if (search) filtered = filtered.filter(q =>
     q.title.toLowerCase().includes(search) ||
     (q.description && q.description.toLowerCase().includes(search))
   );
 
+  currentFilteredList = filtered;
   renderList(filtered);
 
   const easy = (catData.easy || []).length;
@@ -753,15 +823,19 @@ function renderList(questions) {
     return;
   }
   if (countEl) countEl.textContent = `${questions.length} problem${questions.length !== 1 ? 's' : ''}`;
-  container.innerHTML = questions.map((q, i) => `
+  container.innerHTML = questions.map((q, i) => {
+    const isFav = favoriteSet.has(q.id);
+    return `
     <div class="problem-row${selectedId === q.id ? ' active' : ''}" role="button" tabindex="0"
       onclick="selectProblem('${q.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectProblem('${q.id}')}"
       data-id="${q.id}" aria-label="${q.title}, ${q.diff}">
       <span class="problem-num">#${i + 1}</span>
       <span class="problem-title-text">${q.title}</span>
       <span class="diff-badge ${q.diff}">${q.diff.charAt(0).toUpperCase() + q.diff.slice(1)}</span>
+      <span class="favorite-icon ${isFav ? 'favorited' : ''}" onclick="toggleFavorite('${q.id}', event)" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}" role="button" tabindex="0" aria-label="${isFav ? 'Remove from favorites' : 'Add to favorites'}">⭐</span>
       ${statusDotHtml(getQuestionStatus(q.id))}
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function statusDotHtml(status) {
