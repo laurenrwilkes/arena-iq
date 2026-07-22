@@ -12102,7 +12102,7 @@ const QUESTIONS = {
     ]
   },
   "quant": {
-    "easy": [
+    "beginner": [
       {
         "id": "qe4",
         "type": "numeric",
@@ -12562,7 +12562,9 @@ const QUESTIONS = {
           }
         ],
         "explanation": "Zero-coupon bond price = FV/(1+r)ⁿ = 1000/1.1236 ≈ $890.00. The discount reflects time value of money."
-      },
+      }
+    ],
+    "easy": [
       {
         "id": "qe45",
         "type": "numeric",
@@ -13161,7 +13163,7 @@ const QUESTIONS = {
           { label: 'Expected value', value: '0.5 × $10 = $5' },
         ],
         explanation: 'Since both colors are equally likely, guessing either wins with probability 0.5, for an expected value of $5 — though most people would only pay a few dollars to play, since a guaranteed loss feels riskier than the average suggests.',
-      },
+      }
     ],
     "medium": [
       {

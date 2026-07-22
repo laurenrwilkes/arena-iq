@@ -154,6 +154,7 @@
   }
   .diff-pill:hover, .status-pill:hover, .favorites-pill:hover { border-color: var(--purple); color: var(--t2); }
   .diff-pill.active, .status-pill.active, .favorites-pill.active { background: rgba(139,92,246,0.15); border-color: var(--purple); color: var(--purple-l); }
+  .diff-pill.beginner.active { background: rgba(6,182,212,0.12); border-color: var(--cyan); color: var(--cyan); }
   .diff-pill.easy.active { background: rgba(16,185,129,0.12); border-color: var(--green); color: var(--green); }
   .diff-pill.medium.active { background: rgba(245,158,11,0.12); border-color: var(--gold); color: var(--gold); }
   .diff-pill.hard.active { background: rgba(239,68,68,0.12); border-color: var(--red); color: var(--red); }
@@ -207,6 +208,7 @@
     font-size: 0.68rem; font-weight: 800; padding: 2px 8px;
     border-radius: 100px; letter-spacing: 0.3px; flex-shrink: 0;
   }
+  .diff-badge.beginner { background: rgba(6,182,212,0.15); color: var(--cyan); }
   .diff-badge.easy { background: rgba(16,185,129,0.15); color: var(--green); }
   .diff-badge.medium { background: rgba(245,158,11,0.15); color: var(--gold); }
   .diff-badge.hard { background: rgba(239,68,68,0.15); color: var(--red); }
@@ -473,6 +475,7 @@
       <div class="filter-label">Difficulty</div>
       <div class="diff-pills">
         <button class="diff-pill active" data-diff="all" onclick="selectDiff('all',this)">All</button>
+        <button class="diff-pill beginner" data-diff="beginner" onclick="selectDiff('beginner',this)">Beginner</button>
         <button class="diff-pill easy" data-diff="easy" onclick="selectDiff('easy',this)">Easy</button>
         <button class="diff-pill medium" data-diff="medium" onclick="selectDiff('medium',this)">Medium</button>
         <button class="diff-pill hard" data-diff="hard" onclick="selectDiff('hard',this)">Hard</button>
@@ -555,7 +558,7 @@ let favoriteSet = new Set();
 const FLAG_ICON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
 
 // ── PROGRESS TRACKING (points, streak, per-question To Do/Attempted/Solved) ──
-const POINTS_BY_DIFFICULTY = { easy: 10, medium: 20, hard: 30 };
+const POINTS_BY_DIFFICULTY = { beginner: 5, easy: 10, medium: 20, hard: 30 };
 
 function progressKey() {
   return `practice_progress_${(currentUser?.username || '').toLowerCase()}`;
@@ -788,7 +791,7 @@ function applyFilters() {
   const catData = allQuestions[currentCat] || {};
 
   flatList = [];
-  for (const diff of ['easy', 'medium', 'hard']) {
+  for (const diff of ['beginner', 'easy', 'medium', 'hard']) {
     for (const q of (catData[diff] || [])) {
       flatList.push({ ...q, diff });
     }
@@ -806,12 +809,13 @@ function applyFilters() {
   currentFilteredList = filtered;
   renderList(filtered);
 
+  const beg  = (catData.beginner || []).length;
   const easy = (catData.easy || []).length;
   const med  = (catData.medium || []).length;
   const hard = (catData.hard || []).length;
-  const total = easy + med + hard;
+  const total = beg + easy + med + hard;
   document.getElementById('sidebar-stats').innerHTML =
-    `<strong>${total}</strong> problems &nbsp;·&nbsp; <span style="color:var(--green)">${easy}E</span> <span style="color:var(--gold)">${med}M</span> <span style="color:var(--red)">${hard}H</span>`;
+    `<strong>${total}</strong> problems &nbsp;·&nbsp; <span style="color:var(--cyan)">${beg}B</span> <span style="color:var(--green)">${easy}E</span> <span style="color:var(--gold)">${med}M</span> <span style="color:var(--red)">${hard}H</span>`;
 }
 
 function renderList(questions) {
