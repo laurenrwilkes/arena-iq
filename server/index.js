@@ -813,6 +813,20 @@ app.get('/api/admin/backup', (req, res) => {
   res.download(dbPath, `arena-backup-${new Date().toISOString().slice(0,10)}.db`);
 });
 
+// ── ADMIN STATS ──────────────────────────────────────────────────────────────
+app.get('/api/admin/stats', (req, res) => {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
+  const todayCutoff = new Date().toISOString().slice(0, 10) + ' 00:00:00';
+  const weekCutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+  res.json({
+    totalUsers: db.countRealUsers.get().count,
+    signupsToday: db.countUsersSince.get(todayCutoff).count,
+    signupsThisWeek: db.countUsersSince.get(weekCutoff).count,
+    totalMatches: db.countMatches.get().count,
+  });
+});
+
 if (process.env.SENTRY_DSN) app.use(Sentry.expressErrorHandler());
 app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Internal server error' }); });
 

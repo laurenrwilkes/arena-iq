@@ -63,6 +63,11 @@ const recordMatch = db.prepare(`
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
+// Bot accounts seeded at startup use @aiq.internal addresses — excluded from real user counts.
+const countRealUsers = db.prepare("SELECT COUNT(*) as count FROM users WHERE email NOT LIKE '%@aiq.internal'");
+const countUsersSince = db.prepare("SELECT COUNT(*) as count FROM users WHERE email NOT LIKE '%@aiq.internal' AND created_at >= ?");
+const countMatches = db.prepare('SELECT COUNT(*) as count FROM matches');
+
 const getLeaderboard = db.prepare(`
   SELECT id, username, elo, wins, losses, draws, color, badge, shields,
     ROUND(CAST(wins AS REAL) / MAX(wins + losses, 1) * 100, 1) as win_rate
@@ -114,4 +119,4 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   };
 }
 
-module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult };
+module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches };
