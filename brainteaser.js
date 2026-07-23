@@ -1,31 +1,52 @@
-// Welcome overlay — a quick skyscraper logic puzzle shown once on first visit to the
-// homepage. Purely additive: the question browser underneath is already fully loaded
-// and visible, and every path out of this modal (X, overlay click, Escape, either CTA)
-// dismisses it for good via localStorage.
-const BRAINTEASER_SEEN_KEY = 'qb_welcome_puzzle_seen';
+// Welcome overlay — a skyscraper logic puzzle shown once per day on the homepage.
+// Purely additive: the question browser underneath is already fully loaded and
+// visible, and every path out of this modal (X, overlay click, Escape, either CTA)
+// dismisses it until the next calendar day, via localStorage.
+const BRAINTEASER_SEEN_KEY = 'qb_daily_puzzle_last_shown';
 const BT_SIZE = 4;
 
-function btShuffle(arr) {
+function btTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// Deterministic PRNG seeded from today's date, so everyone gets the same puzzle
+// on a given day (a real "daily" puzzle) without needing a server round-trip.
+function btSeededRandom(seedStr) {
+  let h = 1779033703 ^ seedStr.length;
+  for (let i = 0; i < seedStr.length; i++) {
+    h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822519);
+    h = Math.imul(h ^ (h >>> 13), 3266489917);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
+
+function btShuffle(arr, rng) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rng() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 }
 
-function generateSkyscraperPuzzle(n = BT_SIZE) {
+function generateSkyscraperPuzzle(n = BT_SIZE, rng = Math.random) {
   // Cyclic base Latin square, then randomize row order, column order, and value labels
-  // so each visit gets a different (still guaranteed-valid) puzzle.
+  // so each day gets a different (still guaranteed-valid) puzzle.
   const base = [];
   for (let r = 0; r < n; r++) {
     const row = [];
     for (let c = 0; c < n; c++) row.push(((r + c) % n) + 1);
     base.push(row);
   }
-  const rowOrder = btShuffle([...Array(n).keys()]);
-  const colOrder = btShuffle([...Array(n).keys()]);
-  const valueMap = btShuffle([...Array(n).keys()].map(v => v + 1));
+  const rowOrder = btShuffle([...Array(n).keys()], rng);
+  const colOrder = btShuffle([...Array(n).keys()], rng);
+  const valueMap = btShuffle([...Array(n).keys()].map(v => v + 1), rng);
 
   const solution = rowOrder.map(r =>
     colOrder.map(c => valueMap[base[r][c] - 1])
@@ -82,7 +103,7 @@ function validateSkyscraperGrid(grid, clues) {
 }
 
 function closeBrainteaser() {
-  try { localStorage.setItem(BRAINTEASER_SEEN_KEY, '1'); } catch (_) {}
+  try { localStorage.setItem(BRAINTEASER_SEEN_KEY, btTodayKey()); } catch (_) {}
   document.getElementById('bt-modal')?.remove();
   document.removeEventListener('keydown', btEscapeHandler);
 }
@@ -150,7 +171,9 @@ function renderBrainteaserGrid(puzzle) {
 
 function showBrainteaser() {
   if (document.getElementById('bt-modal')) return;
-  const puzzle = generateSkyscraperPuzzle(BT_SIZE);
+  const today = btTodayKey();
+  const rng = btSeededRandom('quantbattle-skyscraper-' + today);
+  const puzzle = generateSkyscraperPuzzle(BT_SIZE, rng);
 
   const modal = document.createElement('div');
   modal.id = 'bt-modal';
@@ -158,14 +181,14 @@ function showBrainteaser() {
     <div class="bt-overlay" id="bt-overlay" role="dialog" aria-modal="true" aria-labelledby="bt-title">
       <div class="bt-box">
         <button class="bt-close" id="bt-close-btn" aria-label="Close">&times;</button>
-        <h2 id="bt-title">🧩 Quick brain teaser</h2>
+        <h2 id="bt-title">🧩 Daily Brain Teaser</h2>
         <p class="bt-sub">Skyscraper puzzle — place 1–4 in every row and column with no repeats. Each edge number is how many buildings you'd see from that side (taller ones hide shorter ones behind them).</p>
         ${renderBrainteaserGrid(puzzle)}
         <div class="bt-feedback" id="bt-feedback"></div>
         <button class="btn btn-primary" id="bt-check-btn" style="width:100%;justify-content:center;margin-top:8px" onclick="btCheckSolution(window._btPuzzle)">Check Solution</button>
         <div class="bt-cta-row">
-          <a href="games.html" class="btn btn-outline" style="justify-content:center">More Brain Teasers →</a>
-          <button class="btn btn-ghost" style="justify-content:center" onclick="closeBrainteaser()">Skip to Quant Questions</button>
+          <a href="games.html" class="btn btn-outline" style="width:100%;justify-content:center">More Brain Teasers →</a>
+          <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="closeBrainteaser()">Skip to Quant Questions</button>
         </div>
       </div>
     </div>`;
@@ -186,8 +209,7 @@ function showBrainteaser() {
     .bt-feedback { min-height:20px;font-size:0.85rem;text-align:center;margin:8px 0;font-weight:600; }
     .bt-feedback-success { color:var(--green); }
     .bt-feedback-error { color:var(--red); }
-    .bt-cta-row { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px; }
-    @media (max-width:420px) { .bt-cta-row { grid-template-columns:1fr; } }
+    .bt-cta-row { display:flex;flex-direction:column;gap:10px;margin-top:16px; }
   `;
   modal.appendChild(style);
   document.body.appendChild(modal);
@@ -202,7 +224,7 @@ function showBrainteaser() {
 }
 
 function initBrainTeaser() {
-  let seen = null;
-  try { seen = localStorage.getItem(BRAINTEASER_SEEN_KEY); } catch (_) {}
-  if (!seen) showBrainteaser();
+  let lastShown = null;
+  try { lastShown = localStorage.getItem(BRAINTEASER_SEEN_KEY); } catch (_) {}
+  if (lastShown !== btTodayKey()) showBrainteaser();
 }
