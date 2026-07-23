@@ -187,7 +187,7 @@ app.get('/api/questions', (req, res) => {
   for (const cat of ['tech', 'quant']) {
     if (!QUESTIONS[cat]) continue;
     result[cat] = {};
-    for (const diff of ['easy', 'medium', 'hard']) {
+    for (const diff of ['beginner', 'easy', 'medium', 'hard']) {
       result[cat][diff] = QUESTIONS[cat][diff] || [];
     }
   }
