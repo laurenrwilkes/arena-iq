@@ -108,6 +108,11 @@ function closeBrainteaser() {
   document.removeEventListener('keydown', btEscapeHandler);
 }
 
+function skipBrainteaser() {
+  trackEvent('brainteaser_skipped');
+  closeBrainteaser();
+}
+
 function btEscapeHandler(e) {
   if (e.key === 'Escape') closeBrainteaser();
 }
@@ -129,6 +134,7 @@ function btCheckSolution(puzzle) {
     feedback.innerHTML = '🎉 Solved it! Nice work.';
     feedback.className = 'bt-feedback bt-feedback-success';
     document.getElementById('bt-check-btn').style.display = 'none';
+    trackEvent('brainteaser_played');
   } else {
     const messages = {
       incomplete: 'Fill in every square first — each one takes a number 1–4.',
@@ -188,7 +194,7 @@ function showBrainteaser() {
         <button class="btn btn-primary" id="bt-check-btn" style="width:100%;justify-content:center;margin-top:8px" onclick="btCheckSolution(window._btPuzzle)">Check Solution</button>
         <div class="bt-cta-row">
           <a href="games.html" class="btn btn-outline" style="width:100%;justify-content:center">More Brain Teasers →</a>
-          <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="closeBrainteaser()">Skip to Quant Questions</button>
+          <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="skipBrainteaser()">Skip to Quant Questions</button>
         </div>
       </div>
     </div>`;

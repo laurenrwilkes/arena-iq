@@ -96,6 +96,7 @@ function connectSocket() {
   socket.on('connect_error', () => updateServerBanner(false));
 
   socket.on('match_found', (data) => {
+    trackEvent('battle_started', { is_quant_battle: !!data.isQuantBattle });
     clearInterval(queueTimer);
     STATE.phase = 'game';
     STATE.gameId = data.gameId;
@@ -196,6 +197,7 @@ function connectSocket() {
   });
 
   socket.on('game_result', (data) => {
+    trackEvent('battle_finished', { won: !!data.youWin, is_draw: !!data.isDraw, is_quant_battle: !!STATE.isQuantBattle });
     clearInterval(STATE.timerInterval);
     clearInterval(STATE.blitzInterval);
     clearInterval(STATE.tacticalInterval);

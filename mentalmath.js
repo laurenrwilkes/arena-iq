@@ -518,6 +518,7 @@ function startVerbalGame() {
 }
 
 function endVerbalGame() {
+  trackEvent('game_completed', { game: 'mental_math_challenge', difficulty: 'verbal', score: STATE.score });
   clearInterval(STATE.verbalInterval);
   try { speechSynthesis.cancel(); } catch {}
   STATE.view = 'gameover';
@@ -659,6 +660,7 @@ function formatTime(totalSeconds) {
 
 function startGame(difficulty) {
   if (!difficulty) return;
+  trackEvent('game_started', { game: 'mental_math_challenge', difficulty });
   STATE.difficulty = difficulty;
   STATE.isNewHighScore = false;
   if (difficulty === 'verbal') { startVerbalGame(); return; }
@@ -740,6 +742,7 @@ function quitGame() {
 }
 
 function endGame() {
+  trackEvent('game_completed', { game: 'mental_math_challenge', difficulty: STATE.difficulty, score: STATE.score });
   clearInterval(STATE.timerInterval);
   STATE.view = 'gameover';
   if (currentUser) {

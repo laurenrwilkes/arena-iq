@@ -1,6 +1,29 @@
 // Auth module — handles register/login modal and token storage
 const API = window.location.origin;
 
+// ── ANALYTICS ────────────────────────────────────────────────────────────────
+// Shared GA4 event helper, loaded on every page. Swallows failures (blocked
+// analytics, missing gtag) so tracking never breaks the app.
+function trackEvent(name, params) {
+  try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (_) {}
+}
+
+// "Returned Next Day" — fires once per page load if the visitor's last recorded
+// visit was on an earlier calendar day than today (retention signal).
+(function trackReturningVisitor() {
+  const KEY = 'qb_last_visit_date';
+  const todayKey = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+  try {
+    const today = todayKey();
+    const lastVisit = localStorage.getItem(KEY);
+    if (lastVisit && lastVisit !== today) trackEvent('returned_next_day', { previous_visit_date: lastVisit });
+    localStorage.setItem(KEY, today);
+  } catch (_) {}
+})();
+
 const Auth = (() => {
   let _user = null;
 
@@ -259,6 +282,7 @@ async function submitRegister() {
   setAuthBtn('reg-btn', 'Creating account...', true);
   try {
     await Auth.register(username, email, password);
+    trackEvent('account_created');
     document.getElementById('auth-modal')?.remove();
     if (window._authSuccessCallback) window._authSuccessCallback(Auth.getUser());
   } catch (e) {

@@ -288,6 +288,7 @@ async function init() {
   loadProfile();
   applyCategoryFromHash();
   render();
+  trackEvent('jobs_viewed');
 }
 
 function applyCategoryFromHash() {
@@ -676,6 +677,7 @@ function toggleSaveJob(jobId, e) {
 function openJob(id) {
   const job = JOBS.find(j => j.id === id);
   if (!job) return;
+  trackEvent('job_clicked', { job_id: job.id, firm: job.firm, category: job.category });
   STATE.openJobId = id;
 
   const slideover = document.getElementById('cr-slideover');

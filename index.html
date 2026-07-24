@@ -859,6 +859,7 @@ function selectProblem(id) {
   const panel = document.getElementById('problem-detail-panel');
   panel.innerHTML = q.type === 'code' ? renderCodeDetail(q) : renderNumericDetail(q);
   panel.scrollTop = 0;
+  trackEvent('questions_viewed', { question_id: q.id, category: currentCat, difficulty: q.diff });
 }
 
 function showEmpty() {
@@ -1032,6 +1033,7 @@ function checkAnswer(qId) {
   const val = parseAnswerValue(input.value);
   if (isNaN(val)) { feedback.innerHTML = '<span style="color:var(--red)">Enter a number first.</span>'; return; }
   const correct = Math.abs(val - q.answer) <= (q.tolerance ?? 0.01);
+  trackEvent('question_submitted', { question_id: q.id, difficulty: q.diff, correct });
   if (correct) {
     const earned = recordSolve(q.id, q.diff);
     feedback.innerHTML = '<span style="color:var(--green)">✅ Correct!</span>' +
@@ -1134,6 +1136,7 @@ async function practiceSubmit(qId) {
   const code = document.getElementById('practice-editor')?.value || '';
   const resultEl = document.getElementById('practice-result');
   if (!q) return;
+  trackEvent('question_submitted', { question_id: q.id, difficulty: q.diff, language: currentLang });
   const runBtn = document.getElementById('practice-run-btn');
   const subBtn = document.getElementById('practice-submit-btn');
   if (runBtn) { runBtn.disabled = true; runBtn.style.opacity = '0.4'; }

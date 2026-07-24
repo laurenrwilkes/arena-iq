@@ -68,7 +68,7 @@ function renderMenu() {
           <span class="game-tag">8:00</span>
         </div>
       </div>
-      <a class="game-card lift-hover" href="mentalmath.html" aria-label="Mental Math Challenge — difficulty-tiered arcade math game" style="text-decoration:none;color:inherit;display:block">
+      <a class="game-card lift-hover" href="mentalmath.html" aria-label="Mental Math Challenge — difficulty-tiered arcade math game" style="text-decoration:none;color:inherit;display:block" onclick="trackEvent('start_game_clicked', { game: 'mental_math_challenge', transport_type: 'beacon' })">
         <div class="game-card-icon">🔥</div>
         <div class="game-card-name">Mental Math Challenge</div>
         <div class="game-card-sub">Arcade-style 2-minute sprint with Easy, Medium, and Hard tiers and saved high scores.</div>
@@ -160,6 +160,7 @@ function goToMenu() {
 }
 
 function goToRules() {
+  trackEvent('start_game_clicked', { game: 'optiver_80_in_8' });
   clearInterval(STATE.timerInterval);
   STATE.phase = 'rules';
   render();
@@ -216,6 +217,7 @@ function formatTime(totalSeconds) {
 }
 
 function startGame() {
+  trackEvent('game_started', { game: 'optiver_80_in_8' });
   STATE.questions = generateQuestions(TOTAL_QUESTIONS);
   STATE.index = 0;
   STATE.correct = 0;
@@ -271,6 +273,7 @@ function skipQuestion() {
 }
 
 function endGame() {
+  trackEvent('game_completed', { game: 'optiver_80_in_8', correct: STATE.correct, answered: STATE.answered, skipped: STATE.skipped });
   clearInterval(STATE.timerInterval);
   STATE.phase = 'result';
   render();
