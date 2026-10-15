@@ -38,6 +38,7 @@ function validateQuestionBank({ minimums = {} } = {}) {
           else if (q.testCases.some(tc => !('input' in tc) || !('expected' in tc))) err(id, 'test case without input/expected');
         }
         if (!TRACKS.has(q.track)) err(id, `unknown track "${q.track}"`);
+        if (q.active && cat === 'quant' && q.track === 'trading' && LEAKY_TITLE.test(q.title)) err(id, `player-facing title names the method: "${q.title}"`);
       }
     }
   }

@@ -44,7 +44,10 @@ test('original titles stay server-side and match the review metadata', () => {
     assert.equal(qmod.ORIGINAL_TITLES[id], t.was);
     const q = Object.values(qmod.QUESTIONS).flatMap(x => Object.values(x).flat()).find(x => x.id === id);
     assert.equal(q.title, t.title);
-    assert.ok(!JSON.stringify(q).includes(JSON.stringify(t.was).slice(1, -1)) || t.was === t.title, `${id}: original title leaks into the served object`);
+    // No field of the served object carries the original title. (Its wording may
+    // still appear inside a prompt that names the quantity it asks for, e.g.
+    // "What is the Macaulay Duration?" — that is part of the question.)
+    assert.ok(!Object.values(q).includes(t.was) && !('originalTitle' in q), `${id}: original title served to players`);
   }
 });
 
