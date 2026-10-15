@@ -449,11 +449,11 @@ function generateBlitzQuestion(difficulty) {
 }
 
 // ── QUANT BATTLE: PHASE 2 TACTICAL PROBLEM SET ───────────────────────────────
-const BLITZ_DURATION = 120; // seconds
+const BLITZ_DURATION = 60; // seconds (was 120; shortened 2026-10-15 to cut match length)
 const TACTICAL_COMPOSITION = {
-  easy:   { mix: [['easy', 3], ['medium', 1]], timeLimit: 480 },
-  medium: { mix: [['easy', 2], ['medium', 2]], timeLimit: 600 },
-  hard:   { mix: [['easy', 1], ['medium', 2], ['hard', 1]], timeLimit: 720 },
+  easy:   { mix: [['easy', 3], ['medium', 1]], timeLimit: 360 },   // was 480
+  medium: { mix: [['easy', 2], ['medium', 2]], timeLimit: 450 },   // was 600
+  hard:   { mix: [['easy', 1], ['medium', 2], ['hard', 1]], timeLimit: 540 },   // was 720
 };
 
 function buildTacticalSet(category, difficulty) {
@@ -539,8 +539,10 @@ function startGame(p1, p2, category, difficulty) {
 // live timers and phase transitions identical regardless of opponent type.
 function simulateBotIfNeeded(game, difficulty) {
   const acc = BOT_ACCURACY[difficulty] || BOT_ACCURACY.easy;
-  const blitzThroughput = { easy: 40, medium: 28, hard: 18 };
-  const attempts = blitzThroughput[difficulty] || 30;
+  // Correct answers per minute; scaled to the blitz length so the bot's pace
+  // (and its chance of winning the blitz point) doesn't depend on BLITZ_DURATION.
+  const blitzPerMinute = { easy: 20, medium: 14, hard: 9 };
+  const attempts = Math.round((blitzPerMinute[difficulty] || 15) * BLITZ_DURATION / 60);
   const n = game.tacticalQuestions.length;
 
   for (const player of [game.p1, game.p2]) {

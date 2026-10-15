@@ -66,8 +66,8 @@ const STATE = {
   blitzQuestion: null,
   blitzScore: 0,
   blitzOppScore: 0,
-  blitzDuration: 120,
-  blitzTimeLeft: 120,
+  blitzDuration: 60,
+  blitzTimeLeft: 60,
   blitzInterval: null,
   blitzPointWon: false,
   tacticalQuestions: [],
@@ -376,7 +376,7 @@ function handleOptionKey(event, el) {
 // Quant's timing is now two-phase (fixed 2-min Blitz + a per-difficulty
 // Tactical round); Tech stays a single timed question as before.
 const DIFF_TIME_LABELS = {
-  quant: { easy: '2 min Blitz + 8 min Tactical', medium: '2 min Blitz + 10 min Tactical', hard: '2 min Blitz + 12 min Tactical' },
+  quant: { easy: '1 min Blitz + 6 min Tactical', medium: '1 min Blitz + 7.5 min Tactical', hard: '1 min Blitz + 9 min Tactical' },
   tech: { easy: '5 min limit', medium: '8 min limit', hard: '12 min limit' },
 };
 
