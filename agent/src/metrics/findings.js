@@ -50,7 +50,9 @@ function buildFindings({ engagement, codebase, questionAudit, gaps }) {
   if (codebase.server.matchesRecordedOnlyForRegisteredPairs) add('F-CODE-matches-partial', 'code', 'The matches table only records games where both players have accounts (including bots); guest games leave no server trace, and no match duration is stored.', {});
   if (codebase.quitCountedAsComplete) add('F-CODE-quit-as-complete', 'code', "Mental Math's Quit button calls endGame(), which fires game_completed: quits are counted as completions.", { location: 'mentalmath.js quitGame()' });
   const bs = codebase.events.find(e => e.name === 'battle_started');
-  if (bs) add('F-CODE-battle-params', 'code', `battle_started only carries [${bs.params.join(', ')}]: no category, difficulty, opponent type or queue time.`, bs);
+  const wanted = { category: 'category', difficulty: 'difficulty', opponent_type: 'opponent type', queue_ms: 'queue time' };
+  const lacking = bs ? Object.keys(wanted).filter(p => !bs.params.includes(p)) : [];
+  if (lacking.length) add('F-CODE-battle-params', 'code', `battle_started only carries [${bs.params.join(', ')}]: no ${lacking.map(p => wanted[p]).join(', ')}.`, bs);
 
   // ── Content (question bank) ───────────────────────────────────────────────
   const qa = questionAudit;

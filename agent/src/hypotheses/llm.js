@@ -50,7 +50,7 @@ const SYSTEM = `You are the analysis lead for QuantBattle (quantbattle.net), a s
 Your job: propose explanations for disengagement and the experiments to test them, using ONLY the findings provided.
 
 Rules:
-- Cite finding ids (e.g. "F-CODE-pacing.bot_wait.hard") in every evidence list. Do not cite ids that are not in the input.
+- Every evidence list item must be exactly one finding id copied from the input (e.g. "F-CODE-pacing.bot_wait.hard"), with no other text. Do not cite ids that are not in the input.
 - Do not compute or invent numbers. Refer to numbers only as they appear in findings.
 - "measured" findings are correlational. "code" findings describe the product, not behaviour. "gap" findings mean we cannot measure something yet. State causal_status honestly; nothing here is causal until an experiment runs.
 - Never infer question-level behaviour from session-level GA4 data.
@@ -76,12 +76,14 @@ function buildContext({ findings, questionSamples, priorOutcomes, synthetic }) {
 function validate(parsed, findingIds) {
   const errors = [];
   const known = new Set(findingIds);
+  // The model sometimes wraps ids ("`F-Q-summary` (content)"); pull out every
+  // id-shaped token, then keep only ids that really exist.
+  const extract = list => [...new Set(list.flatMap(s => String(s).match(/F-[A-Za-z0-9_.-]*[A-Za-z0-9_]/g) || []))];
   const hyps = (parsed.hypotheses || []).map(h => {
-    const evidence = h.evidence.filter(id => known.has(id));
-    const dropped = h.evidence.filter(id => !known.has(id));
-    return { ...h, evidence, droppedEvidence: dropped };
+    const ids = extract(h.evidence);
+    return { ...h, evidence: ids.filter(id => known.has(id)), droppedEvidence: [...ids.filter(id => !known.has(id)), ...h.evidence.filter(s => !/F-/.test(s))] };
   }).filter(h => {
-    if (!h.evidence.length) { errors.push(`hypothesis "${h.title}" cites no valid findings; rejected`); return false; }
+    if (!h.evidence.length) { errors.push(`hypothesis "${h.title}" cites no valid findings (got: ${h.droppedEvidence.slice(0, 3).join(' | ')}); rejected`); return false; }
     return true;
   });
   if (hyps.length < 5) errors.push(`only ${hyps.length} valid hypotheses (need 5)`);
@@ -89,7 +91,7 @@ function validate(parsed, findingIds) {
     const d = parsed.experiments?.[area];
     if (!d) { errors.push(`missing ${area} experiment`); continue; }
     if (!d.guardrails.length) errors.push(`${area} experiment has no guardrails`);
-    d.evidence = d.evidence.filter(id => known.has(id));
+    d.evidence = extract(d.evidence).filter(id => known.has(id));
   }
   return { errors, hypotheses: hyps.slice(0, 5), experiments: parsed.experiments, questionReviews: parsed.question_reviews || [], followUps: parsed.follow_up_questions || [] };
 }

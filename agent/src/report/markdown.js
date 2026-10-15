@@ -66,7 +66,8 @@ function renderMarkdown(run) {
     L.push(`- **Stopping rule:** mSPRT, alpha ${s.alpha}, MDE ${pct(s.mdeAbsolute)} abs; min ${s.minDaysRunning} days & ${s.minUnitsPerArm}/arm; cap ${s.maxUnitsPerArm}/arm or ${s.maxDays} days.`);
     L.push(`- **Feasibility:** ${x.feasibility.note}`);
     L.push(`- **Prerequisites before approval:** ${x.prerequisites.filter(p => !p.satisfied).map(p => p.description).join('; ') || 'all met'}`);
-    L.push('- **Code changes:**'); x.codeChangeOutline.forEach(c => L.push(`  - ${c}`));
+    L.push(`- **Code changes${x.codeImplemented ? ' (already built, behind the flag)' : ''}:**`); x.codeChangeOutline.forEach(c => L.push(`  - ${c}`));
+    if (x.alternativeDesign) L.push(`- **Alternative suggested by ${x.alternativeDesign.source}:** ${x.alternativeDesign.title}: ${x.alternativeDesign.treatment} (not built; would need its own code and approval)`);
     L.push('');
   });
 

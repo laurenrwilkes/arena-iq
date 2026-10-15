@@ -109,11 +109,17 @@ async function runAgent(opts = {}) {
   const existing = registry.loadAll(expDir);
   const experiments = [];
   for (const area of ['pacing', 'question_quality']) {
-    const design = designs[area];
+    // A design whose code is already built wins; an LLM redesign is kept as
+    // an alternative for a human to consider, never silently swapped in.
+    const built = DEFAULT_DESIGNS[area].implemented ? DEFAULT_DESIGNS[area] : null;
+    const design = built || designs[area];
+    const alternative = built && designs[area] !== built ? designs[area] : null;
     const prev = existing.find(x => x.hypothesis?.key === design.hypothesis_key) || existing.find(x => x.area === area && x.status === 'proposed');
     if (prev && prev.status !== 'proposed') { experiments.push(prev); continue; } // don't touch approved/running/concluded
     const id = prev ? prev.id : nextExperimentId([...existing, ...experiments], design.slug);
     const exp = buildExperiment(area, design, { id, gaps, engagement, codebase, lookbackDays: ga4.lookbackDays });
+    exp.codeImplemented = !!built;
+    if (alternative) exp.alternativeDesign = { source: hypothesisSource, title: alternative.title, treatment: alternative.treatment_description, primaryMetric: alternative.primary_metric, rationale: alternative.hypothesis_statement };
     if (!opts.dryRun) registry.save(exp, expDir);
     experiments.push(exp);
   }

@@ -3,7 +3,7 @@
   "title": "Explicit units and rounding on ambiguous numeric questions",
   "area": "question_quality",
   "status": "proposed",
-  "createdAt": "2026-10-15T18:36:42.039Z",
+  "createdAt": "2026-10-15T22:41:50.555Z",
   "unit": "anon_id",
   "trafficAllocation": 1,
   "hypothesis": {
@@ -65,9 +65,9 @@
     "maxDays": 42
   },
   "feasibility": {
-    "eligibleUnitsPerDay": null,
-    "estimatedDaysToMaxUnits": null,
-    "note": "Unknown until GA4 traffic is available."
+    "eligibleUnitsPerDay": 20.9,
+    "estimatedDaysToMaxUnits": 553,
+    "note": "At current traffic this needs ~553 days, beyond the 42-day cap: expect \"inconclusive\" unless the effect is much larger than the MDE. Consider a larger MDE or running without competing experiments."
   },
   "evaluationPlan": [
     "Analyse only units with an experiment_exposure event (intent-to-treat from first exposure).",
@@ -125,5 +125,13 @@
     }
   ],
   "approval": null,
-  "analysisLog": []
+  "analysisLog": [],
+  "codeImplemented": true,
+  "alternativeDesign": {
+    "source": "LLM (claude-opus-5-5), validated against findings",
+    "title": "Explicit rounding/unit instructions on flagged numeric questions",
+    "treatment": "The same questions show a standardised format line matching the stored answer's precision and unit (e.g. 'Enter as a decimal rounded to 4 decimal places', 'Enter in minutes', 'Enter as a decimal, not a percentage'). Answers and tolerances are unchanged.",
+    "primaryMetric": "affected_question_solve_rate",
+    "rationale": "Adding explicit rounding and unit instructions to the numeric questions that lack them will raise the share of exposed players who answer them correctly, without increasing abandonment or disputes."
+  }
 }

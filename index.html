@@ -870,6 +870,11 @@ function selectProblem(id) {
   const panel = document.getElementById('problem-detail-panel');
   panel.innerHTML = q.type === 'code' ? renderCodeDetail(q) : renderNumericDetail(q);
   panel.scrollTop = 0;
+  // On narrow screens the layout stacks and the detail panel sits below the
+  // whole question list, so bring it into view or the tap looks like it did nothing.
+  if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
   trackEvent('questions_viewed', { question_id: q.id, category: currentCat, difficulty: q.diff });
   QBAnalytics.presentQuestion(q.id, { game_session_id: PRACTICE_SESSION, game: 'practice', category: currentCat, difficulty: q.diff, affected: !!q.affected });
   if (q.affected && q.experiment) QBAnalytics.exposure(q.experiment.id, q.experiment.variant);

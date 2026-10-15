@@ -6,8 +6,11 @@ const { EXPERIMENT_METRICS } = require('./metrics');
 
 // Default designs used when no LLM is configured. The LLM may replace the
 // prose, but metrics must come from EXPERIMENT_METRICS either way.
+// `implemented: true` means the treatment code for this design already exists
+// in the app, so the LLM may suggest alternatives but cannot replace it.
 const DEFAULT_DESIGNS = {
   pacing: {
+    implemented: true,
     slug: 'bot-battle-instant-resolve',
     title: 'Resolve bot battles as soon as the player is done',
     hypothesis_key: 'pacing.bot_dead_wait',
@@ -26,6 +29,7 @@ const DEFAULT_DESIGNS = {
     evidence: ['F-CODE-pacing.bot_wait.hard', 'F-CODE-pacing.matchmaking', 'F-GA-funnel-battle_finish'],
   },
   question_quality: {
+    implemented: true,
     slug: 'clarified-answer-format',
     title: 'Explicit units and rounding on ambiguous numeric questions',
     hypothesis_key: 'quality.ambiguous_answer_format',

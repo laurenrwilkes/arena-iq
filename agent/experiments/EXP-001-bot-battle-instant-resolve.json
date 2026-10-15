@@ -3,7 +3,7 @@
   "title": "Resolve bot battles as soon as the player is done",
   "area": "pacing",
   "status": "proposed",
-  "createdAt": "2026-10-15T18:36:42.039Z",
+  "createdAt": "2026-10-15T22:41:50.554Z",
   "unit": "anon_id",
   "trafficAllocation": 1,
   "hypothesis": {
@@ -66,9 +66,9 @@
     "maxDays": 42
   },
   "feasibility": {
-    "eligibleUnitsPerDay": null,
-    "estimatedDaysToMaxUnits": null,
-    "note": "Unknown until GA4 traffic is available."
+    "eligibleUnitsPerDay": 0.3,
+    "estimatedDaysToMaxUnits": 4138,
+    "note": "At current traffic this needs ~4138 days, beyond the 42-day cap: expect \"inconclusive\" unless the effect is much larger than the MDE. Consider a larger MDE or running without competing experiments."
   },
   "evaluationPlan": [
     "Analyse only units with an experiment_exposure event (intent-to-treat from first exposure).",
@@ -121,5 +121,13 @@
     }
   ],
   "approval": null,
-  "analysisLog": []
+  "analysisLog": [],
+  "codeImplemented": true,
+  "alternativeDesign": {
+    "source": "LLM (claude-opus-5-5), validated against findings",
+    "title": "Skip the bot wait: 'See result now' after final submission in bot battles",
+    "treatment": "After the player's final submission in a bot battle, a 'See result now' button appears. It fast-forwards the bot's pre-sampled simulated finish/score and shows the result screen immediately. Bot outcomes keep the same distribution; only the waiting is removed.",
+    "primaryMetric": "bot_battle_completion",
+    "rationale": "Removing the forced non-interactive wait after a player's final submission in a bot battle will increase the share of bot battles that reach the result screen."
+  }
 }
