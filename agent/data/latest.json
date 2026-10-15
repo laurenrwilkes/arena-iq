@@ -1,0 +1,3344 @@
+{
+  "meta": {
+    "runId": "2026-10-15T22-39-22-788Z",
+    "dataDir": "/Users/lauren/Desktop/Websites/arena-iq/agent/data",
+    "generatedAt": "2026-10-15T22:41:50.559Z",
+    "dataSource": "GA4 property 546626239",
+    "lookbackDays": 28,
+    "hypothesisSource": "LLM (claude-opus-5-5), validated against findings",
+    "llmError": null
+  },
+  "engagement": {
+    "synthetic": false,
+    "available": true,
+    "overall": {
+      "activeUsers": 112,
+      "sessions": 165,
+      "engagementRate": 0.49696969696969695,
+      "engagementSecondsPerUser": 302.7142857142857,
+      "sessionsPerUser": 1.4732142857142858
+    },
+    "byTenure": {
+      "new": {
+        "activeUsers": 94,
+        "sessions": 94,
+        "engagementRate": 0.6382978723404256,
+        "engagementSecondsPerUser": 213.54255319148936,
+        "sessionsPerUser": 1
+      },
+      "returning": {
+        "activeUsers": 18,
+        "sessions": 36,
+        "engagementRate": 0.5833333333333334,
+        "engagementSecondsPerUser": 768.3888888888889,
+        "sessionsPerUser": 2
+      },
+      "(not set)": {
+        "activeUsers": 0,
+        "sessions": 35,
+        "engagementRate": 0.02857142857142857,
+        "engagementSecondsPerUser": null,
+        "sessionsPerUser": null
+      }
+    },
+    "byDevice": {
+      "desktop": {
+        "activeUsers": 88,
+        "sessions": 128,
+        "engagementRate": 0.546875,
+        "engagementSecondsPerUser": 370.39772727272725,
+        "sessionsPerUser": 1.4545454545454546
+      },
+      "mobile": {
+        "activeUsers": 23,
+        "sessions": 36,
+        "engagementRate": 0.3055555555555556,
+        "engagementSecondsPerUser": 49.52173913043478,
+        "sessionsPerUser": 1.565217391304348
+      },
+      "tablet": {
+        "activeUsers": 1,
+        "sessions": 1,
+        "engagementRate": 1,
+        "engagementSecondsPerUser": 170,
+        "sessionsPerUser": 1
+      }
+    },
+    "funnels": {
+      "overall": [
+        {
+          "id": "battle_finish",
+          "label": "Battle started → finished",
+          "from": 9,
+          "to": 5,
+          "rate": 0.5555555555555556,
+          "lower": 0.26665129332228826,
+          "upper": 0.8112214790379786
+        },
+        {
+          "id": "solo_finish",
+          "label": "Solo game started → completed",
+          "from": 7,
+          "to": 4,
+          "rate": 0.5714285714285714,
+          "lower": 0.2504583643462755,
+          "upper": 0.8417801448772135
+        },
+        {
+          "id": "solo_click_to_start",
+          "label": "Game card clicked → game started",
+          "from": 10,
+          "to": 7,
+          "rate": 0.7,
+          "lower": 0.3967781472449561,
+          "upper": 0.8922087326805668
+        },
+        {
+          "id": "practice_view_to_submit",
+          "label": "Practice question viewed → submitted",
+          "from": 584,
+          "to": 399,
+          "rate": 0.6832191780821918,
+          "lower": 0.6443950542671053,
+          "upper": 0.7196486802919781
+        },
+        {
+          "id": "brainteaser_play",
+          "label": "Users playing the brain teaser",
+          "from": 112,
+          "to": 9,
+          "rate": 0.08035714285714286,
+          "lower": 0.04285057781557605,
+          "upper": 0.14569555280185456
+        },
+        {
+          "id": "signup",
+          "label": "Users creating an account",
+          "from": 112,
+          "to": 4,
+          "rate": 0.03571428571428571,
+          "lower": 0.013974612384756883,
+          "upper": 0.08824663851112377
+        },
+        {
+          "id": "next_day_return",
+          "label": "Users returning on a later day (approx.)",
+          "from": 112,
+          "to": 20,
+          "rate": 0.17857142857142858,
+          "lower": 0.11867660540947089,
+          "upper": 0.2597842605953695
+        }
+      ],
+      "byTenure": {
+        "new": [
+          {
+            "id": "battle_finish",
+            "label": "Battle started → finished",
+            "from": 7,
+            "to": 4,
+            "rate": 0.5714285714285714,
+            "lower": 0.2504583643462755,
+            "upper": 0.8417801448772135
+          },
+          {
+            "id": "solo_finish",
+            "label": "Solo game started → completed",
+            "from": 4,
+            "to": 2,
+            "rate": 0.5,
+            "lower": 0.15003898900822643,
+            "upper": 0.8499610109917736
+          },
+          {
+            "id": "solo_click_to_start",
+            "label": "Game card clicked → game started",
+            "from": 6,
+            "to": 4,
+            "rate": 0.6666666666666666,
+            "lower": 0.29999331491929243,
+            "upper": 0.9032285889854148
+          },
+          {
+            "id": "practice_view_to_submit",
+            "label": "Practice question viewed → submitted",
+            "from": 367,
+            "to": 245,
+            "rate": 0.667574931880109,
+            "lower": 0.6178618194203607,
+            "upper": 0.713816306291623
+          },
+          {
+            "id": "brainteaser_play",
+            "label": "Users playing the brain teaser",
+            "from": 94,
+            "to": 7,
+            "rate": 0.07446808510638298,
+            "lower": 0.03653858084617147,
+            "upper": 0.14581212243243796
+          },
+          {
+            "id": "signup",
+            "label": "Users creating an account",
+            "from": 94,
+            "to": 2,
+            "rate": 0.02127659574468085,
+            "lower": 0.005854336233788886,
+            "upper": 0.07429020495464672
+          },
+          {
+            "id": "next_day_return",
+            "label": "Users returning on a later day (approx.)",
+            "from": 94,
+            "to": 2,
+            "rate": 0.02127659574468085,
+            "lower": 0.005854336233788886,
+            "upper": 0.07429020495464672
+          }
+        ],
+        "returning": [
+          {
+            "id": "battle_finish",
+            "label": "Battle started → finished",
+            "from": 2,
+            "to": 1,
+            "rate": 0.5,
+            "lower": 0.09453120562230916,
+            "upper": 0.9054687943776909
+          },
+          {
+            "id": "solo_finish",
+            "label": "Solo game started → completed",
+            "from": 3,
+            "to": 2,
+            "rate": 0.6666666666666666,
+            "lower": 0.20765960059822086,
+            "upper": 0.9385080553510953
+          },
+          {
+            "id": "solo_click_to_start",
+            "label": "Game card clicked → game started",
+            "from": 3,
+            "to": 3,
+            "rate": 1,
+            "lower": 0.43850296784794796,
+            "upper": 1
+          },
+          {
+            "id": "practice_view_to_submit",
+            "label": "Practice question viewed → submitted",
+            "from": 215,
+            "to": 154,
+            "rate": 0.7162790697674418,
+            "lower": 0.6526351336079913,
+            "upper": 0.7723300466578124
+          },
+          {
+            "id": "brainteaser_play",
+            "label": "Users playing the brain teaser",
+            "from": 18,
+            "to": 2,
+            "rate": 0.1111111111111111,
+            "lower": 0.031019522616910045,
+            "upper": 0.3279976515122673
+          },
+          {
+            "id": "signup",
+            "label": "Users creating an account",
+            "from": 18,
+            "to": 2,
+            "rate": 0.1111111111111111,
+            "lower": 0.031019522616910045,
+            "upper": 0.3279976515122673
+          },
+          {
+            "id": "next_day_return",
+            "label": "Users returning on a later day (approx.)",
+            "from": 18,
+            "to": 12,
+            "rate": 0.6666666666666666,
+            "lower": 0.4374946727848533,
+            "upper": 0.8372122525883564
+          }
+        ]
+      },
+      "byDevice": {
+        "desktop": [
+          {
+            "id": "battle_finish",
+            "label": "Battle started → finished",
+            "from": 6,
+            "to": 5,
+            "rate": 0.8333333333333334,
+            "lower": 0.4364971775233289,
+            "upper": 0.9699466302860857
+          },
+          {
+            "id": "solo_finish",
+            "label": "Solo game started → completed",
+            "from": 7,
+            "to": 4,
+            "rate": 0.5714285714285714,
+            "lower": 0.2504583643462755,
+            "upper": 0.8417801448772135
+          },
+          {
+            "id": "solo_click_to_start",
+            "label": "Game card clicked → game started",
+            "from": 10,
+            "to": 7,
+            "rate": 0.7,
+            "lower": 0.3967781472449561,
+            "upper": 0.8922087326805668
+          },
+          {
+            "id": "practice_view_to_submit",
+            "label": "Practice question viewed → submitted",
+            "from": 545,
+            "to": 398,
+            "rate": 0.7302752293577982,
+            "lower": 0.6914982293320882,
+            "upper": 0.7658287381613949
+          },
+          {
+            "id": "brainteaser_play",
+            "label": "Users playing the brain teaser",
+            "from": 88,
+            "to": 6,
+            "rate": 0.06818181818181818,
+            "lower": 0.03162092815256326,
+            "upper": 0.14086608402292608
+          },
+          {
+            "id": "signup",
+            "label": "Users creating an account",
+            "from": 88,
+            "to": 4,
+            "rate": 0.045454545454545456,
+            "lower": 0.01781624922325823,
+            "upper": 0.11111744780357269
+          },
+          {
+            "id": "next_day_return",
+            "label": "Users returning on a later day (approx.)",
+            "from": 88,
+            "to": 17,
+            "rate": 0.19318181818181818,
+            "lower": 0.1242595772761829,
+            "upper": 0.2877706682169279
+          }
+        ],
+        "mobile": [
+          {
+            "id": "battle_finish",
+            "label": "Battle started → finished",
+            "from": 3,
+            "to": 0,
+            "rate": 0,
+            "lower": 0,
+            "upper": 0.561497032152052
+          },
+          {
+            "id": "solo_finish",
+            "label": "Solo game started → completed",
+            "from": 0,
+            "to": 0,
+            "rate": null,
+            "lower": null,
+            "upper": null
+          },
+          {
+            "id": "solo_click_to_start",
+            "label": "Game card clicked → game started",
+            "from": 0,
+            "to": 0,
+            "rate": null,
+            "lower": null,
+            "upper": null
+          },
+          {
+            "id": "practice_view_to_submit",
+            "label": "Practice question viewed → submitted",
+            "from": 39,
+            "to": 1,
+            "rate": 0.02564102564102564,
+            "lower": 0.004540703095855178,
+            "upper": 0.1318099018285025
+          },
+          {
+            "id": "brainteaser_play",
+            "label": "Users playing the brain teaser",
+            "from": 23,
+            "to": 2,
+            "rate": 0.08695652173913043,
+            "lower": 0.024180004461884813,
+            "upper": 0.2679598109431207
+          },
+          {
+            "id": "signup",
+            "label": "Users creating an account",
+            "from": 23,
+            "to": 0,
+            "rate": 0,
+            "lower": 0,
+            "upper": 0.14311661864816455
+          },
+          {
+            "id": "next_day_return",
+            "label": "Users returning on a later day (approx.)",
+            "from": 23,
+            "to": 3,
+            "rate": 0.13043478260869565,
+            "lower": 0.04537659090008114,
+            "upper": 0.32127482288334486
+          }
+        ],
+        "tablet": [
+          {
+            "id": "battle_finish",
+            "label": "Battle started → finished",
+            "from": 0,
+            "to": 0,
+            "rate": null,
+            "lower": null,
+            "upper": null
+          },
+          {
+            "id": "solo_finish",
+            "label": "Solo game started → completed",
+            "from": 0,
+            "to": 0,
+            "rate": null,
+            "lower": null,
+            "upper": null
+          },
+          {
+            "id": "solo_click_to_start",
+            "label": "Game card clicked → game started",
+            "from": 0,
+            "to": 0,
+            "rate": null,
+            "lower": null,
+            "upper": null
+          },
+          {
+            "id": "practice_view_to_submit",
+            "label": "Practice question viewed → submitted",
+            "from": 0,
+            "to": 0,
+            "rate": null,
+            "lower": null,
+            "upper": null
+          },
+          {
+            "id": "brainteaser_play",
+            "label": "Users playing the brain teaser",
+            "from": 1,
+            "to": 1,
+            "rate": 1,
+            "lower": 0.20654931411298355,
+            "upper": 1
+          },
+          {
+            "id": "signup",
+            "label": "Users creating an account",
+            "from": 1,
+            "to": 0,
+            "rate": 0,
+            "lower": 0,
+            "upper": 0.7934506858870164
+          },
+          {
+            "id": "next_day_return",
+            "label": "Users returning on a later day (approx.)",
+            "from": 1,
+            "to": 0,
+            "rate": 0,
+            "lower": 0,
+            "upper": 0.7934506858870164
+          }
+        ]
+      }
+    },
+    "deviceGaps": [
+      {
+        "funnel": "practice_view_to_submit",
+        "label": "Practice question viewed → submitted",
+        "device": "mobile",
+        "deviceRate": 0.02564102564102564,
+        "othersRate": 0.7302752293577982,
+        "diff": -0.7046342037167725,
+        "ci": [
+          -0.7666763714406599,
+          -0.6425920359928852
+        ],
+        "n": 39
+      }
+    ],
+    "retention": [
+      {
+        "cohort": "week_of_2026-10-04",
+        "size": 28,
+        "week1": 4,
+        "week1Rate": 0.14285714285714285
+      },
+      {
+        "cohort": "week_of_2026-09-27",
+        "size": 25,
+        "week1": 1,
+        "week1Rate": 0.04
+      },
+      {
+        "cohort": "week_of_2026-09-13",
+        "size": 24,
+        "week1": 1,
+        "week1Rate": 0.041666666666666664
+      },
+      {
+        "cohort": "week_of_2026-09-20",
+        "size": 18,
+        "week1": 2,
+        "week1Rate": 0.1111111111111111
+      }
+    ],
+    "pages": [
+      {
+        "pagePath": "/",
+        "screenPageViews": 113,
+        "activeUsers": 86,
+        "userEngagementDuration": 13175,
+        "engagementSecondsPerUser": 153.19767441860466
+      },
+      {
+        "pagePath": "/index.html",
+        "screenPageViews": 56,
+        "activeUsers": 22,
+        "userEngagementDuration": 11333,
+        "engagementSecondsPerUser": 515.1363636363636
+      },
+      {
+        "pagePath": "/games.html",
+        "screenPageViews": 41,
+        "activeUsers": 18,
+        "userEngagementDuration": 3859,
+        "engagementSecondsPerUser": 214.38888888888889
+      },
+      {
+        "pagePath": "/play.html",
+        "screenPageViews": 40,
+        "activeUsers": 17,
+        "userEngagementDuration": 4654,
+        "engagementSecondsPerUser": 273.7647058823529
+      },
+      {
+        "pagePath": "/careers.html",
+        "screenPageViews": 18,
+        "activeUsers": 13,
+        "userEngagementDuration": 234,
+        "engagementSecondsPerUser": 18
+      },
+      {
+        "pagePath": "/mentalmath.html",
+        "screenPageViews": 7,
+        "activeUsers": 5,
+        "userEngagementDuration": 649,
+        "engagementSecondsPerUser": 129.8
+      }
+    ],
+    "quality": [],
+    "registeredParams": [],
+    "errors": {}
+  },
+  "codebase": {
+    "events": [
+      {
+        "name": "returned_next_day",
+        "params": [
+          "previous_visit_date"
+        ],
+        "locations": [
+          "auth.js:19"
+        ]
+      },
+      {
+        "name": "account_created",
+        "params": [],
+        "locations": [
+          "auth.js:282"
+        ]
+      },
+      {
+        "name": "brainteaser_skipped",
+        "params": [],
+        "locations": [
+          "brainteaser.js:112"
+        ]
+      },
+      {
+        "name": "brainteaser_played",
+        "params": [],
+        "locations": [
+          "brainteaser.js:137"
+        ]
+      },
+      {
+        "name": "jobs_viewed",
+        "params": [],
+        "locations": [
+          "careers.js:291"
+        ]
+      },
+      {
+        "name": "job_clicked",
+        "params": [
+          "category",
+          "firm",
+          "job_id"
+        ],
+        "locations": [
+          "careers.js:680"
+        ]
+      },
+      {
+        "name": "battle_started",
+        "params": [
+          "category",
+          "difficulty",
+          "game_session_id",
+          "is_quant_battle",
+          "opponent_type",
+          "queueStartedAt",
+          "queue_ms"
+        ],
+        "locations": [
+          "game.js:111"
+        ]
+      },
+      {
+        "name": "battle_finished",
+        "params": [
+          "category",
+          "difficulty",
+          "duration_ms",
+          "game_session_id",
+          "is_draw",
+          "is_quant_battle",
+          "opponent_type",
+          "startedAt",
+          "won"
+        ],
+        "locations": [
+          "game.js:223"
+        ]
+      },
+      {
+        "name": "start_game_clicked",
+        "params": [
+          "game",
+          "transport_type"
+        ],
+        "locations": [
+          "games.js:71",
+          "games.js:164"
+        ]
+      },
+      {
+        "name": "game_started",
+        "params": [
+          "difficulty",
+          "game",
+          "game_session_id"
+        ],
+        "locations": [
+          "games.js:223",
+          "mentalmath.js:666"
+        ]
+      },
+      {
+        "name": "game_completed",
+        "params": [
+          "answered",
+          "correct",
+          "difficulty",
+          "duration_ms",
+          "end_reason",
+          "game",
+          "game_session_id",
+          "score",
+          "skipped",
+          "startedAt"
+        ],
+        "locations": [
+          "games.js:281",
+          "mentalmath.js:755"
+        ]
+      },
+      {
+        "name": "questions_viewed",
+        "params": [
+          "category",
+          "difficulty",
+          "question_id"
+        ],
+        "locations": [
+          "index.html:878"
+        ]
+      },
+      {
+        "name": "question_submitted",
+        "params": [
+          "difficulty",
+          "language",
+          "question_id"
+        ],
+        "locations": [
+          "index.html:1064",
+          "index.html:1169"
+        ]
+      },
+      {
+        "name": "solution_revealed",
+        "params": [
+          "game_session_id",
+          "question_id"
+        ],
+        "locations": [
+          "index.html:1077"
+        ]
+      },
+      {
+        "name": "wait_ended",
+        "params": [
+          "game_session_id",
+          "outcome",
+          "wait_ms",
+          "wait_type"
+        ],
+        "locations": [
+          "game.js:104",
+          "game.js:221",
+          "game.js:457"
+        ]
+      },
+      {
+        "name": "wait_started",
+        "params": [
+          "game_session_id",
+          "wait_type"
+        ],
+        "locations": [
+          "game.js:436",
+          "game.js:640",
+          "game.js:1217"
+        ]
+      },
+      {
+        "name": "question_presented",
+        "params": [
+          "affected",
+          "category",
+          "difficulty",
+          "game",
+          "game_session_id",
+          "question_id",
+          "question_index"
+        ],
+        "locations": [
+          "game.js:623",
+          "index.html:879"
+        ]
+      },
+      {
+        "name": "experiment_exposure",
+        "params": [
+          "experiment_id",
+          "variant"
+        ],
+        "locations": [
+          "game.js:627",
+          "index.html:880",
+          "server/index.js:500"
+        ]
+      },
+      {
+        "name": "question_answered",
+        "params": [
+          "affected",
+          "attempts",
+          "correct",
+          "difficulty",
+          "game",
+          "game_session_id",
+          "question_id",
+          "response_ms"
+        ],
+        "locations": [
+          "game.js:632",
+          "index.html:886"
+        ]
+      },
+      {
+        "name": "question_first_input",
+        "params": [
+          "game_session_id",
+          "ms_since_presented",
+          "question_id"
+        ],
+        "locations": [
+          "game.js:646",
+          "game.js:647",
+          "index.html:890"
+        ]
+      },
+      {
+        "name": "post_game_action",
+        "params": [
+          "action",
+          "game",
+          "game_session_id",
+          "ms_since_result"
+        ],
+        "locations": [
+          "game.js:1213",
+          "game.js:1233",
+          "games.js:157",
+          "games.js:221",
+          "mentalmath.js:664",
+          "mentalmath.js:779"
+        ]
+      },
+      {
+        "name": "game_abandoned",
+        "params": [
+          "category",
+          "difficulty",
+          "elapsed_ms",
+          "game",
+          "game_session_id",
+          "opponent_type",
+          "phase",
+          "question_id",
+          "question_index",
+          "reason",
+          "score",
+          "submitted"
+        ],
+        "locations": [
+          "mentalmath.js:746"
+        ]
+      },
+      {
+        "name": "question_flagged",
+        "params": [
+          "context",
+          "question_id",
+          "reason"
+        ],
+        "locations": [
+          "server/index.js:218"
+        ]
+      }
+    ],
+    "pages": [
+      {
+        "page": "careers.html",
+        "hasGtag": true,
+        "hasConsentDefault": true,
+        "setsUserId": false,
+        "isRedirectStub": false
+      },
+      {
+        "page": "games.html",
+        "hasGtag": true,
+        "hasConsentDefault": true,
+        "setsUserId": false,
+        "isRedirectStub": false
+      },
+      {
+        "page": "index.html",
+        "hasGtag": true,
+        "hasConsentDefault": true,
+        "setsUserId": false,
+        "isRedirectStub": false
+      },
+      {
+        "page": "mentalmath.html",
+        "hasGtag": true,
+        "hasConsentDefault": true,
+        "setsUserId": false,
+        "isRedirectStub": false
+      },
+      {
+        "page": "play.html",
+        "hasGtag": true,
+        "hasConsentDefault": true,
+        "setsUserId": false,
+        "isRedirectStub": false
+      },
+      {
+        "page": "problems.html",
+        "hasGtag": false,
+        "hasConsentDefault": false,
+        "setsUserId": false,
+        "isRedirectStub": true
+      },
+      {
+        "page": "reset-password.html",
+        "hasGtag": true,
+        "hasConsentDefault": true,
+        "setsUserId": false,
+        "isRedirectStub": false
+      }
+    ],
+    "server": {
+      "tables": {
+        "users": [
+          "id",
+          "username",
+          "email",
+          "password_hash",
+          "elo",
+          "wins",
+          "losses",
+          "draws",
+          "color",
+          "badge",
+          "shields",
+          "created_at"
+        ],
+        "matches": [
+          "id",
+          "player1_id",
+          "player2_id",
+          "winner_id",
+          "category",
+          "difficulty",
+          "question_id",
+          "p1_elo_before",
+          "p2_elo_before",
+          "p1_elo_after",
+          "p2_elo_after",
+          "created_at"
+        ],
+        "game_events": [
+          "id",
+          "received_at",
+          "client_ts",
+          "anon_id",
+          "game_session_id",
+          "event",
+          "question_id",
+          "props"
+        ],
+        "question_flags": [
+          "id",
+          "created_at",
+          "question_id",
+          "reason",
+          "context",
+          "anon_id",
+          "user_id"
+        ],
+        "meta": [
+          "id",
+          "first_seen_at",
+          "boot_count"
+        ]
+      },
+      "socketEvents": [
+        "join_queue",
+        "request_bot_match",
+        "leave_queue",
+        "submit_blitz_answer",
+        "submit_tactical_results",
+        "submit_answer",
+        "create_private_room",
+        "join_private_room",
+        "disconnect"
+      ],
+      "flagsPersisted": true,
+      "flagsLoggedToConsoleOnly": false,
+      "matchesRecordedOnlyForRegisteredPairs": true,
+      "matchHasDurationColumn": false,
+      "constants": {
+        "BLITZ_DURATION": 120,
+        "TACTICAL_COMPOSITION": {
+          "easy": {
+            "mix": [
+              [
+                "easy",
+                3
+              ],
+              [
+                "medium",
+                1
+              ]
+            ],
+            "timeLimit": 480
+          },
+          "medium": {
+            "mix": [
+              [
+                "easy",
+                2
+              ],
+              [
+                "medium",
+                2
+              ]
+            ],
+            "timeLimit": 600
+          },
+          "hard": {
+            "mix": [
+              [
+                "easy",
+                1
+              ],
+              [
+                "medium",
+                2
+              ],
+              [
+                "hard",
+                1
+              ]
+            ],
+            "timeLimit": 720
+          }
+        },
+        "QUESTIONS_PER_MATCH": 3,
+        "BOT_ACCURACY": {
+          "easy": 0.52,
+          "medium": 0.68,
+          "hard": 0.83
+        },
+        "BOT_DELAY": {
+          "easy": [
+            35,
+            85
+          ],
+          "medium": [
+            65,
+            140
+          ],
+          "hard": [
+            100,
+            230
+          ]
+        },
+        "BOT_ACTIVITY": {
+          "easy": [
+            12,
+            30
+          ],
+          "medium": [
+            22,
+            55
+          ],
+          "hard": [
+            35,
+            90
+          ]
+        },
+        "CODE_BATTLE_TIME_LIMITS": {
+          "easy": 300,
+          "medium": 480,
+          "hard": 720
+        }
+      }
+    },
+    "clientConstants": {
+      "BOT_FALLBACK_SECONDS": 3,
+      "GAME_DURATION": 120,
+      "TOTAL_QUESTIONS": 80,
+      "TOTAL_SECONDS": 480
+    },
+    "pacing": [
+      {
+        "id": "pacing.quant_battle.easy",
+        "statement": "Quant Battle (easy): fixed 120s blitz phase that never ends early, then up to 480s for 4 tactical questions; worst case 10 min per match.",
+        "maxSeconds": 600
+      },
+      {
+        "id": "pacing.quant_battle.medium",
+        "statement": "Quant Battle (medium): fixed 120s blitz phase that never ends early, then up to 600s for 4 tactical questions; worst case 12 min per match.",
+        "maxSeconds": 720
+      },
+      {
+        "id": "pacing.quant_battle.hard",
+        "statement": "Quant Battle (hard): fixed 120s blitz phase that never ends early, then up to 720s for 4 tactical questions; worst case 14 min per match.",
+        "maxSeconds": 840
+      },
+      {
+        "id": "pacing.bot_wait.easy",
+        "statement": "Bot battles (easy, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 35-85s after match start, with no interaction available.",
+        "minSeconds": 35,
+        "maxSeconds": 85
+      },
+      {
+        "id": "pacing.bot_wait.medium",
+        "statement": "Bot battles (medium, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 65-140s after match start, with no interaction available.",
+        "minSeconds": 65,
+        "maxSeconds": 140
+      },
+      {
+        "id": "pacing.bot_wait.hard",
+        "statement": "Bot battles (hard, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 100-230s after match start, with no interaction available.",
+        "minSeconds": 100,
+        "maxSeconds": 230
+      },
+      {
+        "id": "pacing.matchmaking",
+        "statement": "Matchmaking falls back to a bot after 3s, so most battles are likely against bots. battle_started does not record opponent type, so GA4 cannot confirm this.",
+        "seconds": 3
+      },
+      {
+        "id": "pacing.mental_math",
+        "statement": "Mental Math Challenge: fixed 120s round.",
+        "seconds": 120
+      },
+      {
+        "id": "pacing.optiver_80_in_8",
+        "statement": "Optiver 80-in-8: 80 questions in 8 min; the run only ends at the timer or after the final question.",
+        "seconds": 480
+      }
+    ],
+    "consentModeConfigured": true,
+    "pseudonymousIdConfigured": true,
+    "quitCountedAsComplete": false
+  },
+  "questionAudit": {
+    "totalQuestions": 279,
+    "pools": {
+      "tech.easy": 38,
+      "tech.medium": 38,
+      "tech.hard": 33,
+      "quant.beginner": 20,
+      "quant.easy": 31,
+      "quant.medium": 55,
+      "quant.hard": 55,
+      "ib.easy": 3,
+      "ib.medium": 3,
+      "ib.hard": 3
+    },
+    "issueCounts": {
+      "duplicate_title": 8,
+      "tolerance_very_loose": 3,
+      "heavy_reading_for_tier": 3,
+      "no_rounding_instruction": 11
+    },
+    "highSeverity": [],
+    "flagged": [
+      {
+        "id": "tm1",
+        "category": "tech",
+        "tier": "medium",
+        "type": "code",
+        "title": "Valid Parentheses",
+        "words": 62,
+        "issues": [
+          {
+            "code": "duplicate_title",
+            "severity": "low",
+            "detail": "same title as te12"
+          }
+        ]
+      },
+      {
+        "id": "tm3",
+        "category": "tech",
+        "tier": "medium",
+        "type": "code",
+        "title": "Climbing Stairs",
+        "words": 29,
+        "issues": [
+          {
+            "code": "duplicate_title",
+            "severity": "low",
+            "detail": "same title as te26"
+          }
+        ]
+      },
+      {
+        "id": "th8",
+        "category": "tech",
+        "tier": "hard",
+        "type": "code",
+        "title": "Course Schedule Feasibility",
+        "words": 52,
+        "issues": [
+          {
+            "code": "duplicate_title",
+            "severity": "low",
+            "detail": "same title as tm16"
+          }
+        ]
+      },
+      {
+        "id": "th20",
+        "category": "tech",
+        "tier": "hard",
+        "type": "code",
+        "title": "Minimum Meeting Rooms",
+        "words": 28,
+        "issues": [
+          {
+            "code": "duplicate_title",
+            "severity": "low",
+            "detail": "same title as tm20"
+          }
+        ]
+      },
+      {
+        "id": "th24",
+        "category": "tech",
+        "tier": "hard",
+        "type": "code",
+        "title": "Gas Station Circuit",
+        "words": 92,
+        "issues": [
+          {
+            "code": "duplicate_title",
+            "severity": "low",
+            "detail": "same title as tm37"
+          }
+        ]
+      },
+      {
+        "id": "th31",
+        "category": "tech",
+        "tier": "hard",
+        "type": "code",
+        "title": "Minimum Window Substring",
+        "words": 58,
+        "issues": [
+          {
+            "code": "duplicate_title",
+            "severity": "low",
+            "detail": "same title as tm27"
+          }
+        ]
+      },
+      {
+        "id": "qe1",
+        "category": "quant",
+        "tier": "beginner",
+        "type": "numeric",
+        "title": "Expected Value of a Dice Game",
+        "words": 41,
+        "issues": [
+          {
+            "code": "tolerance_very_loose",
+            "severity": "low",
+            "detail": "tolerance 0.015 is 8.8% of answer"
+          }
+        ]
+      },
+      {
+        "id": "qe48",
+        "category": "quant",
+        "tier": "easy",
+        "type": "numeric",
+        "title": "P(Matching Birthdays: 2 People)",
+        "words": 29,
+        "issues": [
+          {
+            "code": "tolerance_very_loose",
+            "severity": "low",
+            "detail": "tolerance 0.0005 is 18.5% of answer"
+          }
+        ]
+      },
+      {
+        "id": "qe60",
+        "category": "quant",
+        "tier": "easy",
+        "type": "numeric",
+        "title": "P(Two Aces in a Row)",
+        "words": 23,
+        "issues": [
+          {
+            "code": "tolerance_very_loose",
+            "severity": "low",
+            "detail": "tolerance 0.0005 is 11.1% of answer"
+          }
+        ]
+      },
+      {
+        "id": "qe67",
+        "category": "quant",
+        "tier": "easy",
+        "type": "numeric",
+        "title": "Best of Three, Weaker Opponent Twice",
+        "words": 80,
+        "issues": [
+          {
+            "code": "heavy_reading_for_tier",
+            "severity": "low",
+            "detail": "80 words in a easy question (category p90 = 50)"
+          }
+        ]
+      },
+      {
+        "id": "qe71",
+        "category": "quant",
+        "tier": "easy",
+        "type": "numeric",
+        "title": "Three-Dice Betting Game",
+        "words": 57,
+        "issues": [
+          {
+            "code": "heavy_reading_for_tier",
+            "severity": "low",
+            "detail": "57 words in a easy question (category p90 = 50)"
+          }
+        ]
+      },
+      {
+        "id": "qe72",
+        "category": "quant",
+        "tier": "easy",
+        "type": "numeric",
+        "title": "Betting Against a Habitual Gambler",
+        "words": 57,
+        "issues": [
+          {
+            "code": "heavy_reading_for_tier",
+            "severity": "low",
+            "detail": "57 words in a easy question (category p90 = 50)"
+          }
+        ]
+      },
+      {
+        "id": "qm43",
+        "category": "quant",
+        "tier": "medium",
+        "type": "numeric",
+        "title": "CAPM Expected Return",
+        "words": 20,
+        "issues": [
+          {
+            "code": "duplicate_title",
+            "severity": "low",
+            "detail": "same title as qm5"
+          }
+        ]
+      },
+      {
+        "id": "qm46",
+        "category": "quant",
+        "tier": "medium",
+        "type": "numeric",
+        "title": "Macaulay Duration",
+        "words": 23,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 1.9434 with no rounding instruction (tolerance 0.005)"
+          }
+        ]
+      },
+      {
+        "id": "qm47",
+        "category": "quant",
+        "tier": "medium",
+        "type": "numeric",
+        "title": "Kelly Criterion (2:1 Odds)",
+        "words": 28,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 0.325 with no rounding instruction (tolerance 0.005)"
+          }
+        ]
+      },
+      {
+        "id": "qm49",
+        "category": "quant",
+        "tier": "medium",
+        "type": "numeric",
+        "title": "Markov Chain Steady State",
+        "words": 32,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 0.5714 with no rounding instruction (tolerance 0.0005)"
+          }
+        ]
+      },
+      {
+        "id": "qm52",
+        "category": "quant",
+        "tier": "medium",
+        "type": "numeric",
+        "title": "Law of Total Variance",
+        "words": 24,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 2.9167 with no rounding instruction (tolerance 0.005)"
+          }
+        ]
+      },
+      {
+        "id": "qm54",
+        "category": "quant",
+        "tier": "medium",
+        "type": "numeric",
+        "title": "Poisson: Expected Interarrival Time",
+        "words": 21,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 0.3333 with no rounding instruction (tolerance 0.0005)"
+          }
+        ]
+      },
+      {
+        "id": "qm55",
+        "category": "quant",
+        "tier": "medium",
+        "type": "numeric",
+        "title": "Risk-Neutral Probability (Binomial)",
+        "words": 28,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 0.7564 with no rounding instruction (tolerance 0.0005)"
+          }
+        ]
+      },
+      {
+        "id": "qm62",
+        "category": "quant",
+        "tier": "medium",
+        "type": "numeric",
+        "title": "Modified Duration",
+        "words": 16,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 4.1667 with no rounding instruction (tolerance 0.005)"
+          }
+        ]
+      },
+      {
+        "id": "qh5",
+        "category": "quant",
+        "tier": "hard",
+        "type": "numeric",
+        "title": "Continuously Compounded Return",
+        "words": 33,
+        "issues": [
+          {
+            "code": "duplicate_title",
+            "severity": "low",
+            "detail": "same title as qe46"
+          }
+        ]
+      },
+      {
+        "id": "qh37",
+        "category": "quant",
+        "tier": "hard",
+        "type": "numeric",
+        "title": "Itô's Lemma: Drift of ln(S)",
+        "words": 30,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 0.055 with no rounding instruction (tolerance 0.001)"
+          }
+        ]
+      },
+      {
+        "id": "qh43",
+        "category": "quant",
+        "tier": "hard",
+        "type": "numeric",
+        "title": "Black-Scholes Delta",
+        "words": 18,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 0.6915 with no rounding instruction (tolerance 0.0005)"
+          }
+        ]
+      },
+      {
+        "id": "qh46",
+        "category": "quant",
+        "tier": "hard",
+        "type": "numeric",
+        "title": "Reflection Principle: BM Maximum",
+        "words": 16,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 0.1336 with no rounding instruction (tolerance 0.001)"
+          }
+        ]
+      },
+      {
+        "id": "qh49",
+        "category": "quant",
+        "tier": "hard",
+        "type": "numeric",
+        "title": "Chebyshev's Inequality",
+        "words": 19,
+        "issues": [
+          {
+            "code": "no_rounding_instruction",
+            "severity": "medium",
+            "detail": "non-integer answer 0.1111 with no rounding instruction (tolerance 0.001)"
+          }
+        ]
+      }
+    ],
+    "repeatRisk": [
+      {
+        "pool": "ib.easy",
+        "size": 3,
+        "drawnPerMatch": 3,
+        "note": "every match serves the entire pool (identical questions each time)"
+      },
+      {
+        "pool": "ib.medium",
+        "size": 3,
+        "drawnPerMatch": 3,
+        "note": "every match serves the entire pool (identical questions each time)"
+      },
+      {
+        "pool": "ib.hard",
+        "size": 3,
+        "drawnPerMatch": 3,
+        "note": "every match serves the entire pool (identical questions each time)"
+      },
+      {
+        "pool": "quant.easy",
+        "battle": "quant.easy",
+        "size": 31,
+        "drawnPerMatch": 3,
+        "note": "9.7% chance any given question reappears next match"
+      },
+      {
+        "pool": "quant.medium",
+        "battle": "quant.easy",
+        "size": 55,
+        "drawnPerMatch": 1,
+        "note": "1.8% chance any given question reappears next match"
+      },
+      {
+        "pool": "quant.easy",
+        "battle": "quant.medium",
+        "size": 31,
+        "drawnPerMatch": 2,
+        "note": "6.5% chance any given question reappears next match"
+      },
+      {
+        "pool": "quant.medium",
+        "battle": "quant.medium",
+        "size": 55,
+        "drawnPerMatch": 2,
+        "note": "3.6% chance any given question reappears next match"
+      },
+      {
+        "pool": "quant.easy",
+        "battle": "quant.hard",
+        "size": 31,
+        "drawnPerMatch": 1,
+        "note": "3.2% chance any given question reappears next match"
+      },
+      {
+        "pool": "quant.medium",
+        "battle": "quant.hard",
+        "size": 55,
+        "drawnPerMatch": 2,
+        "note": "3.6% chance any given question reappears next match"
+      },
+      {
+        "pool": "quant.hard",
+        "battle": "quant.hard",
+        "size": 55,
+        "drawnPerMatch": 1,
+        "note": "1.8% chance any given question reappears next match"
+      }
+    ]
+  },
+  "gaps": {
+    "evaluations": [
+      {
+        "id": "engagement_by_segment",
+        "name": "Engagement rate & session duration by new vs returning and device",
+        "kind": "existing",
+        "status": "measurable",
+        "missing": [],
+        "notRegistered": []
+      },
+      {
+        "id": "battle_finish_ratio",
+        "name": "Battle finish ratio",
+        "kind": "existing",
+        "status": "measurable",
+        "missing": [],
+        "notRegistered": []
+      },
+      {
+        "id": "solo_game_finish_ratio",
+        "name": "Solo game finish ratio (Mental Math + 80-in-8 combined)",
+        "kind": "existing",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "game_started",
+            "params": [
+              "game"
+            ]
+          },
+          {
+            "event": "game_completed",
+            "params": [
+              "game"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "practice_view_to_submit",
+        "name": "Practice question view → submit rate",
+        "kind": "existing",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "questions_viewed",
+            "params": [
+              "question_id"
+            ]
+          },
+          {
+            "event": "question_submitted",
+            "params": [
+              "question_id"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "next_day_return",
+        "name": "Next-day-or-later return (approximate)",
+        "kind": "existing",
+        "status": "measurable",
+        "missing": [],
+        "notRegistered": []
+      },
+      {
+        "id": "time_to_first_interaction",
+        "name": "Time from question presentation to first interaction",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "question_presented",
+            "params": [
+              "game_session_id",
+              "game",
+              "question_id",
+              "question_index",
+              "difficulty"
+            ]
+          },
+          {
+            "event": "question_first_input",
+            "params": [
+              "game_session_id",
+              "question_id",
+              "ms_since_presented"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "abandonment_by_difficulty",
+        "name": "Abandonment conditional on question difficulty and position",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "question_presented",
+            "params": [
+              "game_session_id",
+              "question_id",
+              "question_index",
+              "difficulty"
+            ]
+          },
+          {
+            "event": "game_abandoned",
+            "params": [
+              "game_session_id",
+              "game",
+              "phase",
+              "question_index",
+              "elapsed_ms",
+              "reason"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "next_game_start_rate",
+        "name": "Percentage of players starting another game",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "game_completed",
+            "params": [
+              "game_session_id",
+              "game"
+            ]
+          },
+          {
+            "event": "post_game_action",
+            "params": [
+              "game_session_id",
+              "action",
+              "ms_since_result"
+            ]
+          },
+          {
+            "event": "game_started",
+            "params": [
+              "game_session_id",
+              "game"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "noninteractive_wait_time",
+        "name": "Time spent in non-interactive transitions",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "wait_started",
+            "params": [
+              "game_session_id",
+              "wait_type"
+            ]
+          },
+          {
+            "event": "wait_ended",
+            "params": [
+              "game_session_id",
+              "wait_type",
+              "wait_ms",
+              "outcome"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "question_dispute_rate",
+        "name": "Question dispute rate",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "question_flagged",
+            "params": [
+              "question_id",
+              "reason",
+              "context"
+            ]
+          },
+          {
+            "event": "question_presented",
+            "params": [
+              "question_id"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "game_duration_distribution",
+        "name": "Game completion time distribution",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "game_completed",
+            "params": [
+              "game_session_id",
+              "game",
+              "difficulty",
+              "duration_ms",
+              "end_reason"
+            ]
+          },
+          {
+            "event": "battle_finished",
+            "params": [
+              "game_session_id",
+              "category",
+              "difficulty",
+              "duration_ms",
+              "opponent_type"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "question_solve_rate",
+        "name": "Per-question solve rate and response time",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "question_answered",
+            "params": [
+              "game_session_id",
+              "question_id",
+              "difficulty",
+              "correct",
+              "response_ms",
+              "attempts"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "opponent_type_mix",
+        "name": "Bot vs human battle share",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "battle_started",
+            "params": [
+              "game_session_id",
+              "category",
+              "difficulty",
+              "opponent_type",
+              "queue_ms"
+            ]
+          }
+        ]
+      }
+    ],
+    "plan": {
+      "foundations": [
+        {
+          "id": "consent_mode",
+          "title": "Google Consent Mode v2 default-deny + banner",
+          "why": "No page sets a consent default; GA4 currently loads unconditionally. New behavioural events must respect consent.",
+          "change": "Before gtag('config'): gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'}); update to 'granted' on opt-in. trackEvent() becomes a no-op for custom behavioural events until consent is granted.",
+          "alreadyDone": true
+        },
+        {
+          "id": "anon_id",
+          "title": "Pseudonymous unit id for experiments",
+          "why": "Experiments need consistent assignment across visits without collecting personal data.",
+          "change": "auth.js: const anonId = localStorage.qb_anon_id || (localStorage.qb_anon_id = crypto.randomUUID()); gtag('set','user_properties',{qb_anon_id_hash: <first 8 hex of FNV hash>}). Never send email/username. Only created after consent.",
+          "alreadyDone": true
+        },
+        {
+          "id": "game_session_id",
+          "title": "game_session_id on every game event",
+          "why": "Without it, starts, abandons and completions cannot be joined into per-game funnels.",
+          "change": "Generate crypto.randomUUID() at game start; include in all game/question events.",
+          "alreadyDone": false
+        },
+        {
+          "id": "ga4_custom_dimensions",
+          "title": "Register event params as GA4 custom dimensions",
+          "why": "The Data API cannot group by event params until they are registered (Admin > Custom definitions). Today none appear to be registered.",
+          "change": "Register: game, difficulty, category, opponent_type, phase, end_reason, wait_type, action, experiment_id, variant. Keep question_id OUT of GA4 dimensions (cardinality); send per-question data to the server instead.",
+          "alreadyDone": false
+        },
+        {
+          "id": "server_event_store",
+          "title": "Server-side game_events table",
+          "why": "Question-level analysis needs exact, unsampled, high-cardinality data that GA4 thresholds and aggregates away.",
+          "change": "SQLite table game_events(id, ts, anon_id, game_session_id, event, question_id, props JSON). POST /api/events (batched, consent-gated, rate-limited). Matches the existing better-sqlite3 stack.",
+          "alreadyDone": false
+        },
+        {
+          "id": "experiment_exposure",
+          "title": "experiment_exposure event",
+          "why": "Analysis must count only units that actually saw the variant.",
+          "change": "trackEvent('experiment_exposure', { experiment_id, variant }) the first time a flagged code path runs per anon_id.",
+          "alreadyDone": false
+        }
+      ],
+      "events": [],
+      "serverChanges": []
+    }
+  },
+  "findings": [
+    {
+      "id": "F-GA-overall",
+      "kind": "measured",
+      "statement": "112 active users, 165 sessions, engagement rate 49.7%.",
+      "evidence": {
+        "activeUsers": 112,
+        "sessions": 165,
+        "engagementRate": 0.49696969696969695,
+        "engagementSecondsPerUser": 302.7142857142857,
+        "sessionsPerUser": 1.4732142857142858
+      }
+    },
+    {
+      "id": "F-GA-tenure",
+      "kind": "measured",
+      "statement": "Engagement rate: new 63.8% vs returning 58.3%; engaged seconds/user 214 vs 768.",
+      "evidence": {
+        "new": {
+          "activeUsers": 94,
+          "sessions": 94,
+          "engagementRate": 0.6382978723404256,
+          "engagementSecondsPerUser": 213.54255319148936,
+          "sessionsPerUser": 1
+        },
+        "returning": {
+          "activeUsers": 18,
+          "sessions": 36,
+          "engagementRate": 0.5833333333333334,
+          "engagementSecondsPerUser": 768.3888888888889,
+          "sessionsPerUser": 2
+        },
+        "(not set)": {
+          "activeUsers": 0,
+          "sessions": 35,
+          "engagementRate": 0.02857142857142857,
+          "engagementSecondsPerUser": null,
+          "sessionsPerUser": null
+        }
+      }
+    },
+    {
+      "id": "F-GA-device-desktop",
+      "kind": "measured",
+      "statement": "desktop: 88 users, engagement rate 54.7%, 370 engaged s/user.",
+      "evidence": {
+        "activeUsers": 88,
+        "sessions": 128,
+        "engagementRate": 0.546875,
+        "engagementSecondsPerUser": 370.39772727272725,
+        "sessionsPerUser": 1.4545454545454546
+      }
+    },
+    {
+      "id": "F-GA-device-mobile",
+      "kind": "measured",
+      "statement": "mobile: 23 users, engagement rate 30.6%, 50 engaged s/user.",
+      "evidence": {
+        "activeUsers": 23,
+        "sessions": 36,
+        "engagementRate": 0.3055555555555556,
+        "engagementSecondsPerUser": 49.52173913043478,
+        "sessionsPerUser": 1.565217391304348
+      }
+    },
+    {
+      "id": "F-GA-device-tablet",
+      "kind": "measured",
+      "statement": "tablet: 1 users, engagement rate 100.0%, 170 engaged s/user.",
+      "evidence": {
+        "activeUsers": 1,
+        "sessions": 1,
+        "engagementRate": 1,
+        "engagementSecondsPerUser": 170,
+        "sessionsPerUser": 1
+      }
+    },
+    {
+      "id": "F-GA-funnel-battle_finish",
+      "kind": "measured",
+      "statement": "Battle started → finished: 55.6% (5/9, 95% CI 26.7%-81.1%).",
+      "evidence": {
+        "id": "battle_finish",
+        "label": "Battle started → finished",
+        "from": 9,
+        "to": 5,
+        "rate": 0.5555555555555556,
+        "lower": 0.26665129332228826,
+        "upper": 0.8112214790379786
+      }
+    },
+    {
+      "id": "F-GA-funnel-solo_finish",
+      "kind": "measured",
+      "statement": "Solo game started → completed: 57.1% (4/7, 95% CI 25.0%-84.2%).",
+      "evidence": {
+        "id": "solo_finish",
+        "label": "Solo game started → completed",
+        "from": 7,
+        "to": 4,
+        "rate": 0.5714285714285714,
+        "lower": 0.2504583643462755,
+        "upper": 0.8417801448772135
+      }
+    },
+    {
+      "id": "F-GA-funnel-solo_click_to_start",
+      "kind": "measured",
+      "statement": "Game card clicked → game started: 70.0% (7/10, 95% CI 39.7%-89.2%).",
+      "evidence": {
+        "id": "solo_click_to_start",
+        "label": "Game card clicked → game started",
+        "from": 10,
+        "to": 7,
+        "rate": 0.7,
+        "lower": 0.3967781472449561,
+        "upper": 0.8922087326805668
+      }
+    },
+    {
+      "id": "F-GA-funnel-practice_view_to_submit",
+      "kind": "measured",
+      "statement": "Practice question viewed → submitted: 68.3% (399/584, 95% CI 64.4%-72.0%).",
+      "evidence": {
+        "id": "practice_view_to_submit",
+        "label": "Practice question viewed → submitted",
+        "from": 584,
+        "to": 399,
+        "rate": 0.6832191780821918,
+        "lower": 0.6443950542671053,
+        "upper": 0.7196486802919781
+      }
+    },
+    {
+      "id": "F-GA-funnel-brainteaser_play",
+      "kind": "measured",
+      "statement": "Users playing the brain teaser: 8.0% (9/112, 95% CI 4.3%-14.6%).",
+      "evidence": {
+        "id": "brainteaser_play",
+        "label": "Users playing the brain teaser",
+        "from": 112,
+        "to": 9,
+        "rate": 0.08035714285714286,
+        "lower": 0.04285057781557605,
+        "upper": 0.14569555280185456
+      }
+    },
+    {
+      "id": "F-GA-funnel-signup",
+      "kind": "measured",
+      "statement": "Users creating an account: 3.6% (4/112, 95% CI 1.4%-8.8%).",
+      "evidence": {
+        "id": "signup",
+        "label": "Users creating an account",
+        "from": 112,
+        "to": 4,
+        "rate": 0.03571428571428571,
+        "lower": 0.013974612384756883,
+        "upper": 0.08824663851112377
+      }
+    },
+    {
+      "id": "F-GA-funnel-next_day_return",
+      "kind": "measured",
+      "statement": "Users returning on a later day (approx.): 17.9% (20/112, 95% CI 11.9%-26.0%).",
+      "evidence": {
+        "id": "next_day_return",
+        "label": "Users returning on a later day (approx.)",
+        "from": 112,
+        "to": 20,
+        "rate": 0.17857142857142858,
+        "lower": 0.11867660540947089,
+        "upper": 0.2597842605953695
+      }
+    },
+    {
+      "id": "F-GA-funnel-new",
+      "kind": "measured",
+      "statement": "new users: battle finish 57.1%, solo finish 50.0%.",
+      "evidence": {
+        "battle": {
+          "id": "battle_finish",
+          "label": "Battle started → finished",
+          "from": 7,
+          "to": 4,
+          "rate": 0.5714285714285714,
+          "lower": 0.2504583643462755,
+          "upper": 0.8417801448772135
+        },
+        "solo": {
+          "id": "solo_finish",
+          "label": "Solo game started → completed",
+          "from": 4,
+          "to": 2,
+          "rate": 0.5,
+          "lower": 0.15003898900822643,
+          "upper": 0.8499610109917736
+        }
+      }
+    },
+    {
+      "id": "F-GA-funnel-returning",
+      "kind": "measured",
+      "statement": "returning users: battle finish 50.0%, solo finish 66.7%.",
+      "evidence": {
+        "battle": {
+          "id": "battle_finish",
+          "label": "Battle started → finished",
+          "from": 2,
+          "to": 1,
+          "rate": 0.5,
+          "lower": 0.09453120562230916,
+          "upper": 0.9054687943776909
+        },
+        "solo": {
+          "id": "solo_finish",
+          "label": "Solo game started → completed",
+          "from": 3,
+          "to": 2,
+          "rate": 0.6666666666666666,
+          "lower": 0.20765960059822086,
+          "upper": 0.9385080553510953
+        }
+      }
+    },
+    {
+      "id": "F-GA-devicegap-mobile-practice_view_to_submit",
+      "kind": "measured",
+      "statement": "Practice question viewed → submitted is lower on mobile (2.6%) than other devices (73.0%); difference -70.5%, 95% CI -76.7% to -64.3%. Observational.",
+      "evidence": {
+        "funnel": "practice_view_to_submit",
+        "label": "Practice question viewed → submitted",
+        "device": "mobile",
+        "deviceRate": 0.02564102564102564,
+        "othersRate": 0.7302752293577982,
+        "diff": -0.7046342037167725,
+        "ci": [
+          -0.7666763714406599,
+          -0.6425920359928852
+        ],
+        "n": 39
+      }
+    },
+    {
+      "id": "F-GA-retention",
+      "kind": "measured",
+      "statement": "Week-1 retention across 4 weekly cohorts averages 8.4%.",
+      "evidence": [
+        {
+          "cohort": "week_of_2026-10-04",
+          "size": 28,
+          "week1": 4,
+          "week1Rate": 0.14285714285714285
+        },
+        {
+          "cohort": "week_of_2026-09-27",
+          "size": 25,
+          "week1": 1,
+          "week1Rate": 0.04
+        },
+        {
+          "cohort": "week_of_2026-09-13",
+          "size": 24,
+          "week1": 1,
+          "week1Rate": 0.041666666666666664
+        },
+        {
+          "cohort": "week_of_2026-09-20",
+          "size": 18,
+          "week1": 2,
+          "week1Rate": 0.1111111111111111
+        }
+      ]
+    },
+    {
+      "id": "F-GAP-ga4-dims",
+      "kind": "gap",
+      "statement": "No event parameters are registered as GA4 custom dimensions, so no event can be split by game, difficulty or category in the Data API.",
+      "evidence": {}
+    },
+    {
+      "id": "F-CODE-pacing.quant_battle.easy",
+      "kind": "code",
+      "statement": "Quant Battle (easy): fixed 120s blitz phase that never ends early, then up to 480s for 4 tactical questions; worst case 10 min per match.",
+      "evidence": {
+        "id": "pacing.quant_battle.easy",
+        "statement": "Quant Battle (easy): fixed 120s blitz phase that never ends early, then up to 480s for 4 tactical questions; worst case 10 min per match.",
+        "maxSeconds": 600
+      }
+    },
+    {
+      "id": "F-CODE-pacing.quant_battle.medium",
+      "kind": "code",
+      "statement": "Quant Battle (medium): fixed 120s blitz phase that never ends early, then up to 600s for 4 tactical questions; worst case 12 min per match.",
+      "evidence": {
+        "id": "pacing.quant_battle.medium",
+        "statement": "Quant Battle (medium): fixed 120s blitz phase that never ends early, then up to 600s for 4 tactical questions; worst case 12 min per match.",
+        "maxSeconds": 720
+      }
+    },
+    {
+      "id": "F-CODE-pacing.quant_battle.hard",
+      "kind": "code",
+      "statement": "Quant Battle (hard): fixed 120s blitz phase that never ends early, then up to 720s for 4 tactical questions; worst case 14 min per match.",
+      "evidence": {
+        "id": "pacing.quant_battle.hard",
+        "statement": "Quant Battle (hard): fixed 120s blitz phase that never ends early, then up to 720s for 4 tactical questions; worst case 14 min per match.",
+        "maxSeconds": 840
+      }
+    },
+    {
+      "id": "F-CODE-pacing.bot_wait.easy",
+      "kind": "code",
+      "statement": "Bot battles (easy, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 35-85s after match start, with no interaction available.",
+      "evidence": {
+        "id": "pacing.bot_wait.easy",
+        "statement": "Bot battles (easy, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 35-85s after match start, with no interaction available.",
+        "minSeconds": 35,
+        "maxSeconds": 85
+      }
+    },
+    {
+      "id": "F-CODE-pacing.bot_wait.medium",
+      "kind": "code",
+      "statement": "Bot battles (medium, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 65-140s after match start, with no interaction available.",
+      "evidence": {
+        "id": "pacing.bot_wait.medium",
+        "statement": "Bot battles (medium, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 65-140s after match start, with no interaction available.",
+        "minSeconds": 65,
+        "maxSeconds": 140
+      }
+    },
+    {
+      "id": "F-CODE-pacing.bot_wait.hard",
+      "kind": "code",
+      "statement": "Bot battles (hard, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 100-230s after match start, with no interaction available.",
+      "evidence": {
+        "id": "pacing.bot_wait.hard",
+        "statement": "Bot battles (hard, tech/IB): after a wrong or non-perfect submission the player waits for the bot's simulated finish, uniformly 100-230s after match start, with no interaction available.",
+        "minSeconds": 100,
+        "maxSeconds": 230
+      }
+    },
+    {
+      "id": "F-CODE-pacing.matchmaking",
+      "kind": "code",
+      "statement": "Matchmaking falls back to a bot after 3s, so most battles are likely against bots. battle_started does not record opponent type, so GA4 cannot confirm this.",
+      "evidence": {
+        "id": "pacing.matchmaking",
+        "statement": "Matchmaking falls back to a bot after 3s, so most battles are likely against bots. battle_started does not record opponent type, so GA4 cannot confirm this.",
+        "seconds": 3
+      }
+    },
+    {
+      "id": "F-CODE-pacing.mental_math",
+      "kind": "code",
+      "statement": "Mental Math Challenge: fixed 120s round.",
+      "evidence": {
+        "id": "pacing.mental_math",
+        "statement": "Mental Math Challenge: fixed 120s round.",
+        "seconds": 120
+      }
+    },
+    {
+      "id": "F-CODE-pacing.optiver_80_in_8",
+      "kind": "code",
+      "statement": "Optiver 80-in-8: 80 questions in 8 min; the run only ends at the timer or after the final question.",
+      "evidence": {
+        "id": "pacing.optiver_80_in_8",
+        "statement": "Optiver 80-in-8: 80 questions in 8 min; the run only ends at the timer or after the final question.",
+        "seconds": 480
+      }
+    },
+    {
+      "id": "F-CODE-matches-partial",
+      "kind": "code",
+      "statement": "The matches table only records games where both players have accounts (including bots); guest games leave no server trace, and no match duration is stored.",
+      "evidence": {}
+    },
+    {
+      "id": "F-Q-summary",
+      "kind": "content",
+      "statement": "Question bank: 279 questions. Audit flags: duplicate_title=8, tolerance_very_loose=3, heavy_reading_for_tier=3, no_rounding_instruction=11. 0 high-severity.",
+      "evidence": {
+        "issueCounts": {
+          "duplicate_title": 8,
+          "tolerance_very_loose": 3,
+          "heavy_reading_for_tier": 3,
+          "no_rounding_instruction": 11
+        },
+        "pools": {
+          "tech.easy": 38,
+          "tech.medium": 38,
+          "tech.hard": 33,
+          "quant.beginner": 20,
+          "quant.easy": 31,
+          "quant.medium": 55,
+          "quant.hard": 55,
+          "ib.easy": 3,
+          "ib.medium": 3,
+          "ib.hard": 3
+        }
+      }
+    },
+    {
+      "id": "F-Q-ambiguous-format",
+      "kind": "content",
+      "statement": "11 numeric questions have a 3+ decimal answer but no rounding/unit instruction (e.g. qm46, qm47, qm49, qm52); correct answers in another unit or precision may be marked wrong.",
+      "evidence": [
+        "qm46",
+        "qm47",
+        "qm49",
+        "qm52",
+        "qm54",
+        "qm55",
+        "qm62",
+        "qh37",
+        "qh43",
+        "qh46",
+        "qh49"
+      ]
+    },
+    {
+      "id": "F-Q-duplicates",
+      "kind": "content",
+      "statement": "8 questions reuse another question's title across tiers (e.g. tm1, tm3, th8).",
+      "evidence": [
+        "tm1",
+        "tm3",
+        "th8",
+        "th20",
+        "th24",
+        "th31",
+        "qm43",
+        "qh5"
+      ]
+    },
+    {
+      "id": "F-Q-ib-pool",
+      "kind": "content",
+      "statement": "IB battle pools hold 3 questions per tier and each match draws 3: every IB match serves the identical question set.",
+      "evidence": [
+        {
+          "pool": "ib.easy",
+          "size": 3,
+          "drawnPerMatch": 3,
+          "note": "every match serves the entire pool (identical questions each time)"
+        },
+        {
+          "pool": "ib.medium",
+          "size": 3,
+          "drawnPerMatch": 3,
+          "note": "every match serves the entire pool (identical questions each time)"
+        },
+        {
+          "pool": "ib.hard",
+          "size": 3,
+          "drawnPerMatch": 3,
+          "note": "every match serves the entire pool (identical questions each time)"
+        }
+      ]
+    },
+    {
+      "id": "F-GAP-solo_game_finish_ratio",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Solo game finish ratio (Mental Math + 80-in-8 combined)\" (partial): missing .",
+      "evidence": {
+        "id": "solo_game_finish_ratio",
+        "name": "Solo game finish ratio (Mental Math + 80-in-8 combined)",
+        "kind": "existing",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "game_started",
+            "params": [
+              "game"
+            ]
+          },
+          {
+            "event": "game_completed",
+            "params": [
+              "game"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-practice_view_to_submit",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Practice question view → submit rate\" (partial): missing .",
+      "evidence": {
+        "id": "practice_view_to_submit",
+        "name": "Practice question view → submit rate",
+        "kind": "existing",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "questions_viewed",
+            "params": [
+              "question_id"
+            ]
+          },
+          {
+            "event": "question_submitted",
+            "params": [
+              "question_id"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-time_to_first_interaction",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Time from question presentation to first interaction\" (partial): missing .",
+      "evidence": {
+        "id": "time_to_first_interaction",
+        "name": "Time from question presentation to first interaction",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "question_presented",
+            "params": [
+              "game_session_id",
+              "game",
+              "question_id",
+              "question_index",
+              "difficulty"
+            ]
+          },
+          {
+            "event": "question_first_input",
+            "params": [
+              "game_session_id",
+              "question_id",
+              "ms_since_presented"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-abandonment_by_difficulty",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Abandonment conditional on question difficulty and position\" (partial): missing .",
+      "evidence": {
+        "id": "abandonment_by_difficulty",
+        "name": "Abandonment conditional on question difficulty and position",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "question_presented",
+            "params": [
+              "game_session_id",
+              "question_id",
+              "question_index",
+              "difficulty"
+            ]
+          },
+          {
+            "event": "game_abandoned",
+            "params": [
+              "game_session_id",
+              "game",
+              "phase",
+              "question_index",
+              "elapsed_ms",
+              "reason"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-next_game_start_rate",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Percentage of players starting another game\" (partial): missing .",
+      "evidence": {
+        "id": "next_game_start_rate",
+        "name": "Percentage of players starting another game",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "game_completed",
+            "params": [
+              "game_session_id",
+              "game"
+            ]
+          },
+          {
+            "event": "post_game_action",
+            "params": [
+              "game_session_id",
+              "action",
+              "ms_since_result"
+            ]
+          },
+          {
+            "event": "game_started",
+            "params": [
+              "game_session_id",
+              "game"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-noninteractive_wait_time",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Time spent in non-interactive transitions\" (partial): missing .",
+      "evidence": {
+        "id": "noninteractive_wait_time",
+        "name": "Time spent in non-interactive transitions",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "wait_started",
+            "params": [
+              "game_session_id",
+              "wait_type"
+            ]
+          },
+          {
+            "event": "wait_ended",
+            "params": [
+              "game_session_id",
+              "wait_type",
+              "wait_ms",
+              "outcome"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-question_dispute_rate",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Question dispute rate\" (partial): missing .",
+      "evidence": {
+        "id": "question_dispute_rate",
+        "name": "Question dispute rate",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "question_flagged",
+            "params": [
+              "question_id",
+              "reason",
+              "context"
+            ]
+          },
+          {
+            "event": "question_presented",
+            "params": [
+              "question_id"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-game_duration_distribution",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Game completion time distribution\" (partial): missing .",
+      "evidence": {
+        "id": "game_duration_distribution",
+        "name": "Game completion time distribution",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "game_completed",
+            "params": [
+              "game_session_id",
+              "game",
+              "difficulty",
+              "duration_ms",
+              "end_reason"
+            ]
+          },
+          {
+            "event": "battle_finished",
+            "params": [
+              "game_session_id",
+              "category",
+              "difficulty",
+              "duration_ms",
+              "opponent_type"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-question_solve_rate",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Per-question solve rate and response time\" (partial): missing .",
+      "evidence": {
+        "id": "question_solve_rate",
+        "name": "Per-question solve rate and response time",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "question_answered",
+            "params": [
+              "game_session_id",
+              "question_id",
+              "difficulty",
+              "correct",
+              "response_ms",
+              "attempts"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F-GAP-opponent_type_mix",
+      "kind": "gap",
+      "statement": "Cannot yet measure \"Bot vs human battle share\" (partial): missing .",
+      "evidence": {
+        "id": "opponent_type_mix",
+        "name": "Bot vs human battle share",
+        "kind": "proposed",
+        "status": "partial",
+        "missing": [],
+        "notRegistered": [
+          {
+            "event": "battle_started",
+            "params": [
+              "game_session_id",
+              "category",
+              "difficulty",
+              "opponent_type",
+              "queue_ms"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H1",
+      "priority": 1,
+      "key": "H1-mobile-practice-submit",
+      "area": "device",
+      "title": "Mobile practice questions almost never lead to a submission",
+      "observation": "Practice question viewed → submitted is 2.6% on mobile vs 73.0% on other devices (difference -70.5%, 95% CI -76.7% to -64.3%). Mobile users also show lower engagement (30.6% vs 54.7% on desktop; 50 vs 370 engaged s/user). Mobile is 23 of 112 users.",
+      "hypothesis": "A mobile-specific defect in the practice answer UI blocks or discourages submission. Candidates are the answer input or submit button being hidden by the on-screen keyboard, or a non-numeric keypad. Alternatively, the submit event does not fire on mobile, which would make this a tracking artefact rather than a behaviour gap. Either way, mobile practice users disengage before attempting.",
+      "intervention": "Step 1: run a manual QA pass on real phones and confirm practice_question_submitted fires on mobile. Step 2: if a UI defect is confirmed, ship the minimal fix behind a mobile-only flag (e.g. inputmode=decimal on the answer field, a sticky or visible submit button) and compare mobile practice view→submit by variant.",
+      "evidence": [
+        "F-GA-devicegap-mobile-practice_view_to_submit",
+        "F-GA-device-mobile",
+        "F-GA-device-desktop",
+        "F-GA-funnel-practice_view_to_submit",
+        "F-GAP-practice_view_to_submit"
+      ],
+      "causalStatus": "Correlational only (observational device split). Could be a real UX barrier, a tracking bug, or audience differences. No causal claim until QA plus a flagged fix is tested.",
+      "primaryMetric": null,
+      "guardrails": [
+        "client_error_rate"
+      ],
+      "requiredInstrumentation": [
+        "practice_view_to_submit",
+        "engagement_by_segment"
+      ],
+      "confidence": "medium",
+      "priorityRationale": "Ranked 1. It has the largest and most precisely estimated gap in the data, on the highest-volume funnel. Diagnosis is cheap (QA plus checking event firing), and a fix is small and reversible. Two things temper impact: mobile is a minority of users, and the gap may be a measurement artefact. None of the allowed experiment metrics captures practice submission, so primary_metric is none until practice view→submit by device becomes an experiment metric.",
+      "source": "llm"
+    },
+    {
+      "id": "H2",
+      "priority": 2,
+      "key": "H2-bot-wait-dead-time",
+      "area": "pacing",
+      "title": "Forced non-interactive wait for the bot after a wrong/non-perfect submission",
+      "observation": "In tech/IB bot battles, after a wrong or non-perfect submission the player waits with no interaction for the bot's simulated finish: 35-85s (easy), 65-140s (medium) or 100-230s (hard) after match start. Matchmaking falls back to a bot after 3s, so most battles are likely bot battles. The battle started → finished rate is 55.6% (5/9, 95% CI 26.7%-81.1%).",
+      "hypothesis": "Players who finish early and face up to minutes of dead time leave before the result screen. This lowers battle completion and the chance they start another game.",
+      "intervention": "Behind a feature flag, after the player's final submission in a bot battle, offer a 'See result now' action. It fast-forwards the bot's pre-sampled simulated finish and shows the result screen immediately.",
+      "evidence": [
+        "F-CODE-pacing.bot_wait.easy",
+        "F-CODE-pacing.bot_wait.medium",
+        "F-CODE-pacing.bot_wait.hard",
+        "F-CODE-pacing.matchmaking",
+        "F-GA-funnel-battle_finish",
+        "F-GAP-noninteractive_wait_time",
+        "F-GAP-opponent_type_mix"
+      ],
+      "causalStatus": "The wait is a code fact; its effect on behaviour is unmeasured. Battle finish is based on 9 starts and opponent type is not recorded, so the link to abandonment is a hypothesis only.",
+      "primaryMetric": "bot_battle_completion",
+      "guardrails": [
+        "next_game_start_rate",
+        "game_completion_rate",
+        "client_error_rate"
+      ],
+      "requiredInstrumentation": [
+        "noninteractive_wait_time",
+        "opponent_type_mix",
+        "battle_finish_ratio",
+        "next_game_start_rate"
+      ],
+      "confidence": "low",
+      "priorityRationale": "Ranked 2. The friction is certain from code, it likely affects most battles (bot fallback after 3s), and the fix is a small flagged UI change. It ranks below H1 only because the behavioural evidence is very thin (n=9 battle starts) and the share of bot battles is unconfirmed.",
+      "source": "llm"
+    },
+    {
+      "id": "H3",
+      "priority": 3,
+      "key": "H3-missing-rounding-instructions",
+      "area": "question_quality",
+      "title": "Numeric questions without rounding/unit instructions mark correct answers wrong",
+      "observation": "11 numeric questions have a 3+ decimal answer but no rounding or unit instruction (e.g. qm46, qm47, qm49, qm52). Their tolerances are tight enough that a common 2-decimal or other-unit entry can fall outside them. The audit reports 0 high-severity issues. GA4 cannot split events by question.",
+      "hypothesis": "Players who answer these questions correctly at a different precision or unit (e.g. 0.57 instead of 0.5714, % instead of decimal, seconds instead of minutes) are marked wrong. This leads to frustration, disputes and abandonment on those questions.",
+      "intervention": "Behind a flag, append a standardised format line to the flagged questions (e.g. 'Enter as a decimal rounded to 4 decimal places' or 'in years, to 2 d.p.'). Answers and tolerances stay unchanged.",
+      "evidence": [
+        "F-Q-ambiguous-format",
+        "F-Q-summary",
+        "F-GAP-question_solve_rate",
+        "F-GAP-question_dispute_rate",
+        "F-GAP-abandonment_by_difficulty",
+        "F-GAP-ga4-dims"
+      ],
+      "causalStatus": "A content-audit fact with no behavioural data. Session-level GA4 data cannot show question-level behaviour, so any effect on solve or abandon rates is untested.",
+      "primaryMetric": "affected_question_solve_rate",
+      "guardrails": [
+        "affected_question_abandon_rate",
+        "question_dispute_rate"
+      ],
+      "requiredInstrumentation": [
+        "question_solve_rate",
+        "question_dispute_rate",
+        "abandonment_by_difficulty",
+        "time_to_first_interaction"
+      ],
+      "confidence": "low",
+      "priorityRationale": "Ranked 3. The change is extremely cheap and reversible, and it removes a clear fairness risk. Expected impact is limited: only 11 of 279 questions are affected, and there is no behavioural evidence yet. It also needs question-level events before results can be read.",
+      "source": "llm"
+    },
+    {
+      "id": "H4",
+      "priority": 4,
+      "key": "H4-quant-battle-fixed-blitz",
+      "area": "pacing",
+      "title": "Fixed-length Quant Battle phases make matches long",
+      "observation": "Quant Battle has a fixed 120s blitz phase that never ends early. It is followed by up to 480/600/720s for 4 tactical questions, giving a worst case of 10/12/14 min per match. No match duration is stored, and battle finish is 55.6% (5/9).",
+      "hypothesis": "Players who finish blitz questions early wait out the clock. The long worst-case match length leads some to abandon mid-match or not start another battle.",
+      "intervention": "Behind a flag, end the blitz phase early once the player has answered all available blitz items (or offer a 'Continue' button), leaving the tactical phase unchanged.",
+      "evidence": [
+        "F-CODE-pacing.quant_battle.easy",
+        "F-CODE-pacing.quant_battle.medium",
+        "F-CODE-pacing.quant_battle.hard",
+        "F-CODE-matches-partial",
+        "F-GAP-game_duration_distribution",
+        "F-GA-funnel-battle_finish"
+      ],
+      "causalStatus": "The phase lengths are a code fact. Actual game durations and where players abandon are unmeasured, so this is a hypothesis without behavioural support.",
+      "primaryMetric": "game_completion_rate",
+      "guardrails": [
+        "next_game_start_rate",
+        "client_error_rate"
+      ],
+      "requiredInstrumentation": [
+        "game_duration_distribution",
+        "noninteractive_wait_time",
+        "battle_finish_ratio",
+        "abandonment_by_difficulty"
+      ],
+      "confidence": "low",
+      "priorityRationale": "Ranked 4. It is plausible and the change is moderately easy. It is unclear how often players actually finish blitz early. Duration is not recorded and it overlaps with H2, which has a clearer dead-time mechanism, so it should follow H2.",
+      "source": "llm"
+    },
+    {
+      "id": "H5",
+      "priority": 5,
+      "key": "H5-ib-identical-question-set",
+      "area": "retention",
+      "title": "Every IB battle serves the identical question set",
+      "observation": "Each IB battle pool holds 3 questions per tier and every match draws 3, so every IB match serves the same set. 8 questions also reuse titles across tiers. Week-1 retention averages 8.4% and later-day return is 17.9%.",
+      "hypothesis": "Players who replay IB battles see the exact same questions. This removes novelty and challenge, so they are less likely to start another game or come back.",
+      "intervention": "Behind a flag, expand each IB tier pool (e.g. by adding reviewed questions) so a match draws 3 from a larger set. Measure replay in the IB category.",
+      "evidence": [
+        "F-Q-ib-pool",
+        "F-Q-duplicates",
+        "F-GA-retention",
+        "F-GA-funnel-next_day_return",
+        "F-GAP-next_game_start_rate"
+      ],
+      "causalStatus": "The pool structure is a content fact. Retention figures are site-wide and correlational, and cannot be attributed to IB since events are not split by category. Untested.",
+      "primaryMetric": "next_game_start_rate",
+      "guardrails": [
+        "game_completion_rate",
+        "question_dispute_rate"
+      ],
+      "requiredInstrumentation": [
+        "next_game_start_rate",
+        "opponent_type_mix",
+        "engagement_by_segment"
+      ],
+      "confidence": "low",
+      "priorityRationale": "Ranked 5. Repetition is certain for anyone who replays IB, but the share of IB traffic is unknown. Writing and reviewing new questions costs more than a UI flag, and retention metrics are noisy at current volumes.",
+      "source": "llm"
+    }
+  ],
+  "ruleHypotheses": [
+    {
+      "id": "H1",
+      "key": "pacing.bot_dead_wait",
+      "area": "pacing",
+      "title": "Dead waiting time in bot battles",
+      "observation": "After a wrong or imperfect submission in tech/IB bot battles, the player must wait for the bot's simulated finish (up to ~4 minutes on hard) with nothing to do. Matchmaking falls back to bots after 3s, so this likely affects most battles.",
+      "hypothesis": "Players who finish before the bot leave during the non-interactive wait, lowering battle completion and replay.",
+      "intervention": "When the human has finished, resolve the bot's (already simulated) result immediately and show the result screen. Outcome probabilities are unchanged.",
+      "evidence": [
+        "F-CODE-pacing.bot_wait.easy",
+        "F-CODE-pacing.bot_wait.medium",
+        "F-CODE-pacing.bot_wait.hard",
+        "F-CODE-pacing.matchmaking",
+        "F-GA-funnel-battle_finish"
+      ],
+      "causalStatus": "untested: supported by code inspection and correlational data only",
+      "primaryMetric": "bot_battle_completion",
+      "guardrails": [
+        "premature_exit_rate",
+        "next_day_return",
+        "client_error_rate"
+      ],
+      "requiredInstrumentation": [
+        "opponent_type_mix",
+        "noninteractive_wait_time",
+        "abandonment_by_difficulty"
+      ],
+      "confidence": "medium",
+      "priorOutcomes": [],
+      "score": 13,
+      "source": "rules",
+      "priority": 1
+    },
+    {
+      "id": "H2",
+      "key": "pacing.post_game_transition",
+      "area": "pacing",
+      "title": "Unclear next step after a game",
+      "observation": "Result screens offer several equally weighted actions (and a sign-up block for guests above them). Whether players start another game is not measured.",
+      "hypothesis": "Players finish one game and leave because the next game is not the obvious, one-tap default.",
+      "intervention": "After measuring post_game_action, test a single primary \"Play again\" CTA, with sign-up moved below for guests.",
+      "evidence": [
+        "F-GAP-next_game_start_rate",
+        "F-GA-funnel-battle_finish",
+        "F-GA-funnel-solo_finish",
+        "F-GA-tenure"
+      ],
+      "causalStatus": "untested: supported by code inspection and correlational data only",
+      "primaryMetric": "next_game_start_rate",
+      "guardrails": [
+        "next_day_return",
+        "premature_exit_rate"
+      ],
+      "requiredInstrumentation": [
+        "next_game_start_rate"
+      ],
+      "confidence": "medium",
+      "priorOutcomes": [],
+      "score": 13,
+      "source": "rules",
+      "priority": 2
+    },
+    {
+      "id": "H3",
+      "key": "pacing.quant_battle_length",
+      "area": "pacing",
+      "title": "Quant Battle is long and its blitz never ends early",
+      "observation": "A Quant Battle is a fixed 120s blitz followed by up to 8-12 minutes for four tactical questions (worst case 10-14 minutes).",
+      "hypothesis": "The match length exceeds what casual visitors budget for, so a share leave before the result screen, especially on mobile.",
+      "intervention": "Test a shorter format (e.g. 60s blitz and a 6-minute tactical cap) once duration data shows how often players run to the limit.",
+      "evidence": [
+        "F-CODE-pacing.quant_battle.easy",
+        "F-CODE-pacing.quant_battle.hard",
+        "F-GA-funnel-battle_finish",
+        "F-GAP-game_duration_distribution"
+      ],
+      "causalStatus": "untested: supported by code inspection and correlational data only",
+      "primaryMetric": "bot_battle_completion",
+      "guardrails": [
+        "premature_exit_rate",
+        "next_day_return"
+      ],
+      "requiredInstrumentation": [
+        "game_duration_distribution",
+        "abandonment_by_difficulty"
+      ],
+      "confidence": "medium",
+      "priorOutcomes": [],
+      "score": 10,
+      "source": "rules",
+      "priority": 3
+    },
+    {
+      "id": "H4",
+      "key": "device.mobile_friction",
+      "area": "device",
+      "title": "Mobile friction in core game loops",
+      "observation": "Funnel conversion is significantly lower on mobile than on other devices.",
+      "hypothesis": "Input-heavy screens (code editor, numeric entry with live check) are harder on touch keyboards, so mobile players abandon more.",
+      "intervention": "Instrument per-question first-input time on mobile; then test a numeric keypad (inputmode=\"decimal\") and hide code battles on small screens.",
+      "evidence": [
+        "F-GA-devicegap-mobile-practice_view_to_submit",
+        "F-GA-device-mobile",
+        "F-GA-device-desktop"
+      ],
+      "causalStatus": "untested: supported by code inspection and correlational data only",
+      "primaryMetric": "game_completion_rate",
+      "guardrails": [
+        "client_error_rate"
+      ],
+      "requiredInstrumentation": [
+        "time_to_first_interaction",
+        "abandonment_by_difficulty"
+      ],
+      "confidence": "medium",
+      "priorOutcomes": [],
+      "score": 9,
+      "source": "rules",
+      "priority": 4
+    },
+    {
+      "id": "H5",
+      "key": "quality.ambiguous_answer_format",
+      "area": "question_quality",
+      "title": "Ambiguous answer format in numeric questions",
+      "observation": "Several numeric questions expect a rounded decimal (or a specific unit) without saying so; tolerance-based grading can then reject correct reasoning.",
+      "hypothesis": "Players who get a \"wrong\" verdict on a correct-but-differently-formatted answer feel cheated and abandon the game or stop trusting the bank.",
+      "intervention": "Show reviewed, clarified wording (explicit unit and rounding) for the flagged questions.",
+      "evidence": [
+        "F-Q-ambiguous-format",
+        "F-GAP-question_solve_rate",
+        "F-GAP-question_dispute_rate"
+      ],
+      "causalStatus": "untested: supported by code inspection and correlational data only",
+      "primaryMetric": "affected_question_abandon_rate",
+      "guardrails": [
+        "question_dispute_rate",
+        "game_completion_rate",
+        "client_error_rate"
+      ],
+      "requiredInstrumentation": [
+        "question_solve_rate",
+        "question_dispute_rate",
+        "abandonment_by_difficulty"
+      ],
+      "confidence": "low",
+      "priorOutcomes": [],
+      "score": 8,
+      "source": "rules",
+      "priority": 5
+    }
+  ],
+  "experiments": [
+    {
+      "id": "EXP-001-bot-battle-instant-resolve",
+      "title": "Resolve bot battles as soon as the player is done",
+      "area": "pacing",
+      "status": "proposed",
+      "createdAt": "2026-10-15T22:41:50.554Z",
+      "unit": "anon_id",
+      "trafficAllocation": 1,
+      "hypothesis": {
+        "key": "pacing.bot_dead_wait",
+        "statement": "Removing the non-interactive wait for the bot's simulated finish (up to 85/140/230s by difficulty) will increase the share of players whose bot battles reach the result screen.",
+        "evidence": [
+          "F-CODE-pacing.bot_wait.hard",
+          "F-CODE-pacing.matchmaking",
+          "F-GA-funnel-battle_finish"
+        ]
+      },
+      "variants": [
+        {
+          "key": "control",
+          "weight": 1,
+          "description": "Current behaviour: after a wrong (single-question) or imperfect (multi-question) submission, the player waits until the bot's scheduled finish time."
+        },
+        {
+          "key": "treatment",
+          "weight": 1,
+          "description": "As soon as the player has submitted their final answer, the bot's result is drawn immediately from the same accuracy distribution (BOT_ACCURACY) and the result screen is shown. Win/loss probabilities are unchanged; only the wait is removed. Quant Battle is not affected."
+        }
+      ],
+      "primaryMetric": {
+        "id": "bot_battle_completion",
+        "definition": "Share of exposed units whose bot battles all reached the result screen (no game_abandoned with opponent_type=bot).",
+        "direction": "increase",
+        "baseline": 0.6,
+        "baselineSource": "assumed (no usable measurement yet)"
+      },
+      "guardrails": [
+        {
+          "id": "premature_exit_rate",
+          "definition": "Share of exposed units with a game_abandoned before their first submission in any game.",
+          "harmDirection": "increase",
+          "alpha": 0.05
+        },
+        {
+          "id": "next_day_return",
+          "definition": "Share of exposed units active again 1-7 days after first exposure.",
+          "harmDirection": "decrease",
+          "alpha": 0.05
+        },
+        {
+          "id": "client_error_rate",
+          "definition": "Share of exposed units with at least one client error (Sentry event tagged with experiment variant).",
+          "harmDirection": "increase",
+          "alpha": 0.05
+        }
+      ],
+      "stoppingRule": {
+        "method": "msprt",
+        "alpha": 0.05,
+        "tau": 0.09,
+        "mdeAbsolute": 0.09,
+        "fixedHorizonUnitsPerArm": 443,
+        "minUnitsPerArm": 167,
+        "maxUnitsPerArm": 665,
+        "minDaysRunning": 14,
+        "maxDays": 42
+      },
+      "feasibility": {
+        "eligibleUnitsPerDay": 0.3,
+        "estimatedDaysToMaxUnits": 4138,
+        "note": "At current traffic this needs ~4138 days, beyond the 42-day cap: expect \"inconclusive\" unless the effect is much larger than the MDE. Consider a larger MDE or running without competing experiments."
+      },
+      "evaluationPlan": [
+        "Analyse only units with an experiment_exposure event (intent-to-treat from first exposure).",
+        "Daily: sample-ratio-mismatch check (chi-square, p < 0.001 pauses the experiment).",
+        "Daily: guardrails via always-valid mSPRT p-values; any significant harm recommends revert immediately.",
+        "Primary metric is not interpreted before 14 days and 167 units per arm.",
+        "After that, stop when the always-valid p < 0.05, or at 665 units per arm / 42 days, whichever first; reaching the cap without significance is \"inconclusive\".",
+        "Report effect size with confidence interval, not just significance. A human makes the final keep/revert decision."
+      ],
+      "codeChangeOutline": [
+        "server/index.js startBotMatch: keep the bot resolution in a named function; in the treatment arm call it (and clear the pending timers) from submit_answer once the human has finished.",
+        "socket auth: accept anonId in handshake auth; server computes the variant with agent/src/flags/assign.js (same file served to the client as /flags.js).",
+        "match_found payload: include { experiment_id, variant } so the client can fire experiment_exposure once.",
+        "Default to control whenever the experiment is not live (unapproved, edited after approval, or missing anonId)."
+      ],
+      "risks": [
+        "Faster losses might feel abrupt; watch premature_exit_rate.",
+        "The bot's \"thinking\" status messages no longer appear in treatment."
+      ],
+      "prerequisites": [
+        {
+          "id": "metric:opponent_type_mix",
+          "description": "Metric \"Bot vs human battle share\" is instrumented in code",
+          "satisfied": true
+        },
+        {
+          "id": "metric:abandonment_by_difficulty",
+          "description": "Metric \"Abandonment conditional on question difficulty and position\" is instrumented in code",
+          "satisfied": true
+        },
+        {
+          "id": "foundation:anon_id",
+          "description": "Pseudonymous qb_anon_id assigned after consent",
+          "satisfied": true
+        },
+        {
+          "id": "foundation:consent",
+          "description": "Consent Mode default-deny in place; experiment events only fire with analytics consent",
+          "satisfied": true
+        },
+        {
+          "id": "foundation:exposure",
+          "description": "experiment_exposure event emitted with experiment_id and variant",
+          "satisfied": true
+        },
+        {
+          "id": "review:code",
+          "description": "Treatment code reviewed and merged behind the flag (default = control)",
+          "satisfied": false
+        }
+      ],
+      "approval": null,
+      "analysisLog": [],
+      "codeImplemented": true,
+      "alternativeDesign": {
+        "source": "LLM (claude-opus-5-5), validated against findings",
+        "title": "Skip the bot wait: 'See result now' after final submission in bot battles",
+        "treatment": "After the player's final submission in a bot battle, a 'See result now' button appears. It fast-forwards the bot's pre-sampled simulated finish/score and shows the result screen immediately. Bot outcomes keep the same distribution; only the waiting is removed.",
+        "primaryMetric": "bot_battle_completion",
+        "rationale": "Removing the forced non-interactive wait after a player's final submission in a bot battle will increase the share of bot battles that reach the result screen."
+      }
+    },
+    {
+      "id": "EXP-002-clarified-answer-format",
+      "title": "Explicit units and rounding on ambiguous numeric questions",
+      "area": "question_quality",
+      "status": "proposed",
+      "createdAt": "2026-10-15T22:41:50.555Z",
+      "unit": "anon_id",
+      "trafficAllocation": 1,
+      "hypothesis": {
+        "key": "quality.ambiguous_answer_format",
+        "statement": "Adding explicit unit and rounding instructions to numeric questions the audit flagged as ambiguous will reduce abandonment while those questions are on screen.",
+        "evidence": [
+          "F-Q-ambiguous-format",
+          "F-CODE-flags-lost"
+        ]
+      },
+      "variants": [
+        {
+          "key": "control",
+          "weight": 1,
+          "description": "Current question text."
+        },
+        {
+          "key": "treatment",
+          "weight": 1,
+          "description": "For audit-flagged questions only, show a human-reviewed clarification (e.g. \"Answer in minutes, rounded to 4 decimal places\"). Answers, tolerances and all other questions are unchanged."
+        }
+      ],
+      "primaryMetric": {
+        "id": "affected_question_abandon_rate",
+        "definition": "Among exposed units presented at least one affected question, the share who abandon the game while that question is on screen.",
+        "direction": "decrease",
+        "baseline": 0.12,
+        "baselineSource": "assumed (no usable measurement yet)"
+      },
+      "guardrails": [
+        {
+          "id": "question_dispute_rate",
+          "definition": "Share of exposed units who flag at least one question.",
+          "harmDirection": "increase",
+          "alpha": 0.05
+        },
+        {
+          "id": "game_completion_rate",
+          "definition": "Share of exposed units whose games all end by finish or timer (not game_abandoned).",
+          "harmDirection": "decrease",
+          "alpha": 0.05
+        },
+        {
+          "id": "client_error_rate",
+          "definition": "Share of exposed units with at least one client error (Sentry event tagged with experiment variant).",
+          "harmDirection": "increase",
+          "alpha": 0.05
+        }
+      ],
+      "stoppingRule": {
+        "method": "msprt",
+        "alpha": 0.05,
+        "tau": 0.02,
+        "mdeAbsolute": 0.02,
+        "fixedHorizonUnitsPerArm": 3841,
+        "minUnitsPerArm": 200,
+        "maxUnitsPerArm": 5762,
+        "minDaysRunning": 14,
+        "maxDays": 42
+      },
+      "feasibility": {
+        "eligibleUnitsPerDay": 20.9,
+        "estimatedDaysToMaxUnits": 553,
+        "note": "At current traffic this needs ~553 days, beyond the 42-day cap: expect \"inconclusive\" unless the effect is much larger than the MDE. Consider a larger MDE or running without competing experiments."
+      },
+      "evaluationPlan": [
+        "Analyse only units with an experiment_exposure event (intent-to-treat from first exposure).",
+        "Daily: sample-ratio-mismatch check (chi-square, p < 0.001 pauses the experiment).",
+        "Daily: guardrails via always-valid mSPRT p-values; any significant harm recommends revert immediately.",
+        "Primary metric is not interpreted before 14 days and 200 units per arm.",
+        "After that, stop when the always-valid p < 0.05, or at 5762 units per arm / 42 days, whichever first; reaching the cap without significance is \"inconclusive\".",
+        "Report effect size with confidence interval, not just significance. A human makes the final keep/revert decision."
+      ],
+      "codeChangeOutline": [
+        "server/question-clarifications.js: map of question_id -> reviewed clarification text (drafted by the agent, approved by a human).",
+        "Serve clarified descriptions to treatment units in /api/questions and buildTacticalSet; control receives the original text.",
+        "question_presented carries { question_id, affected: true|false, variant } so analysis can restrict to affected questions.",
+        "Persist /api/flag into a question_flags table so the dispute guardrail is measurable."
+      ],
+      "risks": [
+        "Clarifications could make questions easier; that is acceptable but should be visible via affected_question_solve_rate (secondary).",
+        "Small affected set means slow accumulation."
+      ],
+      "prerequisites": [
+        {
+          "id": "metric:abandonment_by_difficulty",
+          "description": "Metric \"Abandonment conditional on question difficulty and position\" is instrumented in code",
+          "satisfied": true
+        },
+        {
+          "id": "metric:question_dispute_rate",
+          "description": "Metric \"Question dispute rate\" is instrumented in code",
+          "satisfied": true
+        },
+        {
+          "id": "foundation:anon_id",
+          "description": "Pseudonymous qb_anon_id assigned after consent",
+          "satisfied": true
+        },
+        {
+          "id": "foundation:consent",
+          "description": "Consent Mode default-deny in place; experiment events only fire with analytics consent",
+          "satisfied": true
+        },
+        {
+          "id": "foundation:exposure",
+          "description": "experiment_exposure event emitted with experiment_id and variant",
+          "satisfied": true
+        },
+        {
+          "id": "review:code",
+          "description": "Treatment code reviewed and merged behind the flag (default = control)",
+          "satisfied": false
+        },
+        {
+          "id": "review:content",
+          "description": "Every clarification text reviewed and approved by a human",
+          "satisfied": false
+        }
+      ],
+      "approval": null,
+      "analysisLog": [],
+      "codeImplemented": true,
+      "alternativeDesign": {
+        "source": "LLM (claude-opus-5-5), validated against findings",
+        "title": "Explicit rounding/unit instructions on flagged numeric questions",
+        "treatment": "The same questions show a standardised format line matching the stored answer's precision and unit (e.g. 'Enter as a decimal rounded to 4 decimal places', 'Enter in minutes', 'Enter as a decimal, not a percentage'). Answers and tolerances are unchanged.",
+        "primaryMetric": "affected_question_solve_rate",
+        "rationale": "Adding explicit rounding and unit instructions to the numeric questions that lack them will raise the share of exposed players who answer them correctly, without increasing abandonment or disputes."
+      }
+    }
+  ],
+  "questionReviews": [
+    {
+      "question_id": "qm79",
+      "issue": "Possible incorrect answer. The text says each second-direction train arrives 1 minute BEFORE the next first-direction train. That leaves a 9-minute gap before each second-direction train and a 1-minute gap before each first-direction train. Under that reading the commuter would board the second direction most of the time, not with probability 0.1. The stored answer matches the opposite reading (second-direction train arrives 1 minute AFTER a first-direction train).",
+      "suggested_clarification": "Human review: either change the wording to 'each one arrives exactly 1 minute after a train in the first direction' (consistent with 0.1), or re-verify the answer against the current wording."
+    },
+    {
+      "question_id": "qe67",
+      "issue": "'Best-of-3 series' conflicts with 'must win 2 sets in a row'. In a standard best-of-3, winning sets 1 and 3 would also win, which gives a different probability than the stored answer. The answer assumes the consecutive-wins rule.",
+      "suggested_clarification": "Drop 'best-of-3' or reword to: 'The player plays exactly 3 sets and wins the prize only by winning two consecutive sets.'"
+    },
+    {
+      "question_id": "qm68",
+      "issue": "The stored answer assumes the guard chooses randomly between B and C when both are released; this assumption is not stated. If the guard always names B when possible, the answer differs. The text also says 'Enter as a decimal or fraction'; it is unclear whether the input accepts fractions, and 0.67 may fall outside the tolerance.",
+      "suggested_clarification": "Add: 'If both B and C are to be released, the guard names one of them at random.' Replace the entry instruction with 'Enter as a decimal rounded to 4 decimal places' unless fraction input is supported."
+    },
+    {
+      "question_id": "qh2",
+      "issue": "The hint is self-contradictory ('integer or \"inf\" not accepted — compute the finite closed form for finite n'). The text does not say what is paid if no 6 appears within the 20-roll cap. The stored answer appears to assume a payout of 0 in that case.",
+      "suggested_clarification": "Replace the hint with: 'The game stops after at most 20 rolls; if no 6 appears in 20 rolls, the payout is $0. What is the expected payout? Round to the nearest dollar.'"
+    },
+    {
+      "question_id": "qe72",
+      "issue": "'They'll be behind' is ambiguous: it could refer to the gambler or the friend. The direction of the side bet is also easy to misread, and it is not stated that breaking even (exactly one win) does not count as behind.",
+      "suggested_clarification": "Reword: 'A friend bets the gambler $20 at even money that the gambler will be behind (net loss) after 36 plays; the gambler wins the $20 if not behind, and breaking even counts as not behind.'"
+    },
+    {
+      "question_id": "qe71",
+      "issue": "The payout wording ('1×, 2×, or 3× your stake ... for each die matching') can be read as 1× per matching die or as tiered payouts. 'Expected loss' invites sign confusion: a player may enter a negative number.",
+      "suggested_clarification": "Reword: 'You are paid $1, $2 or $3 (plus your stake back) if exactly one, two or three dice match. Enter your expected loss per $1 as a positive number to 4 decimal places.'"
+    },
+    {
+      "question_id": "qm49",
+      "issue": "There is no rounding instruction, and the tolerance is tight enough that a correct 2-decimal entry may be marked wrong.",
+      "suggested_clarification": "Append: 'Enter as a decimal rounded to 4 decimal places.'"
+    },
+    {
+      "question_id": "qm54",
+      "issue": "There is no rounding instruction, and the unit is not stated in the text (stored unit is minutes). A correct answer in seconds, or rounded to 2 decimals, would be marked wrong.",
+      "suggested_clarification": "Append: 'Answer in minutes, as a decimal rounded to 4 decimal places.'"
+    },
+    {
+      "question_id": "qm43",
+      "issue": "The stored unit is %, but the text does not say whether to enter a percentage or a decimal. A decimal entry of the correct value would be marked wrong.",
+      "suggested_clarification": "Append: 'Enter as a percentage (e.g. 7.5 for 7.5%).'"
+    },
+    {
+      "question_id": "qm47",
+      "issue": "There is no format instruction. Players may enter a percentage instead of a fraction, or round differently.",
+      "suggested_clarification": "Append: 'Enter as a decimal fraction of bankroll (not a percentage), rounded to 3 decimal places.'"
+    },
+    {
+      "question_id": "qh37",
+      "issue": "There is no format instruction. The drift may be entered as a percentage rather than a decimal.",
+      "suggested_clarification": "Append: 'Enter as a decimal (not a percentage), rounded to 3 decimal places.'"
+    },
+    {
+      "question_id": "qh49",
+      "issue": "There is no rounding instruction, and the tolerance may reject a correct 2-decimal entry. Players may also wonder whether a fraction is accepted.",
+      "suggested_clarification": "Append: 'Enter as a decimal rounded to 4 decimal places.'"
+    },
+    {
+      "question_id": "qm2",
+      "issue": "'Enter as a fraction in decimal form' is awkward, and no precision is given. A 2-decimal entry may fall outside the tolerance.",
+      "suggested_clarification": "Replace with: 'Enter as a decimal rounded to 4 decimal places.'"
+    },
+    {
+      "question_id": "qm46",
+      "issue": "There is no rounding instruction for a 4-decimal answer in years.",
+      "suggested_clarification": "Append: 'Answer in years, rounded to 4 decimal places.'"
+    },
+    {
+      "question_id": "qm55",
+      "issue": "There is no rounding instruction. 'Risk-free rate = 5% per period (continuous)' could be clearer about using e^(rΔt) rather than 1+r.",
+      "suggested_clarification": "Reword the rate as '5% per period, continuously compounded (use e^0.05)' and append 'rounded to 4 decimal places.'"
+    },
+    {
+      "question_id": "qh46",
+      "issue": "The notation 'max0≤s≤1 Ws' renders without subscripts, which hurts readability. There is no rounding instruction.",
+      "suggested_clarification": "Render as 'P(max over 0 ≤ s ≤ 1 of W_s ≥ 1.5)' and append 'Enter to 4 decimal places.'"
+    },
+    {
+      "question_id": "qe48",
+      "issue": "The tolerance is very loose relative to the answer's size (audit flag), so meaningfully wrong values may be accepted.",
+      "suggested_clarification": "Human review of the tolerance; no change to the answer. Optionally state 'Enter as a decimal rounded to 4 places (e.g. 0.0123).'"
+    }
+  ],
+  "followUps": [
+    "Does practice_question_submitted fire correctly on mobile browsers? Can someone reproduce the mobile practice flow on a real phone to rule out a tracking artefact for the 2.6% figure?",
+    "Is game_abandoned currently emitted (including on tab close or navigation), and with which parameters? The bot_battle_completion and game_completion_rate metrics depend on it.",
+    "Is the bot's result in tech/IB battles pre-sampled at match start, or computed progressively? This determines whether 'See result now' can fast-forward safely.",
+    "Can event parameters (game, difficulty, category, question_id, opponent_type) be registered as GA4 custom dimensions now, so question- and opponent-level metrics become measurable?",
+    "Is there an existing UI for players to flag or dispute a question? If not, can a minimal one ship alongside the question-quality experiment?",
+    "Does the answer input accept fractions (qm68 says 'decimal or fraction')? How are percent signs and units in the input handled?",
+    "Can a human verify the stored answer for qm79 against its current wording before any experiment exposes it?",
+    "Why is the overall engagement rate (49.7%) lower than both the new (63.8%) and returning (58.3%) rates? Are these computed on different bases (sessions vs users)?",
+    "What share of battle traffic is IB versus quant/tech? This sets the priority of expanding the IB question pools."
+  ]
+}
