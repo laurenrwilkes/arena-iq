@@ -63,6 +63,8 @@ const titles = {
   qh66: { title: "How Many for a Shared Day?", was: "The Birthday Problem" },
   qh68: { title: "Groups Versus a Single Match", was: "Comparing Two Birthday Problems" },
   qh71: { title: "$1 Against $2, With an Edge", was: "Ruin with a Skill Edge" },
+  // Decision restored (2026-10-15); the old title described the removed fixed order.
+  qe67: { title: "Choosing the Order of Opponents", was: "Best of Three, Weaker Opponent Twice" },
 };
 
 // Near-exact duplicates (2026-10-15 audit). The kept version is the one a
