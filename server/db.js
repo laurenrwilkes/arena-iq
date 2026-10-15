@@ -40,6 +40,32 @@ db.exec(`
     created_at    TEXT DEFAULT CURRENT_TIMESTAMP
   );
 
+  -- First-party gameplay analytics (consent-gated on the client). anon_id is a
+  -- random UUID from the browser, never linked to users.id.
+  CREATE TABLE IF NOT EXISTS game_events (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    received_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    client_ts       INTEGER,
+    anon_id         TEXT NOT NULL,
+    game_session_id TEXT,
+    event           TEXT NOT NULL,
+    question_id     TEXT,
+    props           TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_game_events_anon  ON game_events(anon_id, received_at);
+  CREATE INDEX IF NOT EXISTS idx_game_events_event ON game_events(event, received_at);
+
+  CREATE TABLE IF NOT EXISTS question_flags (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at  TEXT DEFAULT CURRENT_TIMESTAMP,
+    question_id TEXT NOT NULL,
+    reason      TEXT,
+    context     TEXT,
+    anon_id     TEXT,
+    user_id     INTEGER
+  );
+  CREATE INDEX IF NOT EXISTS idx_question_flags_q ON question_flags(question_id);
+
   -- Single-row persistence canary: if boot_count keeps climbing with the same
   -- first_seen_at across deploys, the DB file is surviving restarts. If
   -- first_seen_at keeps resetting to "now", the filesystem is being wiped.
@@ -104,6 +130,25 @@ const getUserStats = db.prepare(`
   FROM users WHERE id = ?
 `);
 
+const insertGameEvent = db.prepare(`
+  INSERT INTO game_events (client_ts, anon_id, game_session_id, event, question_id, props)
+  VALUES (@client_ts, @anon_id, @game_session_id, @event, @question_id, @props)
+`);
+const insertGameEvents = db.transaction(rows => { for (const r of rows) insertGameEvent.run(r); });
+const insertQuestionFlag = db.prepare('INSERT INTO question_flags (question_id, reason, context, anon_id, user_id) VALUES (?, ?, ?, ?, ?)');
+// Events for every unit exposed to an experiment, from their first exposure on.
+const getExperimentEvents = db.prepare(`
+  SELECT e.anon_id, e.received_at, e.event, e.question_id, e.props
+  FROM game_events e
+  JOIN (SELECT anon_id, MIN(received_at) AS first_at FROM game_events
+        WHERE event = 'experiment_exposure' AND json_extract(props, '$.experiment_id') = ?
+        GROUP BY anon_id) x ON x.anon_id = e.anon_id AND e.received_at >= x.first_at
+  ORDER BY e.anon_id, e.received_at
+`);
+// Keep raw gameplay events for 180 days.
+const pruneGameEvents = db.prepare("DELETE FROM game_events WHERE received_at < strftime('%Y-%m-%dT%H:%M:%fZ','now','-180 days')");
+pruneGameEvents.run();
+
 function calculateElo(winnerElo, loserElo, K = 32) {
   const expected = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
   return { winnerGain: Math.round(K * (1 - expected)), loserLoss: Math.round(K * expected) };
@@ -143,4 +188,4 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   };
 }
 
-module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword };
+module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword, insertGameEvent, insertGameEvents, insertQuestionFlag, getExperimentEvents };

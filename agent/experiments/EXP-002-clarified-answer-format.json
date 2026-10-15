@@ -1,0 +1,143 @@
+{
+  "id": "EXP-002-clarified-answer-format",
+  "title": "Explicit units and rounding on ambiguous numeric questions",
+  "area": "question_quality",
+  "status": "concluded",
+  "createdAt": "2026-10-15T22:41:50.555Z",
+  "unit": "anon_id",
+  "trafficAllocation": 1,
+  "hypothesis": {
+    "key": "quality.ambiguous_answer_format",
+    "statement": "Adding explicit unit and rounding instructions to numeric questions the audit flagged as ambiguous will reduce abandonment while those questions are on screen.",
+    "evidence": [
+      "F-Q-ambiguous-format",
+      "F-CODE-flags-lost"
+    ]
+  },
+  "variants": [
+    {
+      "key": "control",
+      "weight": 1,
+      "description": "Current question text."
+    },
+    {
+      "key": "treatment",
+      "weight": 1,
+      "description": "For audit-flagged questions only, show a human-reviewed clarification (e.g. \"Answer in minutes, rounded to 4 decimal places\"). Answers, tolerances and all other questions are unchanged."
+    }
+  ],
+  "primaryMetric": {
+    "id": "affected_question_abandon_rate",
+    "definition": "Among exposed units presented at least one affected question, the share who abandon the game while that question is on screen.",
+    "direction": "decrease",
+    "baseline": 0.12,
+    "baselineSource": "assumed (no usable measurement yet)"
+  },
+  "guardrails": [
+    {
+      "id": "question_dispute_rate",
+      "definition": "Share of exposed units who flag at least one question.",
+      "harmDirection": "increase",
+      "alpha": 0.05
+    },
+    {
+      "id": "game_completion_rate",
+      "definition": "Share of exposed units whose games all end by finish or timer (not game_abandoned).",
+      "harmDirection": "decrease",
+      "alpha": 0.05
+    },
+    {
+      "id": "client_error_rate",
+      "definition": "Share of exposed units with at least one client error (Sentry event tagged with experiment variant).",
+      "harmDirection": "increase",
+      "alpha": 0.05
+    }
+  ],
+  "stoppingRule": {
+    "method": "msprt",
+    "alpha": 0.05,
+    "tau": 0.02,
+    "mdeAbsolute": 0.02,
+    "fixedHorizonUnitsPerArm": 3841,
+    "minUnitsPerArm": 200,
+    "maxUnitsPerArm": 5762,
+    "minDaysRunning": 14,
+    "maxDays": 42
+  },
+  "feasibility": {
+    "eligibleUnitsPerDay": 20.9,
+    "estimatedDaysToMaxUnits": 553,
+    "note": "At current traffic this needs ~553 days, beyond the 42-day cap: expect \"inconclusive\" unless the effect is much larger than the MDE. Consider a larger MDE or running without competing experiments."
+  },
+  "evaluationPlan": [
+    "Analyse only units with an experiment_exposure event (intent-to-treat from first exposure).",
+    "Daily: sample-ratio-mismatch check (chi-square, p < 0.001 pauses the experiment).",
+    "Daily: guardrails via always-valid mSPRT p-values; any significant harm recommends revert immediately.",
+    "Primary metric is not interpreted before 14 days and 200 units per arm.",
+    "After that, stop when the always-valid p < 0.05, or at 5762 units per arm / 42 days, whichever first; reaching the cap without significance is \"inconclusive\".",
+    "Report effect size with confidence interval, not just significance. A human makes the final keep/revert decision."
+  ],
+  "codeChangeOutline": [
+    "server/question-clarifications.js: map of question_id -> reviewed clarification text (drafted by the agent, approved by a human).",
+    "Serve clarified descriptions to treatment units in /api/questions and buildTacticalSet; control receives the original text.",
+    "question_presented carries { question_id, affected: true|false, variant } so analysis can restrict to affected questions.",
+    "Persist /api/flag into a question_flags table so the dispute guardrail is measurable."
+  ],
+  "risks": [
+    "Clarifications could make questions easier; that is acceptable but should be visible via affected_question_solve_rate (secondary).",
+    "Small affected set means slow accumulation."
+  ],
+  "prerequisites": [
+    {
+      "id": "metric:abandonment_by_difficulty",
+      "description": "Metric \"Abandonment conditional on question difficulty and position\" is instrumented in code",
+      "satisfied": true
+    },
+    {
+      "id": "metric:question_dispute_rate",
+      "description": "Metric \"Question dispute rate\" is instrumented in code",
+      "satisfied": true
+    },
+    {
+      "id": "foundation:anon_id",
+      "description": "Pseudonymous qb_anon_id assigned after consent",
+      "satisfied": true
+    },
+    {
+      "id": "foundation:consent",
+      "description": "Consent Mode default-deny in place; experiment events only fire with analytics consent",
+      "satisfied": true
+    },
+    {
+      "id": "foundation:exposure",
+      "description": "experiment_exposure event emitted with experiment_id and variant",
+      "satisfied": true
+    },
+    {
+      "id": "review:code",
+      "description": "Treatment code reviewed and merged behind the flag (default = control)",
+      "satisfied": false
+    },
+    {
+      "id": "review:content",
+      "description": "Every clarification text reviewed and approved by a human",
+      "satisfied": false
+    }
+  ],
+  "approval": null,
+  "analysisLog": [],
+  "codeImplemented": true,
+  "alternativeDesign": {
+    "source": "LLM (claude-opus-5-5), validated against findings",
+    "title": "Explicit rounding/unit instructions on flagged numeric questions",
+    "treatment": "The same questions show a standardised format line matching the stored answer's precision and unit (e.g. 'Enter as a decimal rounded to 4 decimal places', 'Enter in minutes', 'Enter as a decimal, not a percentage'). Answers and tolerances are unchanged.",
+    "primaryMetric": "affected_question_solve_rate",
+    "rationale": "Adding explicit rounding and unit instructions to the numeric questions that lack them will raise the share of exposed players who answer them correctly, without increasing abandonment or disputes."
+  },
+  "conclusion": {
+    "decision": "shipped",
+    "by": "Lauren Wilkes",
+    "note": "Lauren reviewed and approved the 11 clarifications and chose to ship them to all players (2026-10-15); written directly into server/questions.js.",
+    "at": "2026-10-15T22:50:30.485Z"
+  }
+}

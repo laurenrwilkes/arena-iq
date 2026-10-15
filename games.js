@@ -154,6 +154,7 @@ function renderResult() {
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
 function goToMenu() {
+  QBAnalytics.postGameAction('menu');
   clearInterval(STATE.timerInterval);
   STATE.phase = 'menu';
   render();
@@ -217,7 +218,9 @@ function formatTime(totalSeconds) {
 }
 
 function startGame() {
-  trackEvent('game_started', { game: 'optiver_80_in_8' });
+  QBAnalytics.postGameAction('retry');
+  STATE.gameSessionId = QBAnalytics.startGame('optiver_80_in_8', { question_index: 0, submitted: 0 });
+  QBAnalytics.track('game_started', { game_session_id: STATE.gameSessionId, game: 'optiver_80_in_8' });
   STATE.questions = generateQuestions(TOTAL_QUESTIONS);
   STATE.index = 0;
   STATE.correct = 0;
@@ -240,6 +243,7 @@ function startGame() {
 
 function nextQuestion() {
   STATE.index++;
+  QBAnalytics.updateGame({ question_index: STATE.index, submitted: STATE.answered });
   if (STATE.index >= TOTAL_QUESTIONS) { endGame(); return; }
   render();
 }
@@ -273,7 +277,12 @@ function skipQuestion() {
 }
 
 function endGame() {
-  trackEvent('game_completed', { game: 'optiver_80_in_8', correct: STATE.correct, answered: STATE.answered, skipped: STATE.skipped });
+  const finished = QBAnalytics.endGame();
+  QBAnalytics.track('game_completed', {
+    game_session_id: STATE.gameSessionId, game: 'optiver_80_in_8', correct: STATE.correct, answered: STATE.answered, skipped: STATE.skipped,
+    duration_ms: finished ? Date.now() - finished.startedAt : null, end_reason: STATE.timeLeft <= 0 ? 'timer' : 'finished',
+  });
+  QBAnalytics.showResult(STATE.gameSessionId, 'optiver_80_in_8');
   clearInterval(STATE.timerInterval);
   STATE.phase = 'result';
   render();

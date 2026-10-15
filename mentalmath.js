@@ -496,6 +496,7 @@ function recordVerbalAnswer(raw) {
   if (correct) STATE.score++;
 
   STATE.verbalIndex++;
+  QBAnalytics.updateGame({ submitted: STATE.verbalIndex, question_index: STATE.verbalIndex });
   if (STATE.verbalIndex >= STATE.verbalQuestions.length) {
     endVerbalGame();
   } else {
@@ -518,7 +519,7 @@ function startVerbalGame() {
 }
 
 function endVerbalGame() {
-  trackEvent('game_completed', { game: 'mental_math_challenge', difficulty: 'verbal', score: STATE.score });
+  trackMentalMathCompleted('finished');
   clearInterval(STATE.verbalInterval);
   try { speechSynthesis.cancel(); } catch {}
   STATE.view = 'gameover';
@@ -660,7 +661,9 @@ function formatTime(totalSeconds) {
 
 function startGame(difficulty) {
   if (!difficulty) return;
-  trackEvent('game_started', { game: 'mental_math_challenge', difficulty });
+  QBAnalytics.postGameAction('retry');
+  STATE.gameSessionId = QBAnalytics.startGame('mental_math_challenge', { difficulty: difficulty, submitted: 0 });
+  QBAnalytics.track('game_started', { game_session_id: STATE.gameSessionId, game: 'mental_math_challenge', difficulty: difficulty });
   STATE.difficulty = difficulty;
   STATE.isNewHighScore = false;
   if (difficulty === 'verbal') { startVerbalGame(); return; }
@@ -722,6 +725,7 @@ function checkLiveAnswer(el) {
   if (Math.abs(val - STATE.problem.answer) >= 0.005) return;
 
   STATE.score++;
+  QBAnalytics.updateGame({ submitted: STATE.score });
   playCorrectSound();
   el.classList.add('correct');
   el.disabled = true;
@@ -738,11 +742,25 @@ function checkLiveAnswer(el) {
 
 function quitGame() {
   if (!window.confirm('Quit this challenge? Your current run will end.')) return;
+  // A quit is an abandonment, not a completion.
+  QBAnalytics.abandonGame('quit', { score: STATE.score });
+  STATE.quitting = true;
   if (STATE.difficulty === 'verbal') endVerbalGame(); else endGame();
+  STATE.quitting = false;
+}
+
+function trackMentalMathCompleted(endReason) {
+  if (STATE.quitting) return;
+  const finished = QBAnalytics.endGame();
+  QBAnalytics.track('game_completed', {
+    game_session_id: STATE.gameSessionId, game: 'mental_math_challenge', difficulty: STATE.difficulty, score: STATE.score,
+    duration_ms: finished ? Date.now() - finished.startedAt : null, end_reason: endReason,
+  });
+  QBAnalytics.showResult(STATE.gameSessionId, 'mental_math_challenge');
 }
 
 function endGame() {
-  trackEvent('game_completed', { game: 'mental_math_challenge', difficulty: STATE.difficulty, score: STATE.score });
+  trackMentalMathCompleted('timer');
   clearInterval(STATE.timerInterval);
   STATE.view = 'gameover';
   if (currentUser) {
@@ -758,6 +776,7 @@ function endGame() {
 }
 
 function backToSelect() {
+  QBAnalytics.postGameAction('change_difficulty');
   if (STATE.difficulty === 'verbal') {
     clearInterval(STATE.verbalInterval);
     try { speechSynthesis.cancel(); } catch {}

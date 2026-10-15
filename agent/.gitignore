@@ -1,0 +1,9 @@
+data/latest.json
+data/synthetic/
+.venv/
+__pycache__/
+# OAuth secrets belong in ~/.config/quantbattle, never in the repo.
+.env
+client_secret*.json
+oauth-client*.json
+*authorized-user*.json

@@ -10,6 +10,8 @@ const cors = require('cors');
 const path = require('path');
 const db = require('./db');
 const { getRandomQuestion, getRandomQuestions } = require('./questions');
+const experiments = require('./experiments');
+const { buildSnapshot } = require('./experimentMetrics');
 const { Resend } = require('resend');
 
 if (process.env.SENTRY_DSN) {
@@ -35,6 +37,15 @@ app.use(express.json());
 app.get('/problems.html', (req, res) => res.redirect(301, '/'));
 app.get('/leaderboard.html', (req, res) => res.redirect(301, '/'));
 app.get('/shop.html', (req, res) => res.redirect(301, '/'));
+
+// The site is served from the repo root, so keep server code, the analytics
+// agent, docs and package manifests from being downloadable.
+app.use((req, res, next) => {
+  if (/^\/(server|agent|node_modules)(\/|$)/i.test(req.path) || /\.(md|json|lock|sh)$/i.test(req.path)) {
+    return res.status(404).end();
+  }
+  next();
+});
 
 app.use(express.static(path.join(__dirname, '..')));
 
@@ -195,13 +206,74 @@ app.get('/api/questions', (req, res) => {
 });
 
 app.post('/api/flag', (req, res) => {
-  const { questionId, reason } = req.body;
+  const { questionId, reason, context, anonId } = req.body;
   if (!questionId) return res.status(400).json({ error: 'questionId required' });
   const token = req.headers.authorization?.split(' ')[1];
-  let username = 'anonymous';
-  try { const d = jwt.verify(token, JWT_SECRET); username = d.username || 'user'; } catch (_) {}
+  let username = 'anonymous', userId = null;
+  try { const d = jwt.verify(token, JWT_SECRET); username = d.username || 'user'; userId = d.id || null; } catch (_) {}
   console.log(`[FLAG] ${new Date().toISOString()} | question=${questionId} | user=${username} | reason=${reason || 'none'}`);
+  const validAnon = experiments.isValidAnonId(anonId) ? anonId : null;
+  try {
+    db.insertQuestionFlag.run(String(questionId).slice(0, 32), String(reason || '').slice(0, 200), String(context || '').slice(0, 40), validAnon, userId);
+    logServerEvent(validAnon, 'question_flagged', { reason: String(reason || '').slice(0, 200), context: String(context || '').slice(0, 40) }, { question_id: String(questionId).slice(0, 32) });
+  } catch (e) { console.error('Failed to store flag:', e.message); }
   res.json({ ok: true });
+});
+
+// ── FIRST-PARTY GAMEPLAY ANALYTICS ───────────────────────────────────────────
+// Batched events from analytics.js (sent only with analytics consent).
+const EVENT_NAMES = new Set([
+  'game_started', 'game_completed', 'game_abandoned', 'battle_started', 'battle_finished',
+  'question_presented', 'question_first_input', 'question_answered', 'solution_revealed',
+  'post_game_action', 'wait_started', 'wait_ended', 'experiment_exposure', 'client_error', 'account_created',
+]);
+const eventRate = new Map(); // client key -> { windowStart, count }
+
+function logServerEvent(anonId, event, props, extra = {}) {
+  if (!anonId) return;
+  try {
+    db.insertGameEvent.run({
+      client_ts: Date.now(), anon_id: anonId, event,
+      game_session_id: extra.game_session_id || null, question_id: extra.question_id || null,
+      props: JSON.stringify(props || {}),
+    });
+  } catch (e) { console.error('Failed to log event:', e.message); }
+}
+
+app.post('/api/events', express.text({ type: '*/*', limit: '64kb' }), (req, res) => {
+  const key = (req.headers['x-forwarded-for'] || req.ip || '').toString().split(',')[0].trim();
+  const now = Date.now();
+  const r = eventRate.get(key);
+  if (!r || now - r.windowStart > 60000) eventRate.set(key, { windowStart: now, count: 1 });
+  else if (++r.count > 120) return res.status(429).end();
+  if (eventRate.size > 10000) eventRate.clear();
+
+  let body = req.body;
+  if (typeof body === 'string') { try { body = JSON.parse(body); } catch { return res.status(400).end(); } }
+  const events = Array.isArray(body?.events) ? body.events.slice(0, 50) : [];
+  const rows = [];
+  for (const e of events) {
+    if (!e || !EVENT_NAMES.has(e.event) || !experiments.isValidAnonId(e.anon_id)) continue;
+    const props = e.props && typeof e.props === 'object' && !Array.isArray(e.props) ? { ...e.props } : {};
+    if (e.event === 'experiment_exposure') {
+      // Never trust the client's variant: recompute it from the anon id.
+      const v = experiments.variantFor(String(props.experiment_id || ''), e.anon_id);
+      if (!v || v.id !== props.experiment_id) continue;
+      props.variant = v.variant;
+    }
+    const propsStr = JSON.stringify(props);
+    if (propsStr.length > 2000) continue;
+    rows.push({
+      client_ts: Number.isFinite(e.client_ts) ? Math.round(e.client_ts) : null,
+      anon_id: e.anon_id,
+      game_session_id: typeof e.game_session_id === 'string' ? e.game_session_id.slice(0, 64) : null,
+      event: e.event,
+      question_id: typeof e.question_id === 'string' ? e.question_id.slice(0, 32) : null,
+      props: propsStr,
+    });
+  }
+  try { if (rows.length) db.insertGameEvents(rows); } catch (err) { console.error('Failed to store events:', err.message); }
+  res.status(204).end();
 });
 
 // ── SHOP ROUTES ──────────────────────────────────────────────────────────────
@@ -377,11 +449,11 @@ function generateBlitzQuestion(difficulty) {
 }
 
 // ── QUANT BATTLE: PHASE 2 TACTICAL PROBLEM SET ───────────────────────────────
-const BLITZ_DURATION = 120; // seconds
+const BLITZ_DURATION = 60; // seconds (was 120; shortened 2026-10-15 to cut match length)
 const TACTICAL_COMPOSITION = {
-  easy:   { mix: [['easy', 3], ['medium', 1]], timeLimit: 480 },
-  medium: { mix: [['easy', 2], ['medium', 2]], timeLimit: 600 },
-  hard:   { mix: [['easy', 1], ['medium', 2], ['hard', 1]], timeLimit: 720 },
+  easy:   { mix: [['easy', 3], ['medium', 1]], timeLimit: 360 },   // was 480
+  medium: { mix: [['easy', 2], ['medium', 2]], timeLimit: 450 },   // was 600
+  hard:   { mix: [['easy', 1], ['medium', 2], ['hard', 1]], timeLimit: 540 },   // was 720
 };
 
 function buildTacticalSet(category, difficulty) {
@@ -438,8 +510,9 @@ function startGame(p1, p2, category, difficulty) {
 
   const basePayload = { gameId, question: questions[0], timeLimit: timeLimits[difficulty] || 300, multiQuestion, totalQuestions: questions.length };
   const multiPayload = multiQuestion ? { questions } : {};
-  if (!p1.isBot) io.to(p1.id).emit('match_found', { ...basePayload, ...multiPayload, opponent: { username: p2.username, elo: p2.elo } });
-  if (!p2.isBot) io.to(p2.id).emit('match_found', { ...basePayload, ...multiPayload, opponent: { username: p1.username, elo: p1.elo } });
+  const extrasFor = (opp) => ({ opponentType: opp.isBot ? 'bot' : 'human' });
+  if (!p1.isBot) io.to(p1.id).emit('match_found', { ...basePayload, ...multiPayload, ...extrasFor(p2), opponent: { username: p2.username, elo: p2.elo } });
+  if (!p2.isBot) io.to(p2.id).emit('match_found', { ...basePayload, ...multiPayload, ...extrasFor(p1), opponent: { username: p1.username, elo: p1.elo } });
 
   games[gameId].timer = setTimeout(() => {
     const g = games[gameId];
@@ -466,8 +539,10 @@ function startGame(p1, p2, category, difficulty) {
 // live timers and phase transitions identical regardless of opponent type.
 function simulateBotIfNeeded(game, difficulty) {
   const acc = BOT_ACCURACY[difficulty] || BOT_ACCURACY.easy;
-  const blitzThroughput = { easy: 40, medium: 28, hard: 18 };
-  const attempts = blitzThroughput[difficulty] || 30;
+  // Correct answers per minute; scaled to the blitz length so the bot's pace
+  // (and its chance of winning the blitz point) doesn't depend on BLITZ_DURATION.
+  const blitzPerMinute = { easy: 20, medium: 14, hard: 9 };
+  const attempts = Math.round((blitzPerMinute[difficulty] || 15) * BLITZ_DURATION / 60);
   const n = game.tacticalQuestions.length;
 
   for (const player of [game.p1, game.p2]) {
@@ -516,6 +591,7 @@ function startQuantBattle(p1, p2, difficulty) {
     blitzDuration: BLITZ_DURATION,
     blitzQuestion: game.blitz[self.id].question.text,
     opponent: { username: opp.username, elo: opp.elo },
+    opponentType: opp.isBot ? 'bot' : 'human',
   });
   if (!p1.isBot) io.to(p1.id).emit('match_found', payloadFor(p1, p2));
   if (!p2.isBot) io.to(p2.id).emit('match_found', payloadFor(p2, p1));
@@ -656,11 +732,11 @@ function startBotMatch(playerSocket, category, difficulty) {
       }, totalDelay * i / total);
     }
 
-    setTimeout(() => {
+    const resolveBot = () => {
       const g = games[gameId];
       if (!g || g.ended) return;
       const botProgress = g.playerProgress[botProxy.id];
-      if (!botProgress) return;
+      if (!botProgress || botProgress.finished) return;
       botProgress.submitted = total;
       botProgress.score = Array.from({ length: total }, () => Math.random() < BOT_ACCURACY[difficulty] ? 1 : 0).reduce((a, b) => a + b, 0);
       botProgress.finished = true;
@@ -672,7 +748,9 @@ function startBotMatch(playerSocket, category, difficulty) {
         else if (botProgress.score > playerProgress.score) endGame(gameId, botProxy.id);
         else endGame(gameId, null);
       }
-    }, totalDelay);
+    };
+    game.resolveBotNow = resolveBot;
+    setTimeout(resolveBot, totalDelay);
   } else {
     const [aMin, aMax] = BOT_ACTIVITY[difficulty];
     setTimeout(() => {
@@ -681,9 +759,9 @@ function startBotMatch(playerSocket, category, difficulty) {
       io.to(playerSocket.id).emit('opponent_activity', { message: msg });
     }, (aMin + Math.random() * (aMax - aMin)) * 1000);
 
-    setTimeout(() => {
+    const resolveBot = () => {
       const g = games[gameId];
-      if (!g || g.ended) return;
+      if (!g || g.ended || g.answers[botProxy.id] !== undefined) return;
       io.to(playerSocket.id).emit('opponent_answered');
       const botCorrect = Math.random() < BOT_ACCURACY[difficulty];
       g.answers[botProxy.id] = { correct: botCorrect, timestamp: Date.now() };
@@ -693,12 +771,27 @@ function startBotMatch(playerSocket, category, difficulty) {
       } else if (!botCorrect && playerAnswered && !playerAnswered.correct) {
         endGame(gameId, null);
       }
-    }, totalDelay);
+    };
+    game.resolveBotNow = resolveBot;
+    setTimeout(resolveBot, totalDelay);
   }
+}
+
+// Once the human has nothing left to do, settle the bot's result now instead
+// of making them wait for its scheduled finish. The bot's outcome is drawn
+// from the same distribution either way, so only the waiting changes.
+// (Shipped to everyone 2026-10-15; formerly experiment EXP-001.)
+function maybeResolveBotEarly(game, playerId) {
+  if (!game || game.ended || !game.resolveBotNow) return;
+  const done = game.multiQuestion ? game.playerProgress[playerId]?.finished : game.answers[playerId] !== undefined;
+  if (done) game.resolveBotNow();
 }
 
 // ── SOCKET AUTH ──────────────────────────────────────────────────────────────
 io.use((socket, next) => {
+  // Pseudonymous analytics id (only present when the visitor allows analytics).
+  const anonId = socket.handshake.auth?.anonId;
+  socket.anonId = experiments.isValidAnonId(anonId) ? anonId : null;
   const token = socket.handshake.auth?.token;
   if (!token) {
     socket.userId = null; socket.username = 'Guest'; socket.elo = 1200; socket.isGuest = true; socket.isBot = false;
@@ -833,6 +926,7 @@ io.on('connection', (socket) => {
         if (opponentAnswered && !opponentAnswered.correct) endGame(gameId, null);
       }
     }
+    maybeResolveBotEarly(game, socket.id);
   });
 
   socket.on('create_private_room', ({ category, difficulty }) => {
@@ -891,6 +985,15 @@ app.get('/api/admin/stats', (req, res) => {
     dbBootCount: meta?.boot_count || null,
     dbFilePath: db.dbFilePath,
   });
+});
+
+// ── EXPERIMENT RESULTS (read by the engagement agent) ───────────────────────
+app.get('/api/admin/experiments/:id/snapshot', (req, res) => {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
+  const exp = experiments.experiments.find(e => e.id === req.params.id || e.id.startsWith(`${req.params.id}-`));
+  if (!exp) return res.status(404).json({ error: 'Unknown experiment' });
+  res.json({ experimentId: exp.id, ...buildSnapshot(exp, db.getExperimentEvents.all(exp.id)) });
 });
 
 if (process.env.SENTRY_DSN) app.use(Sentry.expressErrorHandler());
