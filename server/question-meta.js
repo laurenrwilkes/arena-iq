@@ -65,7 +65,16 @@ const titles = {
   qh71: { title: "$1 Against $2, With an Edge", was: "Ruin with a Skill Edge" },
 };
 
-const inactive = {};
+// Near-exact duplicates (2026-10-15 audit). The kept version is the one a
+// candidate can work out without a calculator, or the better-formatted one.
+const inactive = {
+  qm3:  { reason: 'duplicate', keep: 'qe69', note: 'Expected rolls until a 6; three copies existed' },
+  qm38: { reason: 'duplicate', keep: 'qe69', note: 'Expected rolls until a 6; three copies existed' },
+  qm37: { reason: 'duplicate', keep: 'qm4',  note: 'Same Bayes test setup; qm4 resolves to 1/3 mentally, qm37 needs 4 dp' },
+  qm55: { reason: 'duplicate', keep: 'qh4',  note: 'Same one-step risk-neutral probability; qh4 uses simple rates (0.75), qm55 needs e^0.05' },
+  qm43: { reason: 'duplicate', keep: 'qm5',  note: 'Identical CAPM numbers; qm5 is the formatted version' },
+  qm67: { reason: 'duplicate', keep: 'qm66', note: 'Same "both pick the same option" setup with 5 options instead of 10' },
+};
 
 const tracks = {};
 
