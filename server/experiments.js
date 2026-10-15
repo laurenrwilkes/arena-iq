@@ -5,14 +5,10 @@
 const fs = require('fs');
 const path = require('path');
 const { assignVariant, isExperimentLive } = require('../agent/src/flags/assign');
-const CLARIFICATIONS = require('./question-clarifications');
 
 // QB_EXPERIMENTS_DIR is for local integration tests only.
 const EXPERIMENTS_DIR = process.env.QB_EXPERIMENTS_DIR || path.join(__dirname, '..', 'agent', 'experiments');
 const ANON_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-const BOT_RESOLVE_EXP = 'EXP-001';
-const CLARIFY_EXP = 'EXP-002';
 
 function loadExperiments() {
   try {
@@ -52,24 +48,4 @@ function liveAssignments(anonId) {
   return out;
 }
 
-// EXP-002: mark affected questions for everyone (so both arms log exposure
-// when one is shown) and append the clarification for treatment only.
-function clarifyQuestion(q, assignment) {
-  if (!assignment || !CLARIFICATIONS[q.id]) return q;
-  const out = { ...q, affected: true, experiment: assignment };
-  if (assignment.variant === 'treatment') {
-    out.description = `${q.description}\n\n<strong>${CLARIFICATIONS[q.id]}</strong>`;
-  }
-  return out;
-}
-
-function clarifyQuestions(list, anonId) {
-  const assignment = variantFor(CLARIFY_EXP, anonId);
-  if (!assignment) return list;
-  return list.map(q => clarifyQuestion(q, assignment));
-}
-
-module.exports = {
-  BOT_RESOLVE_EXP, CLARIFY_EXP, experiments, isValidAnonId, variantFor, liveAssignments,
-  clarifyQuestions,
-};
+module.exports = { experiments, isValidAnonId, variantFor, liveAssignments };

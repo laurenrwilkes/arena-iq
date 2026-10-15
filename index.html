@@ -759,8 +759,7 @@ document.addEventListener('click', e => {
 
 async function loadQuestions() {
   try {
-    const anonId = QBAnalytics.anonId();
-    const res = await fetch('/api/questions' + (anonId ? `?anon_id=${encodeURIComponent(anonId)}` : ''));
+    const res = await fetch('/api/questions');
     allQuestions = await res.json();
   } catch {
     document.getElementById('problems-list').innerHTML =

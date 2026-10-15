@@ -2,7 +2,7 @@
   "id": "EXP-001-bot-battle-instant-resolve",
   "title": "Resolve bot battles as soon as the player is done",
   "area": "pacing",
-  "status": "proposed",
+  "status": "concluded",
   "createdAt": "2026-10-15T22:41:50.554Z",
   "unit": "anon_id",
   "trafficAllocation": 1,
@@ -129,5 +129,11 @@
     "treatment": "After the player's final submission in a bot battle, a 'See result now' button appears. It fast-forwards the bot's pre-sampled simulated finish/score and shows the result screen immediately. Bot outcomes keep the same distribution; only the waiting is removed.",
     "primaryMetric": "bot_battle_completion",
     "rationale": "Removing the forced non-interactive wait after a player's final submission in a bot battle will increase the share of bot battles that reach the result screen."
+  },
+  "conclusion": {
+    "decision": "shipped",
+    "by": "Lauren Wilkes",
+    "note": "Lauren chose to ship to all players without an A/B test (2026-10-15): ~9 bot battles/month makes a test infeasible (~4000 days to power). Outcome odds unchanged; only the wait is removed.",
+    "at": "2026-10-15T22:50:30.444Z"
   }
 }

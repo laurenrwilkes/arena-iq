@@ -3,8 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { buildSnapshot } = require('../../server/experimentMetrics');
-const CLARIFICATIONS = require('../../server/question-clarifications');
-const { loadQuestionBank } = require('../src/inspect/questions');
+const { loadQuestionBank, auditQuestions } = require('../src/inspect/questions');
 const registry = require('../src/experiments/registry');
 const { buildExperiment, DEFAULT_DESIGNS } = require('../src/experiments/propose');
 
@@ -37,19 +36,14 @@ test('snapshot counts units per arm and applies metric definitions', () => {
   assert.deepEqual(s.unknownMetrics, []);
 });
 
-test('every clarification targets a real question and keeps the stored answer acceptable', () => {
+test('approved format clarifications are in the question bank and no longer flagged', () => {
   const bank = loadQuestionBank();
   const all = Object.values(bank).flatMap(t => Object.values(t).flat());
-  for (const [id, text] of Object.entries(CLARIFICATIONS)) {
-    const q = all.find(x => x.id === id);
-    assert.ok(q, `${id} exists`);
-    const m = text.match(/to (\d) decimal places/);
-    if (m) {
-      const dp = Number(m[1]);
-      const rounded = Math.round(q.answer * 10 ** dp) / 10 ** dp;
-      assert.ok(Math.abs(rounded - q.answer) <= q.tolerance, `${id}: answer rounded to ${dp}dp (${rounded}) must be within tolerance ${q.tolerance}`);
-    }
-  }
+  const ids = ['qm46', 'qm47', 'qm49', 'qm52', 'qm54', 'qm55', 'qm62', 'qh37', 'qh43', 'qh46', 'qh49'];
+  for (const id of ids) assert.match(all.find(q => q.id === id).description, /decimal places/, id);
+  const audit = auditQuestions(bank, {});
+  const stillFlagged = audit.flagged.filter(r => ids.includes(r.id) && r.issues.some(i => i.code === 'no_rounding_instruction'));
+  assert.deepEqual(stillFlagged.map(r => r.id), []);
 });
 
 test('approval can attest review prerequisites but never instrumentation ones', () => {

@@ -61,6 +61,10 @@ Notes:
 
 This writes `data/report.md`, `data/dashboard.html`, appends to `data/history.jsonl`, and saves proposed experiments to `experiments/`.
 
+## Registering GA4 custom dimensions (one-off)
+
+GA4 can only break events down by parameters registered as custom dimensions. `npm run ga4:register-dimensions` registers the 9 the agent uses (`game`, `difficulty`, `category`, `opponent_type`, `is_quant_battle`, `end_reason`, `reason`, `phase`, `action`). It needs the **Google Analytics Admin API** enabled in your Cloud project and Editor access on the property. It asks for edit access for that run only and never saves the token. Existing dimensions are skipped. Data appears for events received after registration.
+
 ## Experiment lifecycle
 
 ```bash

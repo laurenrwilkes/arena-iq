@@ -134,6 +134,11 @@ function inspectServer(root) {
     flagsLoggedToConsoleOnly: /console\.log/.test(flagHandler) && !/db\.|INSERT/i.test(flagHandler),
     matchesRecordedOnlyForRegisteredPairs: /if \(game\.p1\.userId && game\.p2\.userId\)/.test(server),
     matchHasDurationColumn: (tables.matches || []).some(c => /duration|ended_at|started_at/.test(c)),
+    // Bot battles resolve as soon as the human finishes, for everyone (not gated by an experiment variant).
+    botWaitRemoved: (() => {
+      const fn = (server.match(/function maybeResolveBotEarly[\s\S]*?\n\}/) || [''])[0];
+      return !!fn && !/variant/.test(fn) && /maybeResolveBotEarly\(game, socket\.id\)/.test(server);
+    })(),
     constants: { ...extractConstants(serverFile, /DURATION|COMPOSITION|DELAY|ACCURACY|ACTIVITY|QUESTIONS_PER_MATCH/), CODE_BATTLE_TIME_LIMITS: inlineTimeLimits },
   };
 }
@@ -153,7 +158,9 @@ function pacingModel(server, client) {
       });
     }
   }
-  if (c.BOT_DELAY) {
+  if (c.BOT_DELAY && server.botWaitRemoved) {
+    facts.push({ id: 'pacing.bot_wait_removed', statement: 'Bot battles (tech/IB) end as soon as the player has submitted everything; the bot result is drawn immediately with unchanged odds (no forced wait).' });
+  } else if (c.BOT_DELAY) {
     for (const [diff, [lo, hi]] of Object.entries(c.BOT_DELAY)) {
       facts.push({
         id: `pacing.bot_wait.${diff}`,

@@ -2,7 +2,7 @@
   "id": "EXP-002-clarified-answer-format",
   "title": "Explicit units and rounding on ambiguous numeric questions",
   "area": "question_quality",
-  "status": "proposed",
+  "status": "concluded",
   "createdAt": "2026-10-15T22:41:50.555Z",
   "unit": "anon_id",
   "trafficAllocation": 1,
@@ -133,5 +133,11 @@
     "treatment": "The same questions show a standardised format line matching the stored answer's precision and unit (e.g. 'Enter as a decimal rounded to 4 decimal places', 'Enter in minutes', 'Enter as a decimal, not a percentage'). Answers and tolerances are unchanged.",
     "primaryMetric": "affected_question_solve_rate",
     "rationale": "Adding explicit rounding and unit instructions to the numeric questions that lack them will raise the share of exposed players who answer them correctly, without increasing abandonment or disputes."
+  },
+  "conclusion": {
+    "decision": "shipped",
+    "by": "Lauren Wilkes",
+    "note": "Lauren reviewed and approved the 11 clarifications and chose to ship them to all players (2026-10-15); written directly into server/questions.js.",
+    "at": "2026-10-15T22:50:30.485Z"
   }
 }

@@ -6,7 +6,8 @@
 //   qb-agent approve <EXP-id> --by "<name>" [--attest review:code,...]   human approval (binds to spec hash)
 //   qb-agent start <EXP-id>                   mark approved experiment as running (live on next deploy)
 //   qb-agent analyze <EXP-id> --server <url> | --snapshot f   evaluate results (server needs QB_ADMIN_KEY)
-//   qb-agent conclude <EXP-id> <keep|revert|inconclusive> --by "<name>" [--note "..."]
+//   qb-agent conclude <EXP-id> <keep|revert|inconclusive|shipped> --by "<name>" [--note "..."]
+//     (shipped = rolled out to everyone without an A/B test)
 const fs = require('fs');
 const path = require('path');
 const { runAgent } = require('../src/run');
@@ -71,7 +72,7 @@ async function main() {
     }
     case 'conclude': {
       const [, id, decision] = args;
-      if (!['keep', 'revert', 'inconclusive'].includes(decision)) throw new Error('decision must be keep|revert|inconclusive');
+      if (!['keep', 'revert', 'inconclusive', 'shipped'].includes(decision)) throw new Error('decision must be keep|revert|inconclusive|shipped');
       const by = opt('by');
       if (!by) throw new Error('--by "<name>" is required: a human records the final decision');
       const exp = { ...registry.load(id), status: 'concluded', conclusion: { decision, by, note: opt('note') || '', at: new Date().toISOString() } };

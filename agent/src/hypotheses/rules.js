@@ -108,7 +108,7 @@ function generateRuleHypotheses(findings, priorOutcomes = {}, limit = 5) {
     // stats like tenure or retention are context, not evidence for a mechanism.
     const measured = evidence.filter(i => i.startsWith('F-GA-funnel') || i.startsWith('F-GA-devicegap')).length;
     const prior = priorOutcomes[t.key] || [];
-    const settled = prior.some(p => p.decision === 'keep' || p.decision === 'revert');
+    const settled = prior.some(p => ['keep', 'revert', 'shipped'].includes(p.decision));
     const needsMoreData = prior.some(p => p.decision === 'inconclusive');
     const score = 2 * Math.min(measured, 2) + evidence.length + t.reach + t.ease - (settled ? 10 : 0) + (needsMoreData ? 1 : 0);
     out.push({

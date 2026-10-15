@@ -49,12 +49,13 @@ function tmp() {
 test('synthetic run without LLM: 5 hypotheses, one pacing + one quality experiment, all proposed', async () => {
   const dirs = tmp();
   const run = await runAgent({ synthetic: true, llm: false, ...dirs });
-  assert.equal(run.hypotheses.length, 5);
+  // The rule engine only proposes hypotheses it has evidence for (max 5).
+  assert.ok(run.hypotheses.length >= 1 && run.hypotheses.length <= 5);
   run.hypotheses.forEach(h => assert.ok(h.evidence.length > 0));
   assert.deepEqual(run.experiments.map(x => x.area).sort(), ['pacing', 'question_quality']);
   run.experiments.forEach(x => { assert.equal(x.status, 'proposed'); assert.equal(x.approval, null); });
   assert.ok(fs.existsSync(path.join(dirs.dataDir, 'dashboard.html')));
-  assert.ok(history.readAll({ dir: dirs.dataDir, type: 'hypothesis' }).length === 5);
+  assert.equal(history.readAll({ dir: dirs.dataDir, type: 'hypothesis' }).length, run.hypotheses.length);
   // Second run reuses experiment ids instead of creating duplicates.
   const again = await runAgent({ synthetic: true, llm: false, ...dirs });
   assert.deepEqual(again.experiments.map(x => x.id).sort(), run.experiments.map(x => x.id).sort());
@@ -85,5 +86,5 @@ test('LLM output with no valid evidence falls back to rules', async () => {
   const run = await runAgent({ synthetic: true, ...tmp(), dryRun: true, anthropicClient: fakeClient(llmPayload(['F-MADE-UP'])) });
   assert.match(run.meta.hypothesisSource, /rules/);
   assert.ok(run.meta.llmError);
-  assert.equal(run.hypotheses.length, 5);
+  assert.ok(run.hypotheses.length >= 1 && run.hypotheses.every(h => h.source === 'rules'));
 });

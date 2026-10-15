@@ -199,7 +199,7 @@ app.get('/api/questions', (req, res) => {
     if (!QUESTIONS[cat]) continue;
     result[cat] = {};
     for (const diff of ['beginner', 'easy', 'medium', 'hard']) {
-      result[cat][diff] = experiments.clarifyQuestions(QUESTIONS[cat][diff] || [], req.query.anon_id);
+      result[cat][diff] = QUESTIONS[cat][diff] || [];
     }
   }
   res.json(result);
@@ -494,11 +494,6 @@ function startGame(p1, p2, category, difficulty) {
     [p2.id]: { submitted: 0, score: 0, finished: false, finishTime: null, hintUsed: false },
   };
 
-  // EXP-001 applies to bot battles only; the human's anon id picks the arm.
-  const human = p1.isBot ? p2 : p1;
-  const botAssignment = (p1.isBot || p2.isBot) ? experiments.variantFor(experiments.BOT_RESOLVE_EXP, human.anonId) : null;
-  if (botAssignment) logServerEvent(human.anonId, 'experiment_exposure', { experiment_id: botAssignment.id, variant: botAssignment.variant, category, difficulty });
-
   games[gameId] = {
     p1, p2,
     question: questions[0],
@@ -511,12 +506,11 @@ function startGame(p1, p2, category, difficulty) {
     timeLimit: timeLimits[difficulty] || 300,
     timer: null,
     ended: false,
-    botAssignment,
   };
 
   const basePayload = { gameId, question: questions[0], timeLimit: timeLimits[difficulty] || 300, multiQuestion, totalQuestions: questions.length };
   const multiPayload = multiQuestion ? { questions } : {};
-  const extrasFor = (opp) => ({ opponentType: opp.isBot ? 'bot' : 'human', experiment: opp.isBot ? botAssignment : null });
+  const extrasFor = (opp) => ({ opponentType: opp.isBot ? 'bot' : 'human' });
   if (!p1.isBot) io.to(p1.id).emit('match_found', { ...basePayload, ...multiPayload, ...extrasFor(p2), opponent: { username: p2.username, elo: p2.elo } });
   if (!p2.isBot) io.to(p2.id).emit('match_found', { ...basePayload, ...multiPayload, ...extrasFor(p1), opponent: { username: p1.username, elo: p1.elo } });
 
@@ -617,9 +611,8 @@ function endBlitzPhase(gameId) {
   if (s1 > s2) game.blitzPoints[game.p1.id] = 1;
   else if (s2 > s1) game.blitzPoints[game.p2.id] = 1;
 
-  const playerById = { [game.p1.id]: game.p1, [game.p2.id]: game.p2 };
   const payloadFor = (selfId, oppId) => ({
-    questions: experiments.clarifyQuestions(game.tacticalQuestions, playerById[selfId]?.anonId),
+    questions: game.tacticalQuestions,
     timeLimit: game.tacticalTimeLimit,
     yourBlitzScore: game.blitz[selfId].score,
     opponentBlitzScore: game.blitz[oppId].score,
@@ -782,11 +775,12 @@ function startBotMatch(playerSocket, category, difficulty) {
   }
 }
 
-// EXP-001 treatment: once the human has nothing left to do, settle the bot's
-// result now instead of at its scheduled time. The bot's outcome is drawn from
-// the same distribution either way, so only the waiting changes.
+// Once the human has nothing left to do, settle the bot's result now instead
+// of making them wait for its scheduled finish. The bot's outcome is drawn
+// from the same distribution either way, so only the waiting changes.
+// (Shipped to everyone 2026-10-15; formerly experiment EXP-001.)
 function maybeResolveBotEarly(game, playerId) {
-  if (!game || game.ended || !game.resolveBotNow || game.botAssignment?.variant !== 'treatment') return;
+  if (!game || game.ended || !game.resolveBotNow) return;
   const done = game.multiQuestion ? game.playerProgress[playerId]?.finished : game.answers[playerId] !== undefined;
   if (done) game.resolveBotNow();
 }
