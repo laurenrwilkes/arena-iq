@@ -2,3 +2,10 @@ server/node_modules
 server/arena.db
 node_modules
 .env
+
+# Local tooling and secrets (never commit)
+.mcp.json
+.venv/
+agent/.venv/
+agent/data/latest.json
+agent/data/synthetic/
