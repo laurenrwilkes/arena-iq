@@ -15605,14 +15605,38 @@ const QUESTIONS = {
   }
 };
 
+// ── EDITORIAL METADATA ───────────────────────────────────────────────────────
+// Display titles, active status and tracks come from question-meta.js, applied
+// once here. Original titles stay in this file and in ORIGINAL_TITLES (server
+// only, never sent to players).
+const META = require('./question-meta');
+const DEFAULT_TRACK = { quant: 'trading', tech: 'coding', ib: 'investment_banking' };
+const ORIGINAL_TITLES = {};
+for (const [cat, tiers] of Object.entries(QUESTIONS)) {
+  for (const list of Object.values(tiers)) {
+    for (const q of list) {
+      ORIGINAL_TITLES[q.id] = q.title;
+      if (META.titles[q.id]) q.title = META.titles[q.id].title;
+      q.track = META.tracks[q.id] || DEFAULT_TRACK[cat];
+      q.active = !META.inactive[q.id];
+    }
+  }
+}
+
+// Questions eligible for battles and /api/question: active, and for quant only
+// the trading track.
+function battlePool(category, difficulty) {
+  return (QUESTIONS[category]?.[difficulty] || []).filter(q => q.active && (category !== 'quant' || q.track === 'trading'));
+}
+
 function getRandomQuestion(category, difficulty) {
-  const pool = QUESTIONS[category]?.[difficulty];
-  if (!pool?.length) return null;
+  const pool = battlePool(category, difficulty);
+  if (!pool.length) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function getRandomQuestions(category, difficulty, n) {
-  const pool = (QUESTIONS[category]?.[difficulty] || []).slice();
+  const pool = battlePool(category, difficulty);
   const result = [];
   while (result.length < n && pool.length > 0) {
     const i = Math.floor(Math.random() * pool.length);
@@ -15621,4 +15645,4 @@ function getRandomQuestions(category, difficulty, n) {
   return result;
 }
 
-module.exports = { QUESTIONS, getRandomQuestion, getRandomQuestions };
+module.exports = { QUESTIONS, ORIGINAL_TITLES, battlePool, getRandomQuestion, getRandomQuestions };
