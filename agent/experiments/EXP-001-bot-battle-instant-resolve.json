@@ -1,0 +1,125 @@
+{
+  "id": "EXP-001-bot-battle-instant-resolve",
+  "title": "Resolve bot battles as soon as the player is done",
+  "area": "pacing",
+  "status": "proposed",
+  "createdAt": "2026-10-15T18:36:42.039Z",
+  "unit": "anon_id",
+  "trafficAllocation": 1,
+  "hypothesis": {
+    "key": "pacing.bot_dead_wait",
+    "statement": "Removing the non-interactive wait for the bot's simulated finish (up to 85/140/230s by difficulty) will increase the share of players whose bot battles reach the result screen.",
+    "evidence": [
+      "F-CODE-pacing.bot_wait.hard",
+      "F-CODE-pacing.matchmaking",
+      "F-GA-funnel-battle_finish"
+    ]
+  },
+  "variants": [
+    {
+      "key": "control",
+      "weight": 1,
+      "description": "Current behaviour: after a wrong (single-question) or imperfect (multi-question) submission, the player waits until the bot's scheduled finish time."
+    },
+    {
+      "key": "treatment",
+      "weight": 1,
+      "description": "As soon as the player has submitted their final answer, the bot's result is drawn immediately from the same accuracy distribution (BOT_ACCURACY) and the result screen is shown. Win/loss probabilities are unchanged; only the wait is removed. Quant Battle is not affected."
+    }
+  ],
+  "primaryMetric": {
+    "id": "bot_battle_completion",
+    "definition": "Share of exposed units whose bot battles all reached the result screen (no game_abandoned with opponent_type=bot).",
+    "direction": "increase",
+    "baseline": 0.6,
+    "baselineSource": "assumed (no usable measurement yet)"
+  },
+  "guardrails": [
+    {
+      "id": "premature_exit_rate",
+      "definition": "Share of exposed units with a game_abandoned before their first submission in any game.",
+      "harmDirection": "increase",
+      "alpha": 0.05
+    },
+    {
+      "id": "next_day_return",
+      "definition": "Share of exposed units active again 1-7 days after first exposure.",
+      "harmDirection": "decrease",
+      "alpha": 0.05
+    },
+    {
+      "id": "client_error_rate",
+      "definition": "Share of exposed units with at least one client error (Sentry event tagged with experiment variant).",
+      "harmDirection": "increase",
+      "alpha": 0.05
+    }
+  ],
+  "stoppingRule": {
+    "method": "msprt",
+    "alpha": 0.05,
+    "tau": 0.09,
+    "mdeAbsolute": 0.09,
+    "fixedHorizonUnitsPerArm": 443,
+    "minUnitsPerArm": 167,
+    "maxUnitsPerArm": 665,
+    "minDaysRunning": 14,
+    "maxDays": 42
+  },
+  "feasibility": {
+    "eligibleUnitsPerDay": null,
+    "estimatedDaysToMaxUnits": null,
+    "note": "Unknown until GA4 traffic is available."
+  },
+  "evaluationPlan": [
+    "Analyse only units with an experiment_exposure event (intent-to-treat from first exposure).",
+    "Daily: sample-ratio-mismatch check (chi-square, p < 0.001 pauses the experiment).",
+    "Daily: guardrails via always-valid mSPRT p-values; any significant harm recommends revert immediately.",
+    "Primary metric is not interpreted before 14 days and 167 units per arm.",
+    "After that, stop when the always-valid p < 0.05, or at 665 units per arm / 42 days, whichever first; reaching the cap without significance is \"inconclusive\".",
+    "Report effect size with confidence interval, not just significance. A human makes the final keep/revert decision."
+  ],
+  "codeChangeOutline": [
+    "server/index.js startBotMatch: keep the bot resolution in a named function; in the treatment arm call it (and clear the pending timers) from submit_answer once the human has finished.",
+    "socket auth: accept anonId in handshake auth; server computes the variant with agent/src/flags/assign.js (same file served to the client as /flags.js).",
+    "match_found payload: include { experiment_id, variant } so the client can fire experiment_exposure once.",
+    "Default to control whenever the experiment is not live (unapproved, edited after approval, or missing anonId)."
+  ],
+  "risks": [
+    "Faster losses might feel abrupt; watch premature_exit_rate.",
+    "The bot's \"thinking\" status messages no longer appear in treatment."
+  ],
+  "prerequisites": [
+    {
+      "id": "metric:opponent_type_mix",
+      "description": "Metric \"Bot vs human battle share\" is instrumented in code",
+      "satisfied": true
+    },
+    {
+      "id": "metric:abandonment_by_difficulty",
+      "description": "Metric \"Abandonment conditional on question difficulty and position\" is instrumented in code",
+      "satisfied": true
+    },
+    {
+      "id": "foundation:anon_id",
+      "description": "Pseudonymous qb_anon_id assigned after consent",
+      "satisfied": true
+    },
+    {
+      "id": "foundation:consent",
+      "description": "Consent Mode default-deny in place; experiment events only fire with analytics consent",
+      "satisfied": true
+    },
+    {
+      "id": "foundation:exposure",
+      "description": "experiment_exposure event emitted with experiment_id and variant",
+      "satisfied": true
+    },
+    {
+      "id": "review:code",
+      "description": "Treatment code reviewed and merged behind the flag (default = control)",
+      "satisfied": false
+    }
+  ],
+  "approval": null,
+  "analysisLog": []
+}

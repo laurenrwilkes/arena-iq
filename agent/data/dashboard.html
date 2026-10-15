@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Engagement Agent</title>
+<style>
+:root { color-scheme: light; --bg:#fcfcfb; --card:#ffffff; --border:#e4e3df; --text:#0b0b0b; --text2:#52514e; --muted:#8a8984; --series:#2a78d6; --ci:rgba(11,11,11,.35); --warn-bg:#fff4d6; --warn:#7a5200; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --bg:#1a1a19; --card:#232322; --border:#3a3a38; --text:#f0efec; --text2:#c3c2b7; --muted:#8f8e86; --series:#3987e5; --ci:rgba(240,239,236,.45); --warn-bg:#3a2e10; --warn:#f2c46b; } }
+:root[data-theme="dark"] { color-scheme: dark; --bg:#1a1a19; --card:#232322; --border:#3a3a38; --text:#f0efec; --text2:#c3c2b7; --muted:#8f8e86; --series:#3987e5; --ci:rgba(240,239,236,.45); --warn-bg:#3a2e10; --warn:#f2c46b; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1100px; margin:0 auto; padding:24px 16px 64px; }
+h1 { font-size:1.5rem; margin:0 0 4px; } h2 { font-size:1.1rem; margin:32px 0 12px; }
+.sub { color:var(--text2); margin:0 0 16px; }
+.banner { background:var(--warn-bg); color:var(--warn); border-radius:8px; padding:10px 14px; margin:12px 0; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+.tile, .card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px; }
+.tile .v { font-size:1.6rem; font-weight:650; font-variant-numeric:tabular-nums; } .tile .l { color:var(--text2); font-size:.85rem; }
+.bar-row { display:grid; grid-template-columns:minmax(120px,240px) 1fr 110px; gap:10px; align-items:center; padding:5px 0; }
+.bar-label { color:var(--text2); font-size:.9rem; } .bar-value { font-variant-numeric:tabular-nums; text-align:right; } .bar-value small { color:var(--muted); }
+.bar-track { position:relative; height:14px; }
+.bar { position:absolute; left:0; top:2px; height:10px; background:var(--series); border-radius:0 4px 4px 0; }
+.ci { position:absolute; top:6px; height:2px; background:var(--ci); }
+.bar-row:hover .bar-label { color:var(--text); }
+table { width:100%; border-collapse:collapse; font-size:.9rem; } th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--border); vertical-align:top; }
+th { color:var(--text2); font-weight:600; } th.num, td.num { text-align:right; font-variant-numeric:tabular-nums; }
+.pill { display:inline-block; font-size:.75rem; padding:1px 8px; border-radius:999px; border:1px solid var(--border); color:var(--text2); }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:12px; }
+.card header { margin-bottom:6px; } .card p { margin:6px 0; color:var(--text2); }
+dl { display:grid; grid-template-columns:90px 1fr; gap:4px 10px; margin:8px 0; font-size:.88rem; } dt { color:var(--muted); } dd { margin:0; }
+ol.hyp > li { margin-bottom:14px; } .ev code { font-size:.78rem; color:var(--text2); }
+ul.friction li { margin-bottom:6px; } .kind { font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-right:6px; }
+.wrap { overflow-x:auto; }
+@media (max-width:600px) { .bar-row { grid-template-columns:1fr 70px; } .bar-track { grid-column:1 / -1; grid-row:2; } }
+</style></head>
+<body><main>
+<h1>QuantBattle engagement agent</h1>
+<p class="sub">Run 2026-10-15T18-36-42-015Z · 2026-10-15T18:36:42.040Z · data: none (code-only run, GA4 skipped) · hypotheses: rules (deterministic)</p>
+
+<div class="banner">No GA4 data in this run (code-only). Traffic figures below are empty, not zero.</div>
+
+
+<h2>Current engagement</h2>
+<div class="tiles">
+  <div class="tile"><div class="v">0</div><div class="l">Active users (28d)</div></div>
+  <div class="tile"><div class="v">n/a</div><div class="l">Engagement rate</div></div>
+  <div class="tile"><div class="v">n/a</div><div class="l">Returning-user engagement</div></div>
+  <div class="tile"><div class="v">n/a</div><div class="l">New-user engagement</div></div>
+  <div class="tile"><div class="v">13/13</div><div class="l">Metrics measurable today</div></div>
+</div>
+<h2>Funnels <small class="sub">(bar = rate, line = 95% CI; hover for counts)</small></h2>
+<div class="card"></div>
+<div class="wrap"><table><thead><tr><th>Device</th><th class="num">Users</th><th class="num">Engagement</th><th class="num">Engaged s/user</th></tr></thead><tbody>
+
+</tbody></table></div>
+
+<h2>Biggest suspected friction points</h2>
+<ul class="friction"><li><span class="kind">code</span>Quant Battle (easy): fixed 120s blitz phase that never ends early, then up to 480s for 4 tactical questions; worst case 10 min per match.</li><li><span class="kind">code</span>Quant Battle (medium): fixed 120s blitz phase that never ends early, then up to 600s for 4 tactical questions; worst case 12 min per match.</li><li><span class="kind">code</span>Quant Battle (hard): fixed 120s blitz phase that never ends early, then up to 720s for 4 tactical questions; worst case 14 min per match.</li><li><span class="kind">code</span>Bot battles (easy, tech/IB): after a wrong or non-perfect submission the player waits for the bot&#39;s simulated finish, uniformly 35-85s after match start, with no interaction available.</li><li><span class="kind">content</span>11 numeric questions have a 3+ decimal answer but no rounding/unit instruction (e.g. qm46, qm47, qm49, qm52); correct answers in another unit or precision may be marked wrong.</li><li><span class="kind">content</span>8 questions reuse another question&#39;s title across tiers (e.g. tm1, tm3, th8).</li><li><span class="kind">content</span>IB battle pools hold 3 questions per tier and each match draws 3: every IB match serves the identical question set.</li></ul>
+
+<h2>Proposed new metrics</h2>
+<div class="wrap"><table><thead><tr><th>Metric</th><th>Status</th><th>Missing instrumentation</th></tr></thead><tbody>
+<tr><td>Engagement rate &amp; session duration by new vs returning and device</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Battle finish ratio</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Solo game finish ratio (Mental Math + 80-in-8 combined)</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Practice question view → submit rate</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Next-day-or-later return (approximate)</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Time from question presentation to first interaction</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Abandonment conditional on question difficulty and position</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Percentage of players starting another game</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Time spent in non-interactive transitions</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Question dispute rate</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Game completion time distribution</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Per-question solve rate and response time</td><td><span class="pill">measurable</span></td><td>—</td></tr><tr><td>Bot vs human battle share</td><td><span class="pill">measurable</span></td><td>—</td></tr>
+</tbody></table></div>
+
+<h2>Recommended experiments &amp; hypotheses</h2>
+<ol class="hyp"><li><strong>Dead waiting time in bot battles</strong> <span class="pill">pacing</span> <span class="pill">confidence low</span>
+  <div>Players who finish before the bot leave during the non-interactive wait, lowering battle completion and replay.</div><div><em>Intervention:</em> When the human has finished, resolve the bot&#39;s (already simulated) result immediately and show the result screen. Outcome probabilities are unchanged.</div>
+  <div class="ev"><code>F-CODE-pacing.bot_wait.easy</code> <code>F-CODE-pacing.bot_wait.medium</code> <code>F-CODE-pacing.bot_wait.hard</code> <code>F-CODE-pacing.matchmaking</code> <code>F-CODE-battle-params</code></div></li><li><strong>Ambiguous answer format in numeric questions</strong> <span class="pill">question_quality</span> <span class="pill">confidence low</span>
+  <div>Players who get a &quot;wrong&quot; verdict on a correct-but-differently-formatted answer feel cheated and abandon the game or stop trusting the bank.</div><div><em>Intervention:</em> Show reviewed, clarified wording (explicit unit and rounding) for the flagged questions.</div>
+  <div class="ev"><code>F-Q-ambiguous-format</code></div></li><li><strong>Quant Battle is long and its blitz never ends early</strong> <span class="pill">pacing</span> <span class="pill">confidence low</span>
+  <div>The match length exceeds what casual visitors budget for, so a share leave before the result screen, especially on mobile.</div><div><em>Intervention:</em> Test a shorter format (e.g. 60s blitz and a 6-minute tactical cap) once duration data shows how often players run to the limit.</div>
+  <div class="ev"><code>F-CODE-pacing.quant_battle.easy</code> <code>F-CODE-pacing.quant_battle.hard</code></div></li><li><strong>IB battles always serve the same three questions</strong> <span class="pill">question_quality</span> <span class="pill">confidence low</span>
+  <div>Returning players see no novelty in IB battles and stop replaying them; this depresses repeat play for that segment.</div><div><em>Intervention:</em> Expand IB pools (at least 15 per tier) before any experiment; meanwhile, hide IB battles or label them as a fixed set.</div>
+  <div class="ev"><code>F-Q-ib-pool</code></div></li></ol>
+<div class="cards"><article class="card">
+    <header><span class="pill pill-proposed">proposed</span> <strong>EXP-001-bot-battle-instant-resolve</strong> Resolve bot battles as soon as the player is done</header>
+    <p>Removing the non-interactive wait for the bot&#39;s simulated finish (up to 85/140/230s by difficulty) will increase the share of players whose bot battles reach the result screen.</p>
+    <dl>
+      <dt>Primary</dt><dd>bot_battle_completion (increase; baseline 60.0%, assumed (no usable measurement yet))</dd>
+      <dt>Guardrails</dt><dd>premature_exit_rate, next_day_return, client_error_rate</dd>
+      <dt>Stopping</dt><dd>mSPRT α=0.05, MDE 9.0%, ≥14d, cap 665/arm or 42d</dd>
+      <dt>Feasibility</dt><dd>Unknown until GA4 traffic is available.</dd>
+      
+      
+    </dl>
+    <details><summary>1 prerequisite(s) before approval</summary><ul><li>Treatment code reviewed and merged behind the flag (default = control)</li></ul></details>
+  </article><article class="card">
+    <header><span class="pill pill-proposed">proposed</span> <strong>EXP-002-clarified-answer-format</strong> Explicit units and rounding on ambiguous numeric questions</header>
+    <p>Adding explicit unit and rounding instructions to numeric questions the audit flagged as ambiguous will reduce abandonment while those questions are on screen.</p>
+    <dl>
+      <dt>Primary</dt><dd>affected_question_abandon_rate (decrease; baseline 12.0%, assumed (no usable measurement yet))</dd>
+      <dt>Guardrails</dt><dd>question_dispute_rate, game_completion_rate, client_error_rate</dd>
+      <dt>Stopping</dt><dd>mSPRT α=0.05, MDE 2.0%, ≥14d, cap 5762/arm or 42d</dd>
+      <dt>Feasibility</dt><dd>Unknown until GA4 traffic is available.</dd>
+      
+      
+    </dl>
+    <details><summary>2 prerequisite(s) before approval</summary><ul><li>Treatment code reviewed and merged behind the flag (default = control)</li><li>Every clarification text reviewed and approved by a human</li></ul></details>
+  </article></div>
+
+<h2>Running experiments</h2>
+<div class="cards"><p class="sub">None running. Experiments start only after human approval and deployment.</p></div>
+
+<h2>Completed experiments</h2>
+<div class="cards"><p class="sub">None yet.</p></div>
+</main>
+<script type="application/json" id="run-data">{"meta":{"runId":"2026-10-15T18-36-42-015Z","dataDir":"/Users/lauren/Desktop/Websites/arena-iq/agent/data","generatedAt":"2026-10-15T18:36:42.040Z","dataSource":"none (code-only run, GA4 skipped)","lookbackDays":28,"hypothesisSource":"rules (deterministic)","llmError":null},"hypotheses":[{"id":"H1","key":"pacing.bot_dead_wait","area":"pacing","title":"Dead waiting time in bot battles","observation":"After a wrong or imperfect submission in tech/IB bot battles, the player must wait for the bot's simulated finish (up to ~4 minutes on hard) with nothing to do. Matchmaking falls back to bots after 3s, so this likely affects most battles.","hypothesis":"Players who finish before the bot leave during the non-interactive wait, lowering battle completion and replay.","intervention":"When the human has finished, resolve the bot's (already simulated) result immediately and show the result screen. Outcome probabilities are unchanged.","evidence":["F-CODE-pacing.bot_wait.easy","F-CODE-pacing.bot_wait.medium","F-CODE-pacing.bot_wait.hard","F-CODE-pacing.matchmaking","F-CODE-battle-params"],"causalStatus":"untested: supported by code inspection and correlational data only","primaryMetric":"bot_battle_completion","guardrails":["premature_exit_rate","next_day_return","client_error_rate"],"requiredInstrumentation":["opponent_type_mix","noninteractive_wait_time","abandonment_by_difficulty"],"confidence":"low","priorOutcomes":[],"score":11,"source":"rules","priority":1},{"id":"H2","key":"quality.ambiguous_answer_format","area":"question_quality","title":"Ambiguous answer format in numeric questions","observation":"Several numeric questions expect a rounded decimal (or a specific unit) without saying so; tolerance-based grading can then reject correct reasoning.","hypothesis":"Players who get a \"wrong\" verdict on a correct-but-differently-formatted answer feel cheated and abandon the game or stop trusting the bank.","intervention":"Show reviewed, clarified wording (explicit unit and rounding) for the flagged questions.","evidence":["F-Q-ambiguous-format"],"causalStatus":"untested: supported by code inspection and correlational data only","primaryMetric":"affected_question_abandon_rate","guardrails":["question_dispute_rate","game_completion_rate","client_error_rate"],"requiredInstrumentation":["question_solve_rate","question_dispute_rate","abandonment_by_difficulty"],"confidence":"low","priorOutcomes":[],"score":6,"source":"rules","priority":2},{"id":"H3","key":"pacing.quant_battle_length","area":"pacing","title":"Quant Battle is long and its blitz never ends early","observation":"A Quant Battle is a fixed 120s blitz followed by up to 8-12 minutes for four tactical questions (worst case 10-14 minutes).","hypothesis":"The match length exceeds what casual visitors budget for, so a share leave before the result screen, especially on mobile.","intervention":"Test a shorter format (e.g. 60s blitz and a 6-minute tactical cap) once duration data shows how often players run to the limit.","evidence":["F-CODE-pacing.quant_battle.easy","F-CODE-pacing.quant_battle.hard"],"causalStatus":"untested: supported by code inspection and correlational data only","primaryMetric":"bot_battle_completion","guardrails":["premature_exit_rate","next_day_return"],"requiredInstrumentation":["game_duration_distribution","abandonment_by_difficulty"],"confidence":"low","priorOutcomes":[],"score":6,"source":"rules","priority":3},{"id":"H4","key":"quality.ib_identical_sets","area":"question_quality","title":"IB battles always serve the same three questions","observation":"Each IB tier has exactly as many questions as a match draws, so every IB match repeats the identical set.","hypothesis":"Returning players see no novelty in IB battles and stop replaying them; this depresses repeat play for that segment.","intervention":"Expand IB pools (at least 15 per tier) before any experiment; meanwhile, hide IB battles or label them as a fixed set.","evidence":["F-Q-ib-pool"],"causalStatus":"untested: supported by code inspection and correlational data only","primaryMetric":"next_game_start_rate","guardrails":["game_completion_rate"],"requiredInstrumentation":["opponent_type_mix","next_game_start_rate"],"confidence":"low","priorOutcomes":[],"score":4,"source":"rules","priority":4}],"experiments":["EXP-001-bot-battle-instant-resolve","EXP-002-clarified-answer-format"]}</script>
+</body></html>

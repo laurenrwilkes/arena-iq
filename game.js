@@ -90,14 +90,31 @@ async function init() {
 
 function connectSocket() {
   const token = Auth.getToken();
-  socket = io(SERVER, { auth: token ? { token } : {}, reconnection: true, reconnectionAttempts: 5, timeout: 5000 });
+  const auth = {};
+  if (token) auth.token = token;
+  const anonId = QBAnalytics.anonId();
+  if (anonId) auth.anonId = anonId;
+  socket = io(SERVER, { auth, reconnection: true, reconnectionAttempts: 5, timeout: 5000 });
   socket.on('connect', () => updateServerBanner(true));
   socket.on('disconnect', () => updateServerBanner(false));
   socket.on('connect_error', () => updateServerBanner(false));
 
   socket.on('match_found', (data) => {
-    trackEvent('battle_started', { is_quant_battle: !!data.isQuantBattle });
     clearInterval(queueTimer);
+    QBAnalytics.endWait('matched');
+    QBAnalytics.resetQuestions();
+    STATE.opponentType = data.opponentType || 'unknown';
+    STATE.gameSessionId = QBAnalytics.startGame('battle', {
+      category: STATE.category, difficulty: STATE.difficulty, opponent_type: STATE.opponentType,
+      phase: data.isQuantBattle ? 'blitz' : 'question', question_index: 0, submitted: 0,
+    });
+    QBAnalytics.track('battle_started', {
+      game_session_id: STATE.gameSessionId, is_quant_battle: !!data.isQuantBattle,
+      category: STATE.category, difficulty: STATE.difficulty, opponent_type: STATE.opponentType,
+      queue_ms: STATE.queueStartedAt ? Date.now() - STATE.queueStartedAt : null,
+    });
+    // Server already logged EXP-001 exposure; mirror it to GA4 only.
+    if (data.experiment) QBAnalytics.ga('experiment_exposure', { experiment_id: data.experiment.id, variant: data.experiment.variant });
     STATE.phase = 'game';
     STATE.gameId = data.gameId;
     STATE.opponent = data.opponent;
@@ -129,6 +146,7 @@ function connectSocket() {
     STATE.numericChecked = false;
     STATE.numericCheckCorrect = false;
     render();
+    presentBattleQuestion(STATE.question, 0);
     startTimer();
   });
 
@@ -137,6 +155,7 @@ function connectSocket() {
   // matching Mental Math's exact 200ms flash-then-advance timing.
   socket.on('blitz_question', ({ yourScore, question }) => {
     STATE.blitzScore = yourScore;
+    QBAnalytics.updateGame({ submitted: yourScore });
     playCorrectSound();
     const scoreEl = document.getElementById('blitz-score');
     if (scoreEl) scoreEl.textContent = yourScore;
@@ -172,7 +191,9 @@ function connectSocket() {
     STATE.tacticalTimeLimit = data.timeLimit;
     STATE.tacticalTimeLeft = data.timeLimit;
     STATE.tacticalSubmitted = false;
+    QBAnalytics.updateGame({ phase: 'tactical', submitted: 0 });
     render();
+    presentBattleQuestion(STATE.tacticalQuestions[0], 0);
     startTacticalTimer();
   });
 
@@ -197,7 +218,14 @@ function connectSocket() {
   });
 
   socket.on('game_result', (data) => {
-    trackEvent('battle_finished', { won: !!data.youWin, is_draw: !!data.isDraw, is_quant_battle: !!STATE.isQuantBattle });
+    QBAnalytics.endWait('result');
+    const finished = QBAnalytics.endGame();
+    QBAnalytics.track('battle_finished', {
+      game_session_id: STATE.gameSessionId, won: !!data.youWin, is_draw: !!data.isDraw, is_quant_battle: !!STATE.isQuantBattle,
+      category: STATE.category, difficulty: STATE.difficulty, opponent_type: STATE.opponentType,
+      duration_ms: finished ? Date.now() - finished.startedAt : null,
+    });
+    QBAnalytics.showResult(STATE.gameSessionId, 'battle');
     clearInterval(STATE.timerInterval);
     clearInterval(STATE.blitzInterval);
     clearInterval(STATE.tacticalInterval);
@@ -404,6 +432,8 @@ function renderMatchmaking() {
 function findMatch() {
   if (!STATE.category || !STATE.difficulty) return;
   STATE.phase = 'matchmaking';
+  STATE.queueStartedAt = Date.now();
+  QBAnalytics.startWait('matchmaking');
   render();
 
   if (socket?.connected) socket.emit('join_queue', { category: STATE.category, difficulty: STATE.difficulty });
@@ -424,6 +454,7 @@ function findMatch() {
 
 function cancelQueue() {
   clearInterval(queueTimer);
+  QBAnalytics.endWait('cancelled');
   socket?.emit('leave_queue');
   STATE.phase = 'setup';
   render();
@@ -582,7 +613,39 @@ function goToTacticalQuestion(i) {
   STATE.tacticalIndex = i;
   const app = document.getElementById('app');
   if (app) app.innerHTML = renderTacticalPhase();
+  presentBattleQuestion(STATE.tacticalQuestions[i], i);
 }
+
+// ── ANALYTICS HELPERS ────────────────────────────────────────────────────────
+function presentBattleQuestion(q, index) {
+  if (!q) return;
+  QBAnalytics.updateGame({ question_index: index, question_id: q.id });
+  QBAnalytics.presentQuestion(q.id, {
+    game_session_id: STATE.gameSessionId, game: 'battle', question_index: index,
+    difficulty: q.diff || STATE.difficulty, affected: !!q.affected,
+  });
+  if (q.affected && q.experiment) QBAnalytics.exposure(q.experiment.id, q.experiment.variant);
+}
+
+function battleAnswered(q, correct, extra) {
+  if (!q) return;
+  QBAnalytics.answerQuestion(q.id, Object.assign({
+    game_session_id: STATE.gameSessionId, game: 'battle', difficulty: q.diff || STATE.difficulty,
+    correct: !!correct, affected: !!q.affected,
+  }, extra || {}));
+}
+
+function waitForOpponent() {
+  QBAnalytics.updateGame({ phase: 'waiting' });
+  QBAnalytics.startWait('opponent', STATE.gameSessionId);
+}
+
+document.addEventListener('input', (e) => {
+  const id = e.target && e.target.id;
+  const props = { game_session_id: STATE.gameSessionId };
+  if (id === 'numeric-input' || id === 'code-editor') QBAnalytics.firstInput(STATE.question?.id, props);
+  else if (id === 'tactical-input') QBAnalytics.firstInput(STATE.tacticalQuestions[STATE.tacticalIndex]?.id, props);
+});
 
 function startTacticalTimer() {
   clearInterval(STATE.tacticalInterval);
@@ -613,6 +676,13 @@ function submitTacticalResults() {
   });
 
   socket?.emit('submit_tactical_results', { gameId: STATE.gameId, correctCount });
+  STATE.tacticalQuestions.forEach((q, i) => {
+    const raw = STATE.tacticalAnswers[i];
+    const val = parseAnswerValue(raw);
+    battleAnswered(q, !isNaN(val) && Math.abs(val - q.answer) <= (q.tolerance ?? 0.01), { answered: raw != null && String(raw).trim() !== '' });
+  });
+  QBAnalytics.updateGame({ submitted: STATE.tacticalQuestions.length });
+  waitForOpponent();
 
   const app = document.getElementById('app');
   if (app) app.innerHTML = `
@@ -693,7 +763,7 @@ function renderCodeGame(q) {
         </div>
         <textarea id="code-editor" class="code-editor" spellcheck="false">${STATE.language === 'python' ? (q.pythonStarter || '') : (q.starter || '')}</textarea>
         <div id="test-output" class="test-output" style="display:none"></div>
-        <div class="editor-actions">
+        <div class="editor-actions" id="editor-actions">
           <button class="btn btn-outline" id="run-btn" onclick="runTests()" style="flex:1">▶ Run Tests</button>
           <button class="btn btn-primary" id="submit-btn" onclick="submitCode()" style="flex:2">Submit →</button>
         </div>
@@ -866,6 +936,9 @@ async function submitCode() {
 
   socket?.emit('submit_answer', { gameId: STATE.gameId, correct: allPassed, hintUsed: STATE.hintUsed, questionIndex: 0, isLast: true });
   STATE.myAnswerCorrect = allPassed;
+  battleAnswered(q, allPassed, { language: STATE.language });
+  QBAnalytics.updateGame({ submitted: 1 });
+  waitForOpponent();
 
   const feedback = document.getElementById('submit-feedback');
   if (feedback) feedback.innerHTML = allPassed
@@ -1002,6 +1075,9 @@ function submitNumeric() {
     isLast,
   });
   STATE.myAnswerCorrect = correct;
+  battleAnswered(q, correct, { hint_used: !!STATE.hintUsed });
+  QBAnalytics.updateGame({ submitted: STATE.questionIndex + 1 });
+  if (isLast) waitForOpponent();
 
   const feedback = document.getElementById('numeric-feedback');
   if (!STATE.multiQuestion || isLast) {
@@ -1027,6 +1103,7 @@ function nextQuestion() {
   STATE.numericCheckCorrect = false;
   const app = document.getElementById('app');
   if (app) app.innerHTML = renderGame();
+  presentBattleQuestion(STATE.question, STATE.questionIndex);
 }
 
 // ── TIMER ────────────────────────────────────────────────────────────────────
@@ -1127,14 +1204,17 @@ function renderResult() {
     <div class="result-actions">
       <button class="btn btn-primary btn-lg" onclick="rematch()">⚔️ Play Again</button>
       <button class="btn btn-outline btn-lg" onclick="backToSetup()">🔄 New Battle</button>
-      <a href="index.html" class="btn btn-ghost btn-lg">📖 Practice</a>
+      <a href="index.html" class="btn btn-ghost btn-lg" onclick="QBAnalytics.postGameAction('practice')">📖 Practice</a>
     </div>
   </div>`;
 }
 
 function rematch() {
+  QBAnalytics.postGameAction('rematch');
   STATE.myAnswerCorrect = null;
   STATE.phase = 'matchmaking';
+  STATE.queueStartedAt = Date.now();
+  QBAnalytics.startWait('matchmaking');
   render();
   if (socket?.connected) socket.emit('join_queue', { category: STATE.category, difficulty: STATE.difficulty });
   let remaining = BOT_FALLBACK_SECONDS;
@@ -1150,6 +1230,7 @@ function rematch() {
 }
 
 function backToSetup() {
+  QBAnalytics.postGameAction('new_battle');
   clearInterval(queueTimer);
   clearInterval(STATE.timerInterval);
   clearInterval(STATE.blitzInterval);
@@ -1174,7 +1255,7 @@ async function flagGameQuestion() {
         'Content-Type': 'application/json',
         ...(Auth.getToken() ? { Authorization: `Bearer ${Auth.getToken()}` } : {}),
       },
-      body: JSON.stringify({ questionId: STATE.question?.id, reason: 'Flagged during battle' }),
+      body: JSON.stringify({ questionId: STATE.question?.id, reason: 'Flagged during battle', context: 'battle', anonId: QBAnalytics.anonId() }),
     });
   } catch (_) {}
 }

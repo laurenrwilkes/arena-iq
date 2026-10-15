@@ -8,6 +8,15 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  // Consent Mode v2: ads always off; analytics opt-in for EEA/UK/CH, on elsewhere
+  // unless the visitor declined (choice stored by analytics.js).
+  (function () {
+    var c = null; try { c = localStorage.getItem('qb_consent'); } catch (e) {}
+    var base = { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' };
+    if (c) { base.analytics_storage = c; gtag('consent', 'default', base); return; }
+    gtag('consent', 'default', Object.assign({ analytics_storage: 'denied', region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'] }, base));
+    gtag('consent', 'default', Object.assign({ analytics_storage: 'granted' }, base));
+  })();
   gtag('js', new Date());
   gtag('config', 'G-3DF233421J');
 </script>
@@ -275,6 +284,7 @@ document.addEventListener('click', e => {
 <div id="app"></div>
 
 <script src="/socket.io/socket.io.js"></script>
+<script src="analytics.js"></script>
 <script src="auth.js"></script>
 <script src="storageUtils.js"></script>
 <script src="game.js"></script>

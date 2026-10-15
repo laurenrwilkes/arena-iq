@@ -8,6 +8,15 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  // Consent Mode v2: ads always off; analytics opt-in for EEA/UK/CH, on elsewhere
+  // unless the visitor declined (choice stored by analytics.js).
+  (function () {
+    var c = null; try { c = localStorage.getItem('qb_consent'); } catch (e) {}
+    var base = { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' };
+    if (c) { base.analytics_storage = c; gtag('consent', 'default', base); return; }
+    gtag('consent', 'default', Object.assign({ analytics_storage: 'denied', region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'] }, base));
+    gtag('consent', 'default', Object.assign({ analytics_storage: 'granted' }, base));
+  })();
   gtag('js', new Date());
   gtag('config', 'G-3DF233421J');
 </script>
@@ -540,6 +549,7 @@
   </div>
 </section>
 
+<script src="analytics.js"></script>
 <script src="auth.js"></script>
 <script src="storageUtils.js"></script>
 <script src="brainteaser.js"></script>
@@ -749,7 +759,8 @@ document.addEventListener('click', e => {
 
 async function loadQuestions() {
   try {
-    const res = await fetch('/api/questions');
+    const anonId = QBAnalytics.anonId();
+    const res = await fetch('/api/questions' + (anonId ? `?anon_id=${encodeURIComponent(anonId)}` : ''));
     allQuestions = await res.json();
   } catch {
     document.getElementById('problems-list').innerHTML =
@@ -860,7 +871,19 @@ function selectProblem(id) {
   panel.innerHTML = q.type === 'code' ? renderCodeDetail(q) : renderNumericDetail(q);
   panel.scrollTop = 0;
   trackEvent('questions_viewed', { question_id: q.id, category: currentCat, difficulty: q.diff });
+  QBAnalytics.presentQuestion(q.id, { game_session_id: PRACTICE_SESSION, game: 'practice', category: currentCat, difficulty: q.diff, affected: !!q.affected });
+  if (q.affected && q.experiment) QBAnalytics.exposure(q.experiment.id, q.experiment.variant);
 }
+
+// One id per practice page visit, so a visit's question events can be grouped.
+const PRACTICE_SESSION = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+function practiceAnswered(q, correct, extra) {
+  QBAnalytics.answerQuestion(q.id, Object.assign({ game_session_id: PRACTICE_SESSION, game: 'practice', difficulty: q.diff, correct: !!correct, affected: !!q.affected }, extra || {}));
+}
+document.addEventListener('input', (e) => {
+  const id = e.target && e.target.id;
+  if ((id === 'num-input' || id === 'practice-editor') && selectedId) QBAnalytics.firstInput(selectedId, { game_session_id: PRACTICE_SESSION });
+});
 
 function showEmpty() {
   document.getElementById('problem-detail-panel').innerHTML = `
@@ -1034,6 +1057,7 @@ function checkAnswer(qId) {
   if (isNaN(val)) { feedback.innerHTML = '<span style="color:var(--red)">Enter a number first.</span>'; return; }
   const correct = Math.abs(val - q.answer) <= (q.tolerance ?? 0.01);
   trackEvent('question_submitted', { question_id: q.id, difficulty: q.diff, correct });
+  practiceAnswered(q, correct);
   if (correct) {
     const earned = recordSolve(q.id, q.diff);
     feedback.innerHTML = '<span style="color:var(--green)">✅ Correct!</span>' +
@@ -1045,6 +1069,7 @@ function checkAnswer(qId) {
 }
 
 function revealSolution() {
+  if (selectedId) QBAnalytics.track('solution_revealed', { game_session_id: PRACTICE_SESSION, question_id: selectedId }, { ga: false });
   const box = document.getElementById('solution-box');
   if (box) { box.classList.add('show'); box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
 }
@@ -1162,6 +1187,7 @@ async function practiceSubmit(qId) {
     });
   }
 
+  practiceAnswered(q, allPassed, { language: currentLang });
   if (resultEl) {
     if (allPassed) {
       const earned = recordSolve(q.id, q.diff);
@@ -1200,7 +1226,7 @@ async function flagQuestion(qId) {
         'Content-Type': 'application/json',
         ...(Auth.getToken() ? { Authorization: `Bearer ${Auth.getToken()}` } : {}),
       },
-      body: JSON.stringify({ questionId: qId, reason: 'User flagged via practice page' }),
+      body: JSON.stringify({ questionId: qId, reason: 'User flagged via practice page', context: 'practice', anonId: QBAnalytics.anonId() }),
     });
   } catch (_) {}
 }

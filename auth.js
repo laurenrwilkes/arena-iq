@@ -2,11 +2,8 @@
 const API = window.location.origin;
 
 // ── ANALYTICS ────────────────────────────────────────────────────────────────
-// Shared GA4 event helper, loaded on every page. Swallows failures (blocked
-// analytics, missing gtag) so tracking never breaks the app.
-function trackEvent(name, params) {
-  try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (_) {}
-}
+// trackEvent() (GA4) and QBAnalytics come from analytics.js, loaded first on
+// every page.
 
 // "Returned Next Day" — fires once per page load if the visitor's last recorded
 // visit was on an earlier calendar day than today (retention signal).
@@ -282,7 +279,7 @@ async function submitRegister() {
   setAuthBtn('reg-btn', 'Creating account...', true);
   try {
     await Auth.register(username, email, password);
-    trackEvent('account_created');
+    QBAnalytics.track('account_created', {});
     document.getElementById('auth-modal')?.remove();
     if (window._authSuccessCallback) window._authSuccessCallback(Auth.getUser());
   } catch (e) {

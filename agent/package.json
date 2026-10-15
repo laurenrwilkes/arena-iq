@@ -1,0 +1,21 @@
+{
+  "name": "quantbattle-engagement-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Autonomous engagement experimentation agent for QuantBattle: GA4 ingestion, codebase inspection, metric discovery, hypotheses and A/B experiment analysis.",
+  "bin": {
+    "qb-agent": "bin/qb-agent.js"
+  },
+  "scripts": {
+    "run": "node bin/qb-agent.js run",
+    "demo": "node bin/qb-agent.js run --synthetic --no-llm",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.134.0",
+    "@google-analytics/data": "^7.3.0"
+  }
+}
