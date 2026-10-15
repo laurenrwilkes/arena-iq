@@ -76,6 +76,16 @@ const inactive = {
   qm67: { reason: 'duplicate', keep: 'qm66', note: 'Same "both pick the same option" setup with 5 options instead of 10' },
 };
 
-const tracks = {};
+// Off-trading quant questions (2026-10-15 audit): still in Practice, never in
+// quant battles. Descriptive-statistics items (qe37, qe38, qe57, qe62) and
+// qh73 await a decision and stay on trading for now.
+const CF = 'corporate_finance', SC = 'stochastic_calculus';
+const tracks = {
+  // Corporate finance: returns, interest, bonds, CAPM, Sharpe
+  qe3: CF, qe6: CF, qe34: CF, qe39: CF, qe44: CF, qe49: CF, qe52: CF, qe54: CF, qe64: CF,
+  qm5: CF, qm43: CF, qm46: CF, qm58: CF, qm62: CF, qh6: CF,
+  // Stochastic calculus: Brownian motion, GBM, Itô
+  qm60: SC, qh37: SC, qh38: SC, qh39: SC, qh41: SC, qh42: SC, qh50: SC, qh57: SC, qh59: SC, qh61: SC, qh63: SC,
+};
 
 module.exports = { titles, inactive, tracks };
