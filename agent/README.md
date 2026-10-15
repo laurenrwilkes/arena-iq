@@ -10,14 +10,54 @@ npm test          # 26 tests
 npm run demo      # offline dry run on SYNTHETIC data, no LLM -> data/synthetic/
 ```
 
-Real run:
+Real run: put settings in `agent/.env` (gitignored, loaded automatically):
 
 ```bash
-export GA4_PROPERTY_ID=123456789                       # GA4 Admin > Property details
-export GOOGLE_APPLICATION_CREDENTIALS=/path/sa.json    # service account with the Viewer role on the property
-export ANTHROPIC_API_KEY=...                           # optional; without it, use --no-llm
-node bin/qb-agent.js run            # or --no-ga4 for a code-only run
+GA4_PROPERTY_ID=123456789     # GA4 Admin > Property settings > Property details (digits only)
+ANTHROPIC_API_KEY=...         # optional; without it, use --no-llm
 ```
+
+then `npm run ga4:login` once (below) and `node bin/qb-agent.js run` (or `--no-ga4` for a code-only run).
+
+## GA4 login (OAuth, single user)
+
+The agent signs in to GA4 as you via OAuth with a Desktop OAuth client, asking only for `analytics.readonly`. No service account key is needed; `GOOGLE_APPLICATION_CREDENTIALS` is optional and wins if set.
+
+**1. Create the Desktop OAuth client** (Google Cloud Console, any project you can create resources in):
+
+1. **APIs & Services → Library** → enable **Google Analytics Data API**.
+2. **Google Auth Platform → Branding** (shown as "OAuth consent screen" in older consoles) → Get started. App name `QuantBattle agent`, your email as support and developer contact.
+3. **Audience**: choose **Internal** if the project belongs to a Google Workspace org and your account is in it (no test users needed). Otherwise choose **External**, leave it in **Testing**, and under **Test users** click **Add users** and add the Google account that can see the GA4 property.
+4. **Data access** → Add or remove scopes → add `https://www.googleapis.com/auth/analytics.readonly` → Save.
+5. **Clients → Create client** → Application type **Desktop app** → name it → Create → **Download JSON**.
+6. Move it out of Downloads to the default location:
+   ```bash
+   mkdir -p ~/.config/quantbattle && chmod 700 ~/.config/quantbattle
+   mv ~/Downloads/client_secret_*.json ~/.config/quantbattle/oauth-client.json
+   chmod 600 ~/.config/quantbattle/oauth-client.json
+   ```
+
+Your Google account also needs at least **Viewer** access on the GA4 property (GA4 Admin → Property access management).
+
+**2. Log in once:**
+
+```bash
+cd agent
+npm run ga4:login
+```
+
+This creates `agent/.venv`, installs `google-auth-oauthlib`, and opens your browser. Pick your account. For an External app in Testing, Google warns "Google hasn't verified this app": click **Continue** (it's your own client). Grant read-only Analytics access. The script saves your credentials to `~/.config/quantbattle/ga4-authorized-user.json` (mode 600). It refuses to write anywhere inside the repository.
+
+**3. Check it works:**
+
+```bash
+npm run test:ga4     # prints active users for the last 7 days
+```
+
+Notes:
+- External apps in **Testing** get refresh tokens that expire after **7 days**. When GA4 calls start failing with `invalid_grant`, run `npm run ga4:login` again. Internal apps don't have this limit.
+- To revoke access: https://myaccount.google.com/permissions, then delete the token file.
+- Paths can be overridden with `GA4_OAUTH_CLIENT_FILE` / `GA4_OAUTH_TOKEN_FILE` in `agent/.env`.
 
 This writes `data/report.md`, `data/dashboard.html`, appends to `data/history.jsonl`, and saves proposed experiments to `experiments/`.
 
