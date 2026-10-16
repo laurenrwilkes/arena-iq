@@ -10,6 +10,7 @@ const cors = require('cors');
 const path = require('path');
 const db = require('./db');
 const { getRandomQuestion, getRandomQuestions } = require('./questions');
+const { validateQuestionBank } = require('./validate-questions');
 const experiments = require('./experiments');
 const { buildSnapshot } = require('./experimentMetrics');
 const { Resend } = require('resend');
@@ -199,7 +200,7 @@ app.get('/api/questions', (req, res) => {
     if (!QUESTIONS[cat]) continue;
     result[cat] = {};
     for (const diff of ['beginner', 'easy', 'medium', 'hard']) {
-      result[cat][diff] = QUESTIONS[cat][diff] || [];
+      result[cat][diff] = (QUESTIONS[cat][diff] || []).filter(q => q.active);
     }
   }
   res.json(result);
@@ -471,6 +472,13 @@ function buildTacticalSet(category, difficulty) {
 
 const MULTI_Q_CATEGORIES = new Set(['quant', 'ib']);
 const QUESTIONS_PER_MATCH = 3;
+
+// Log (never crash on) question-bank problems such as a pool too small for a match.
+{
+  const { minimumsFrom } = require('./validate-questions');
+  const problems = validateQuestionBank({ minimums: minimumsFrom({ TACTICAL_COMPOSITION, QUESTIONS_PER_MATCH }) });
+  if (problems.length) console.error(`[questions] ${problems.length} problem(s):\n- ${problems.join('\n- ')}`);
+}
 
 function startGame(p1, p2, category, difficulty) {
   if (category === 'quant') return startQuantBattle(p1, p2, difficulty);

@@ -13042,14 +13042,15 @@ const QUESTIONS = {
       {
         id: 'qe67', type: 'numeric',
         title: 'Best of Three, Weaker Opponent Twice',
-        description: 'A player faces two opponents in a best-of-3 series, alternating between them, and must win 2 sets in a row to take the prize. Their chance of beating the weaker opponent on any set is <strong>0.8</strong>, and of beating the stronger opponent is <strong>0.4</strong>.\n\nIf the player faces the stronger opponent in the 1st and 3rd sets (and the weaker one in the middle set), what is their probability of winning the series?\n\nEnter to 3 decimal places.',
+        description: 'A player faces two opponents in a best-of-3 series, alternating between them, and must win 2 sets in a row to take the prize. Their chance of beating the weaker opponent on any set is <strong>0.8</strong>, and of beating the stronger opponent is <strong>0.4</strong>.\n\nThe player may choose the order: stronger–weaker–stronger, or weaker–stronger–weaker. Choosing the better order, what is their probability of winning the series?\n\nEnter to 3 decimal places.',
         unit: '',
         answer: 0.512,
         tolerance: 0.003,
         steps: [
-          { label: 'Must win the middle set no matter what', value: 'call this probability f = 0.8' },
-          { label: 'Then win at least one of the other two sets', value: 'against the stronger opponent (c = 0.4)' },
-          { label: 'P(win series) = c·f·(2−c)', value: '= 0.4 × 0.8 × 1.6 = 0.512' },
+          { label: 'Two in a row means the middle set must be won', value: 'P(win) = P(middle) × P(win at least one outer set)' },
+          { label: 'Stronger–weaker–stronger (f = 0.8 middle, c = 0.4 outer)', value: 'f·c·(2−c) = 0.8 × 0.4 × 1.6 = 0.512' },
+          { label: 'Weaker–stronger–weaker (c = 0.4 middle, f = 0.8 outer)', value: 'c·f·(2−f) = 0.4 × 0.8 × 1.2 = 0.384' },
+          { label: 'Better order: face the stronger opponent twice', value: '0.512' },
         ],
         explanation: 'Winning requires taking the middle set for sure, then at least one of the two outer sets. The formula cf(2−c) evaluates to 0.512 — better than facing the stronger opponent only once, because the extra matchup against the weaker player in the pivotal middle game matters more.',
       },
@@ -13938,7 +13939,7 @@ const QUESTIONS = {
         "id": "qm64",
         "type": "numeric",
         "title": "Conditional Variance (Poisson-Binomial)",
-        "description": "X|N ~ Binomial(N, 0.5) and N ~ Poisson(λ=<strong>6</strong>). What is <strong>Var(X)</strong>?\n\nHint: Use the law of total variance.",
+        "description": "X|N ~ Binomial(N, 0.5) and N ~ Poisson(λ=<strong>6</strong>). What is <strong>Var(X)</strong>?",
         "unit": "",
         "answer": 3,
         "tolerance": 0.01,
@@ -14812,7 +14813,7 @@ const QUESTIONS = {
         "id": "qh54",
         "type": "numeric",
         "title": "Stopping Time: E[W<sub>τ</sub>²]",
-        "description": "Standard BM W<sub>t</sub> is stopped at τ = inf{t : W<sub>t</sub> = 3 or W<sub>t</sub> = −2}. What is <strong>E[W<sub>τ</sub>²]</strong>?\n\nHint: W<sub>t</sub>² − t is a martingale.",
+        "description": "Standard BM W<sub>t</sub> is stopped at τ = inf{t : W<sub>t</sub> = 3 or W<sub>t</sub> = −2}. What is <strong>E[W<sub>τ</sub>²]</strong>?",
         "unit": "",
         "answer": 6,
         "tolerance": 0.01,
@@ -15169,13 +15170,15 @@ const QUESTIONS = {
       {
         id: 'qh72', type: 'numeric',
         title: 'Bold vs. Cautious Betting',
-        description: 'A gambler with $20 needs $40 at a table with 38 equally likely numbers, where 18 of them pay even money. Under <strong>bold play</strong> — betting the entire $20 on one spin — what\'s the probability of reaching $40?\n\nEnter as a decimal or fraction.',
+        description: 'A gambler with $20 needs $40 at a table with 38 equally likely numbers, where 18 of them pay even money. They can play <strong>boldly</strong> (stake the whole $20 on one even-money spin) or <strong>cautiously</strong> ($1 even-money bets until they reach $40 or go broke).\n\nChoosing the better strategy, what\'s the probability of reaching $40?\n\nEnter as a decimal or fraction.',
         unit: '',
         answer: 0.4737,
         tolerance: 0.002,
         steps: [
-          { label: 'P(winning a single even-money bet)', value: '18/38 = 9/19' },
-          { label: 'Bold play needs exactly one win', value: 'P(reach goal) = 9/19' },
+          { label: 'P(winning a single even-money bet)', value: '18/38 = 9/19, so every bet favours the house' },
+          { label: 'Cautious: $1 steps from $20 to $40 (r = q/p = 10/9)', value: '(1 − r²⁰) / (1 − r⁴⁰) ≈ 0.108' },
+          { label: 'Bold: a single spin', value: '9/19 ≈ 0.474' },
+          { label: 'Better strategy: bold play', value: '9/19 ≈ 0.4737' },
         ],
         explanation: 'Bold play\'s success probability is simply 18/38 ≈ 0.474, since one win doubles the stake immediately. Betting $1 at a time instead drops this to about 0.11 — under one-fourth as good — because it exposes far more bets to the house edge.',
       },
@@ -15605,14 +15608,38 @@ const QUESTIONS = {
   }
 };
 
+// ── EDITORIAL METADATA ───────────────────────────────────────────────────────
+// Display titles, active status and tracks come from question-meta.js, applied
+// once here. Original titles stay in this file and in ORIGINAL_TITLES (server
+// only, never sent to players).
+const META = require('./question-meta');
+const DEFAULT_TRACK = { quant: 'trading', tech: 'coding', ib: 'investment_banking' };
+const ORIGINAL_TITLES = {};
+for (const [cat, tiers] of Object.entries(QUESTIONS)) {
+  for (const list of Object.values(tiers)) {
+    for (const q of list) {
+      ORIGINAL_TITLES[q.id] = q.title;
+      if (META.titles[q.id]) q.title = META.titles[q.id].title;
+      q.track = META.tracks[q.id] || DEFAULT_TRACK[cat];
+      q.active = !META.inactive[q.id];
+    }
+  }
+}
+
+// Questions eligible for battles and /api/question: active, and for quant only
+// the trading track.
+function battlePool(category, difficulty) {
+  return (QUESTIONS[category]?.[difficulty] || []).filter(q => q.active && (category !== 'quant' || q.track === 'trading'));
+}
+
 function getRandomQuestion(category, difficulty) {
-  const pool = QUESTIONS[category]?.[difficulty];
-  if (!pool?.length) return null;
+  const pool = battlePool(category, difficulty);
+  if (!pool.length) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function getRandomQuestions(category, difficulty, n) {
-  const pool = (QUESTIONS[category]?.[difficulty] || []).slice();
+  const pool = battlePool(category, difficulty);
   const result = [];
   while (result.length < n && pool.length > 0) {
     const i = Math.floor(Math.random() * pool.length);
@@ -15621,4 +15648,4 @@ function getRandomQuestions(category, difficulty, n) {
   return result;
 }
 
-module.exports = { QUESTIONS, getRandomQuestion, getRandomQuestions };
+module.exports = { QUESTIONS, ORIGINAL_TITLES, battlePool, getRandomQuestion, getRandomQuestions };

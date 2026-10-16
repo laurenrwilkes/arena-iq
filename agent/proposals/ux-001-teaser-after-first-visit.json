@@ -1,0 +1,116 @@
+{
+  "status": "approved",
+  "createdAt": "2026-10-16T07:15:42.637Z",
+  "createdBy": "engagement agent",
+  "deployment": {
+    "status": "not_deployed"
+  },
+  "reviews": [
+    {
+      "decision": "approve",
+      "option": "ship",
+      "label": "Ship it",
+      "effect": "Reviewed deployment to everyone, then compare before and after",
+      "status": "approved",
+      "feedback": "also make the pujzzle only a 3 by 3",
+      "by": "reviewer",
+      "at": "2026-10-16T07:35:35.074Z"
+    }
+  ],
+  "outcomes": [],
+  "id": "ux-001-teaser-after-first-visit",
+  "type": "ux",
+  "title": "Skip the daily puzzle on a visitor's first visit",
+  "summary": "New visitors land on the practice page with the daily skyscraper puzzle covering it. This change shows the puzzle from their second visit instead. One change, in brainteaser.js.",
+  "decision": {
+    "issue": "Puzzle covers practice for first-time visitors",
+    "subject": "Homepage · daily brain teaser",
+    "context": "6 of 89 new visitors solved it and 11 skipped it; what the rest did isn't tracked. The change: show it from the second visit.",
+    "options": [
+      {
+        "id": "ship",
+        "label": "Ship it",
+        "outcome": "approve",
+        "effect": "Reviewed deployment to everyone, then compare before and after"
+      },
+      {
+        "id": "track-first",
+        "label": "Track closes first",
+        "outcome": "revise",
+        "needsFeedback": false,
+        "effect": "First record how people close the puzzle, then decide"
+      },
+      {
+        "id": "reject",
+        "label": "Don't ship",
+        "outcome": "reject",
+        "effect": "Keep the puzzle on every first visit"
+      },
+      {
+        "id": "other",
+        "label": "Other",
+        "outcome": "revise",
+        "effect": "Tell me what you want instead"
+      }
+    ]
+  },
+  "base": "main",
+  "branch": "proposal/ux-001-teaser-after-first-visit",
+  "affectedFlow": {
+    "path": "/",
+    "steps": [
+      "Open the homepage as a new visitor (the preview starts with empty storage).",
+      "Current: the puzzle covers the practice page until it is solved, skipped or closed.",
+      "Proposed: the practice page is usable straight away. Reload (a second visit) and the puzzle appears as before."
+    ]
+  },
+  "hypothesis": "For first-time visitors the puzzle overlay sits between landing and the practice questions. Showing it from the second visit may let more new visitors reach a practice question in their first session, without reducing puzzle play among returning visitors.",
+  "evidence": [
+    {
+      "kind": "measured",
+      "statement": "79 sessions from new visitors started on the homepage, where the puzzle overlay appears on the first visit of each day.",
+      "source": "GA4 property 546626239 · landing page × new/returning · last 28 days",
+      "asOf": "2026-10-15",
+      "n": 79
+    },
+    {
+      "kind": "measured",
+      "statement": "6 of 89 new visitors solved the puzzle and 11 used its 'Skip to Quant Questions' button.",
+      "source": "GA4 property 546626239 · brainteaser_played, brainteaser_skipped · last 28 days",
+      "asOf": "2026-10-15",
+      "n": 89
+    },
+    {
+      "kind": "measured",
+      "statement": "31 of 89 new visitors viewed at least one practice question; 14 submitted an answer.",
+      "source": "GA4 property 546626239 · questions_viewed, question_submitted · last 28 days",
+      "asOf": "2026-10-15",
+      "n": 89
+    },
+    {
+      "kind": "code",
+      "statement": "Closing the overlay with the × button, the Escape key or a click outside records no event, and brainteaser_played fires only on a correct solution. What the remaining ~60 new visitors did with the overlay is unknown.",
+      "note": "brainteaser.js: closeBrainteaser() sends nothing"
+    },
+    {
+      "kind": "speculative",
+      "statement": "Some new visitors may leave, or lose interest, when a puzzle appears before the content they came for. This has not been measured."
+    }
+  ],
+  "prediction": {
+    "metric": "first_visit_practice_rate",
+    "direction": "increase",
+    "expectedEffect": "A modest increase in the share of first-visit sessions that reach a practice question. No effect size is claimed: the data cannot separate overlay friction from visitors who would have left anyway.",
+    "uncertainty": "High. About 89 new visitors per 28 days; detecting a 5-point change in a ~35% rate would take many months in an A/B test, and the ~60 untracked overlay dismissals leave the baseline incomplete."
+  },
+  "successMetric": {
+    "id": "first_visit_practice_rate",
+    "definition": "Share of first-visit sessions (a new anon_id) with at least one question_presented event in the same session, from the server event store.",
+    "guardrails": [
+      "Puzzle plays per returning visitor",
+      "7-day return rate of new visitors",
+      "Client error rate"
+    ],
+    "measurementPlan": "At current traffic, prefer a reviewed rollout with a before/after comparison over 4+ weeks each, reported as observational, or an A/B test via the experiment registry once traffic allows. Tracking how the overlay is closed (×, Escape, outside click) first would complete the baseline."
+  }
+}

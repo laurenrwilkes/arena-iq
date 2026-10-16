@@ -65,6 +65,24 @@ This writes `data/report.md`, `data/dashboard.html`, appends to `data/history.js
 
 GA4 can only break events down by parameters registered as custom dimensions. `npm run ga4:register-dimensions` registers the 9 the agent uses (`game`, `difficulty`, `category`, `opponent_type`, `is_quant_battle`, `end_reason`, `reason`, `phase`, `action`). It needs the **Google Analytics Admin API** enabled in your Cloud project and Editor access on the property. It asks for edit access for that run only and never saves the token. Existing dimensions are skipped. Data appears for events received after registration.
 
+## Proposal review dashboard (local)
+
+```bash
+cd agent && node bin/qb-agent.js review      # http://localhost:4100
+```
+
+- **Question proposals** (`proposals/q-*.json`): the proposed question is injected into a local copy of the site. Play it in the real practice page, or in a battle at its tier (it is always in the tactical round). The answer and solution stay hidden until you reveal them. The page also shows the reasoning pattern, sources, the authenticity rationale and deterministic checks (answer vs worked solution, precision vs tolerance, title leaks, similarity to the bank, answer change).
+- **UX proposals** (`proposals/ux-*.json` + a `proposal/...` git branch with exactly one commit): switch between *Current* (the base branch) and *Proposed* in two local copies and click through the affected flow. "Reset as new visitor" clears that copy's storage. Evidence is labelled **Measured** (with source, date and n), **Code** or **Speculative**. The prediction is shown as a prediction, with its uncertainty.
+- **Isolation:** each preview is a git worktree under `agent/.previews/` running the real server on its own port with a throwaway database and no production keys. A preview-only harness, never committed, removes GA4 and Sentry. Nothing is pushed or deployed.
+- **Decisions** (approve / request revision / reject, with feedback) are saved on the proposal and in `data/history.jsonl`. Approval authorises a controlled test or a reviewed deployment, and does not change the site. Record what happens next:
+
+```bash
+node bin/qb-agent.js proposal deployed <id> deployed --by "Lauren" --ref <commit>
+node bin/qb-agent.js proposal outcome <id> --metric first_visit_practice_rate --value 0.41 --source "event store, 4 weeks"
+```
+
+Previews need a Node version that can load `server/node_modules/better-sqlite3`; if the system Node can't, Node 22 is installed once into `agent/.tools/`. To remove previews: delete `agent/.previews/` and run `git worktree prune`.
+
 ## Experiment lifecycle
 
 ```bash

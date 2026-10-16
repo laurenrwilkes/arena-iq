@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { DATA_DIR } = require('../config');
 
-const TYPES = ['observation', 'metric_proposal', 'hypothesis', 'code_change', 'assignment', 'result', 'decision', 'follow_up', 'approval'];
+const TYPES = ['observation', 'metric_proposal', 'hypothesis', 'code_change', 'assignment', 'result', 'decision', 'follow_up', 'approval', 'proposal', 'deployment', 'outcome'];
 
 function historyFile(dir = DATA_DIR) {
   return path.join(dir, 'history.jsonl');

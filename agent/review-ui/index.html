@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proposal Review</title>
+<style>
+:root { --bg:#0b1220; --panel:#111a2e; --card:#182338; --card2:#1e2c47; --border:rgba(255,255,255,.09); --t1:#f8fafc; --t2:#94a3b8; --t3:#64748b;
+  --accent:#8b5cf6; --accent-l:#c4b5fd; --gold:#f59e0b; --green:#10b981; --red:#ef4444; --cyan:#06b6d4; --r:10px; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--t1); font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+a { color:var(--accent-l); }
+.layout { display:grid; grid-template-columns:300px 1fr; min-height:100vh; }
+aside { background:var(--panel); border-right:1px solid var(--border); padding:16px; position:sticky; top:0; height:100vh; overflow:auto; }
+aside h1 { font-size:15px; margin:0 0 2px; } aside .sub { color:var(--t3); font-size:12px; margin-bottom:14px; }
+.group { color:var(--t3); font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin:14px 0 6px; }
+.item { display:block; width:100%; text-align:left; background:none; border:1px solid transparent; color:var(--t1); padding:8px 10px; border-radius:8px; cursor:pointer; font:inherit; }
+.item:hover { background:var(--card); } .item.active { background:var(--card2); border-color:var(--border); }
+.item .t { display:block; font-weight:600; font-size:13px; } .item .m { display:block; color:var(--t3); font-size:11px; margin-top:2px; }
+main { padding:24px 28px 80px; max-width:1200px; min-width:0; }
+h2 { font-size:20px; margin:0 0 4px; } h3 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--t2); margin:26px 0 10px; }
+.muted { color:var(--t2); } .small { font-size:12px; }
+.pill { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:999px; border:1px solid var(--border); color:var(--t2); white-space:nowrap; }
+.s-in_review { color:var(--gold); border-color:rgba(245,158,11,.4); } .s-approved { color:var(--green); border-color:rgba(16,185,129,.4); }
+.s-rejected { color:var(--red); border-color:rgba(239,68,68,.4); } .s-revision_requested { color:var(--cyan); border-color:rgba(6,182,212,.4); }
+.card { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.frame-wrap { border:1px solid var(--border); border-radius:var(--r); overflow:hidden; background:#000; }
+.frame-bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:8px 10px; background:var(--card); border-bottom:1px solid var(--border); }
+iframe { width:100%; height:720px; border:0; display:block; background:var(--bg); }
+.seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.seg button { background:none; border:0; color:var(--t2); padding:6px 12px; cursor:pointer; font:inherit; }
+.seg button.on { background:var(--accent); color:#fff; }
+.btn { background:var(--card2); color:var(--t1); border:1px solid var(--border); border-radius:8px; padding:7px 12px; cursor:pointer; font:inherit; }
+.btn:hover { border-color:var(--accent); } .btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn[disabled] { opacity:.5; cursor:not-allowed; }
+table { width:100%; border-collapse:collapse; } td, th { text-align:left; padding:7px 8px; border-bottom:1px solid var(--border); vertical-align:top; font-size:13px; } th { color:var(--t2); font-weight:600; }
+.st { font-weight:700; font-size:11px; text-transform:uppercase; } .st-pass { color:var(--green); } .st-fail { color:var(--red); } .st-warn { color:var(--gold); } .st-info { color:var(--cyan); }
+.ev { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); } .ev:last-child { border-bottom:0; }
+.k { flex:none; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 7px; border-radius:5px; height:fit-content; }
+.k-measured { background:rgba(16,185,129,.15); color:var(--green); } .k-code { background:rgba(139,92,246,.18); color:var(--accent-l); } .k-speculative { background:rgba(245,158,11,.15); color:var(--gold); }
+.callout { border-left:3px solid var(--gold); background:rgba(245,158,11,.07); padding:10px 14px; border-radius:0 8px 8px 0; }
+.callout.pred { border-color:var(--cyan); background:rgba(6,182,212,.07); }
+pre.diff { margin:0; max-height:420px; overflow:auto; font:12px/1.5 ui-monospace,Menlo,monospace; background:#070d18; padding:12px; border-radius:8px; }
+.dl-add { color:#6ee7b7; } .dl-del { color:#fca5a5; } .dl-hunk { color:var(--cyan); }
+.qtext { background:var(--card2); border-radius:8px; padding:10px 12px; white-space:pre-wrap; }
+.hidden { display:none; }
+textarea, input[type=text] { width:100%; background:#0f172a; color:var(--t1); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font:inherit; }
+.decide label { margin-right:16px; cursor:pointer; }
+.timeline .row { display:grid; grid-template-columns:150px 110px 1fr; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.empty { color:var(--t3); padding:40px 0; }
+.top { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:8px; }
+.top .subject { color:var(--t3); font-size:12px; }
+.top .issue { font-size:22px; font-weight:700; margin:2px 0 4px; }
+.top .context { color:var(--t2); margin:0 0 14px; max-width:820px; }
+.opts { display:flex; gap:10px; flex-wrap:wrap; }
+.opt { flex:1 1 170px; text-align:left; background:var(--card2); border:1.5px solid var(--border); color:var(--t1); border-radius:10px; padding:10px 12px; cursor:pointer; font:inherit; }
+.opt:hover { border-color:var(--accent); } .opt.on { border-color:var(--accent); background:rgba(139,92,246,.18); }
+.opt b { display:block; font-size:15px; } .opt span { display:block; color:var(--t2); font-size:12px; margin-top:2px; }
+.toprow { display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+.decided { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.decided .chosen { font-size:16px; font-weight:700; }
+details.more > summary { cursor:pointer; color:var(--t2); margin:18px 0 0; font-size:13px; }
+.err { color:var(--red); white-space:pre-wrap; }
+@media (max-width:900px) { .layout { grid-template-columns:1fr; } aside { position:static; height:auto; } .grid2 { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <h1>Proposal review</h1>
+    <div class="sub">Local only · previews never touch production</div>
+    <div id="list"></div>
+  </aside>
+  <main id="main"><div class="empty">Select a proposal.</div></main>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+// Question text uses a few formatting tags; allow only those.
+const rich = s => esc(s).replace(/&lt;(\/?)(strong|em|sub|sup|code|br)&gt;/g, '<$1$2>').replace(/\n/g, '<br>');
+let session = {}, current = null, previewInfo = null, uxVersion = 'proposed';
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+
+async function loadList(selectId) {
+  const items = await api('/api/proposals');
+  const groups = { question: 'Question quality', ux: 'UX improvements' };
+  $('#list').innerHTML = Object.entries(groups).map(([type, label]) => {
+    const rows = items.filter(p => p.type === type);
+    return `<div class="group">${label}</div>` + (rows.length ? rows.map(p => `
+      <button class="item ${p.id === selectId ? 'active' : ''}" data-id="${esc(p.id)}">
+        <span class="t">${esc(p.issue || p.title)}</span>
+        <span class="m">${esc(p.subject || p.id)}</span>
+        <span class="m">${p.decided ? `<span class="pill s-${esc(p.status)}">${esc(p.decided)}</span>` : '<span class="pill s-in_review">needs decision</span>'}</span>
+      </button>`).join('') : '<div class="muted small">None</div>');
+  }).join('');
+  document.querySelectorAll('.item').forEach(b => b.onclick = () => open(b.dataset.id));
+}
+
+async function open(id) {
+  history.replaceState(null, '', '#' + id);
+  await loadList(id);
+  $('#main').innerHTML = '<div class="empty">Loading…</div>';
+  current = await api('/api/proposals/' + encodeURIComponent(id));
+  previewInfo = null;
+  render();
+  try {
+    previewInfo = await api('/api/proposals/' + encodeURIComponent(id) + '/preview', { method: 'POST' });
+    renderPreview();
+  } catch (e) {
+    $('#preview').innerHTML = `<div class="card err">Preview failed to start:\n${esc(e.message)}</div>`;
+  }
+}
+
+function header(p) {
+  return `<h2 style="font-size:16px">${esc(p.title)}</h2>
+    <div class="muted"><span class="pill s-${esc(p.status)}">${esc(p.status.replace('_', ' '))}</span>
+    · ${esc(p.id)} · deployment: <b>${esc(p.deployment?.status || 'not_deployed')}</b> · proposed ${esc((p.createdAt || '').slice(0, 10))} by ${esc(p.createdBy || 'agent')}</div>
+    <p>${esc(p.summary)}</p>`;
+}
+
+function render() {
+  const { proposal: p } = current;
+  $('#main').innerHTML = renderDecision() + '<h3>Details</h3>' + header(p) + (p.type === 'question' ? renderQuestion() : renderUx()) + renderHistory();
+  bindDecision();
+}
+
+// ── Question proposals ───────────────────────────────────────────────────────
+function renderQuestion() {
+  const { proposal: p, evaluation: ev } = current;
+  const q = p.question;
+  return `
+  <h3>Play it</h3>
+  <div id="preview"><div class="card muted">Starting an isolated preview of the site… (first start can take ~10 s)</div></div>
+  <h3>Solution <button class="btn" id="reveal" style="margin-left:8px">Reveal answer &amp; solution</button></h3>
+  <div id="solution" class="card hidden">
+    <p><b>Answer:</b> ${esc(q.answer)} ${esc(q.unit || '')} <span class="muted">(accepted within ±${esc(q.tolerance)})</span></p>
+    <table>${q.steps.map(s => `<tr><td class="muted" style="width:45%">${rich(s.label)}</td><td>${rich(s.value)}</td></tr>`).join('')}</table>
+    ${q.explanation ? `<p class="muted">${rich(q.explanation)}</p>` : ''}
+    ${p.verification ? `<p class="small muted"><b>Verified by:</b> ${esc(p.verification)}</p>` : ''}
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card"><h3 style="margin-top:0">Reasoning pattern</h3><p>${esc(p.reasoningPattern)}</p>
+      <h3>Sources &amp; inspiration</h3>${(p.sources || []).length ? `<ul>${p.sources.map(s => `<li>${esc(s.citation)}${s.note ? ` <span class="muted">— ${esc(s.note)}</span>` : ''}</li>`).join('')}</ul>` : '<p class="muted">None recorded.</p>'}
+    </div>
+    <div class="card"><h3 style="margin-top:0">Authenticity</h3>
+      <p><b>Interview likeness:</b> ${esc(p.authenticity.likeness ?? '–')} / 5</p><p>${esc(p.authenticity.rationale)}</p>
+      ${(p.authenticity.textbookMarkers || []).length ? `<p class="muted small">Textbook markers: ${p.authenticity.textbookMarkers.map(esc).join(', ')}</p>` : ''}
+    </div>
+  </div>
+  <h3>Evaluation</h3>
+  <div class="card"><table><tr><th>Check</th><th>Result</th><th>Detail</th></tr>
+    ${ev.checks.map(c => `<tr><td>${esc(c.label)}</td><td class="st st-${esc(c.status)}">${esc(c.status)}</td><td class="muted">${esc(c.detail)}</td></tr>`).join('')}
+  </table></div>
+  ${ev.current ? `<h3>Compared with the live question (${esc(ev.current.id)})</h3>
+  <div class="grid2"><div class="card"><div class="small muted">Live now · "${esc(ev.current.title)}"</div><div class="qtext">${rich(ev.current.description)}</div><p class="small muted">Answer ${esc(ev.current.answer)}</p></div>
+  <div class="card"><div class="small muted">Proposed · "${esc(q.title)}"</div><div class="qtext">${rich(q.description)}</div><p class="small muted">Answer hidden until revealed above</p></div></div>` : ''}`;
+}
+
+// ── UX proposals ─────────────────────────────────────────────────────────────
+function renderUx() {
+  const { proposal: p, branch: b } = current;
+  const kindLabel = { measured: 'Measured', code: 'Code', speculative: 'Speculative' };
+  return `
+  <h3>Try it</h3>
+  <div id="preview"><div class="card muted">Starting isolated previews of the current site and of the proposed change… (first start can take ~15 s)</div></div>
+  <h3>Hypothesis</h3><div class="card">${esc(p.hypothesis)}</div>
+  <h3>Evidence</h3><div class="card">${p.evidence.map(e => `<div class="ev"><span class="k k-${esc(e.kind)}">${kindLabel[e.kind]}</span><div>${esc(e.statement)}
+      ${e.kind === 'measured' ? `<div class="small muted">${esc(e.source)} · as of ${esc(e.asOf)}${e.n != null ? ` · n = ${esc(e.n)}` : ''}</div>` : ''}${e.note ? `<div class="small muted">${esc(e.note)}</div>` : ''}</div></div>`).join('')}</div>
+  <h3>Prediction</h3>
+  <div class="callout pred"><b>Prediction, not a measured result.</b> ${esc(p.prediction.expectedEffect)}<div class="small" style="margin-top:6px"><b>Uncertainty:</b> ${esc(p.prediction.uncertainty)}</div></div>
+  <h3>Success metric</h3>
+  <div class="card"><p><b>${esc(p.successMetric.id || '')}</b> — ${esc(p.successMetric.definition)}</p>
+    ${(p.successMetric.guardrails || []).length ? `<p class="muted small">Guardrails: ${p.successMetric.guardrails.map(esc).join(' · ')}</p>` : ''}
+    ${p.successMetric.measurementPlan ? `<p class="muted small">${esc(p.successMetric.measurementPlan)}</p>` : ''}</div>
+  <h3>Code change</h3>
+  <div class="card">${b.ok ? `<p class="small">${b.singleChange ? '<span class="st st-pass">exactly one change</span>' : `<span class="st st-fail">${b.commits.length} commits — should be exactly one</span>`}
+      · branch <code>${esc(p.branch)}</code> on <code>${esc(p.base)}</code> (merge-base ${esc(b.mergeBase)})</p>
+      <pre class="diff">${diffHtml(b.diff)}</pre>` : `<p class="err">${esc(b.error)}</p>`}</div>`;
+}
+
+function diffHtml(d) {
+  return esc(d).split('\n').map(l => l.startsWith('+') && !l.startsWith('+++') ? `<span class="dl-add">${l}</span>` : l.startsWith('-') && !l.startsWith('---') ? `<span class="dl-del">${l}</span>` : l.startsWith('@@') ? `<span class="dl-hunk">${l}</span>` : l).join('\n');
+}
+
+function renderPreview() {
+  const p = current.proposal, el = $('#preview');
+  if (!el || !previewInfo) return;
+  if (p.type === 'question') {
+    el.innerHTML = `<div class="frame-wrap"><div class="frame-bar">
+      <span class="seg"><button class="on" data-v="practice">Practice view</button><button data-v="battle">Battle view</button></span>
+      <span class="small muted" id="frame-hint">The proposed question is open in the real practice page. Solve it before revealing the solution.</span>
+      <span style="flex:1"></span><a class="small" id="newtab" target="_blank" rel="noopener" href="${esc(previewInfo.practice)}">Open in new tab</a></div>
+      <iframe id="frame" src="${esc(previewInfo.practice)}"></iframe></div>
+      <div class="small muted" style="margin-top:6px">Isolated local copy of <code>${esc(previewInfo.base)}</code> @ ${esc(previewInfo.sha)} with only this question injected; GA4 and Sentry are disabled.</div>`;
+    el.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
+      el.querySelectorAll('.seg button').forEach(x => x.classList.toggle('on', x === b));
+      const battle = b.dataset.v === 'battle';
+      $('#frame').src = battle ? previewInfo.battle : previewInfo.practice;
+      $('#newtab').href = $('#frame').src;
+      $('#frame-hint').textContent = battle
+        ? `Choose Quant Finance · ${p.tier}: the proposed question is always in the tactical round (after the 60-second blitz).`
+        : 'The proposed question is open in the real practice page. Solve it before revealing the solution.';
+    });
+  } else {
+    const steps = p.affectedFlow.steps || [];
+    el.innerHTML = `<div class="frame-wrap"><div class="frame-bar">
+      <span class="seg"><button data-v="current">Current</button><button data-v="proposed">Proposed</button></span>
+      <button class="btn" id="fresh" title="Clears this preview's local storage, like a brand-new visitor">Reset as new visitor</button>
+      <span style="flex:1"></span><a class="small" id="newtab" target="_blank" rel="noopener">Open in new tab</a></div>
+      <iframe id="frame"></iframe></div>
+      ${steps.length ? `<div class="card" style="margin-top:8px"><b class="small">Affected flow</b><ol class="small" style="margin:6px 0 0">${steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol></div>` : ''}
+      <div class="small muted" style="margin-top:6px">Current = <code>${esc(p.base)}</code> @ ${esc(previewInfo.currentSha)} · Proposed = <code>${esc(p.branch)}</code> @ ${esc(previewInfo.proposedSha)}. Local copies with GA4 and Sentry disabled.</div>`;
+    const go = (fresh) => {
+      const base = uxVersion === 'current' ? previewInfo.current : previewInfo.proposed;
+      const src = base + previewInfo.path + (fresh ? (previewInfo.path.includes('?') ? '&' : '?') + 'resetStorage=1' : '');
+      $('#frame').src = src; $('#newtab').href = base + previewInfo.path;
+      el.querySelectorAll('.seg button').forEach(x => x.classList.toggle('on', x.dataset.v === uxVersion));
+    };
+    el.querySelectorAll('.seg button').forEach(b => b.onclick = () => { uxVersion = b.dataset.v; go(false); });
+    $('#fresh').onclick = () => go(true);
+    go(true);
+  }
+}
+
+// ── Decision & history ───────────────────────────────────────────────────────
+function renderDecision() {
+  const p = current.proposal, d = p.decision;
+  const last = (p.reviews || []).at(-1);
+  const opts = d.options.map(o => `<button class="opt" data-id="${esc(o.id)}"><b>${esc(o.label)}</b>${o.effect ? `<span>${esc(o.effect)}</span>` : ''}</button>`).join('');
+  const form = `<div class="opts">${opts}</div>
+    <div class="toprow">
+      <input type="text" id="fb" style="flex:1 1 320px" placeholder="Note (optional; required for Other)">
+      <input type="text" id="by" style="max-width:170px" value="${esc(localStorage.getItem('qb_reviewer') || (session.reviewer !== 'reviewer' ? session.reviewer : ''))}" placeholder="Your name">
+      <button class="btn primary" id="submit" disabled>Record decision</button>
+      <span class="small muted" id="dmsg"></span>
+    </div>`;
+  const decided = last ? `<div class="decided" id="decided">
+      <span class="pill s-${esc(last.status)}">${esc(last.status.replace('_', ' '))}</span>
+      <span class="chosen">${esc(last.label || last.decision)}</span>
+      <span class="muted small">by ${esc(last.by)} · ${esc(last.at.slice(0, 16).replace('T', ' '))}${last.feedback ? ` — “${esc(last.feedback)}”` : ''}</span>
+      <button class="btn" id="change">Change decision</button></div>
+      <div id="form" class="hidden" style="margin-top:12px">${form}</div>` : `<div id="form">${form}</div>`;
+  return `<section class="top">
+    <div class="subject">${esc(d.subject || p.id)}</div>
+    <div class="issue">${esc(d.issue)}</div>
+    ${d.context ? `<p class="context">${esc(d.context)}</p>` : ''}
+    ${decided}
+    <p class="small muted" style="margin:10px 0 0">Recording a decision never changes the live site; it authorises a reviewed change or a controlled test.</p>
+  </section>`;
+}
+
+function bindDecision() {
+  const p = current.proposal;
+  const r = $('#reveal'); if (r) r.onclick = () => { $('#solution').classList.toggle('hidden'); r.textContent = $('#solution').classList.contains('hidden') ? 'Reveal answer & solution' : 'Hide solution'; };
+  const ch = $('#change'); if (ch) ch.onclick = () => { $('#form').classList.remove('hidden'); ch.remove(); };
+  let chosen = null;
+  document.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    chosen = p.decision.options.find(o => o.id === b.dataset.id);
+    document.querySelectorAll('.opt').forEach(x => x.classList.toggle('on', x === b));
+    const needsNote = chosen.outcome === 'revise' && chosen.needsFeedback !== false;
+    $('#fb').placeholder = needsNote ? `What do you want instead? (required)` : 'Note (optional)';
+    if (needsNote) $('#fb').focus();
+    $('#submit').disabled = false; $('#dmsg').textContent = '';
+  });
+  $('#submit').onclick = async () => {
+    if (!chosen) return;
+    const by = $('#by').value.trim();
+    if (!by) { $('#dmsg').textContent = 'Add your name.'; $('#by').focus(); return; }
+    try { localStorage.setItem('qb_reviewer', by); } catch (_) {}
+    $('#submit').disabled = true;
+    try {
+      const keep = $('#preview') ? $('#preview').innerHTML : '';
+      current = await api('/api/proposals/' + encodeURIComponent(p.id) + '/decision', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ option: chosen.id, feedback: $('#fb').value, by }) });
+      render(); if (keep) { $('#preview').innerHTML = keep; renderPreview(); }
+      loadList(p.id);
+    } catch (e) { $('#dmsg').textContent = e.message; $('#submit').disabled = false; }
+  };
+}
+
+function renderHistory() {
+  const p = current.proposal;
+  const rows = current.history.slice().reverse().map(h => {
+    const d = h.data || {};
+    const text = h.type === 'decision' ? `${d.label || d.decision} by ${d.by}${d.feedback ? ` — ${d.feedback}` : ''}` :
+      h.type === 'deployment' ? `${d.status}${d.ref ? ` (${d.ref})` : ''}${d.note ? ` — ${d.note}` : ''}` :
+      h.type === 'outcome' ? `${d.metric}: ${d.value}${d.note ? ` — ${d.note}` : ''}` :
+      h.type === 'proposal' ? (d.note || 'proposed') : JSON.stringify(d).slice(0, 160);
+    return `<div class="row"><span class="muted">${esc(h.ts.slice(0, 16).replace('T', ' '))}</span><span class="pill">${esc(h.type)}</span><span>${esc(text)}</span></div>`;
+  }).join('');
+  const outcomes = (p.outcomes || []).length ? `<p class="small">Measured outcomes: ${p.outcomes.map(o => `${esc(o.metric)} = ${esc(o.value)}`).join(' · ')}</p>` : '<p class="small muted">No measured outcomes yet. They are recorded after a controlled test or deployment.</p>';
+  return `<h3>History</h3><div class="card timeline">${outcomes}${rows || '<div class="muted small">No history yet.</div>'}</div>`;
+}
+
+(async () => {
+  session = await api('/api/session');
+  const id = location.hash.slice(1);
+  await loadList(id);
+  if (id) open(id);
+})();
+</script>
+</body>
+</html>
