@@ -1,12 +1,12 @@
 {
   "id": "ux-002-puzzle-3x3",
   "type": "ux",
-  "title": "Make the daily puzzle a 3×3 grid",
-  "summary": "Requested by Lauren in her ux-001 review (\"also make the puzzle only a 3 by 3\"). The daily skyscraper puzzle shrinks from 4×4 to 3×3. One change, in brainteaser.js.",
+  "title": "Make the daily puzzle a 3×3 city with visible buildings",
+  "summary": "Requested by Lauren in her ux-001 review, then revised after her preview: the play area is a clearly bordered 3×3 board, and every height she types draws a building, with a worked example and per-side sightlines to explain the edge numbers. One commit, in brainteaser.js.",
   "decision": {
-    "issue": "Shrink the daily puzzle to 3×3",
+    "issue": "3×3 puzzle with visible buildings",
     "subject": "Homepage · daily brain teaser",
-    "context": "Your request from the ux-001 review. A 3×3 grid is quicker but much easier: there are only 12 possible 3×3 grids, so most players will solve it in seconds.",
+    "context": "Revised from your feedback: the board is now clearly 3×3 (edge numbers sit outside it), typed heights appear as buildings, and tapping an edge number lights up what you can see from that side. Still easy: only 12 possible 3×3 grids.",
     "options": [
       {
         "id": "ship",
@@ -36,9 +36,9 @@
   "affectedFlow": {
     "path": "/",
     "steps": [
-      "Open the homepage (the preview starts as a new visitor, so the puzzle appears; ux-001 is not in these previews).",
-      "Current: a 4×4 grid, numbers 1–4.",
-      "Proposed: a 3×3 grid, numbers 1–3. Try solving it and check the instructions read correctly."
+      "Open the homepage (the preview starts as a new visitor, so the puzzle appears).",
+      "Current: a 4×4 grid of number boxes, with the edge numbers in matching boxes.",
+      "Proposed: a bordered 3×3 board. Type heights 1–3 and watch the buildings appear; tap an edge number to see which buildings are visible from that side; a full row or column turns its edge numbers green or red."
     ]
   },
   "hypothesis": "A smaller grid takes less time, so more of the visitors who see the puzzle will finish it rather than skip or close it.",
@@ -52,11 +52,15 @@
     },
     {
       "kind": "code",
-      "statement": "The generator already works for any size; only the two instruction lines hard-coded \"1–4\". All 200 test puzzles generated at 3×3 were valid."
+      "statement": "The generator already works for any size; only two instruction lines hard-coded 1–4. All 200 test puzzles generated at 3×3 were valid. The new board, buildings, sightlines and clue colours were checked in a simulated browser, and a full correct solution is still accepted."
     },
     {
       "kind": "speculative",
       "statement": "A 3×3 puzzle may feel too easy to be satisfying, which could lower repeat interest. Not measured."
+    },
+    {
+      "kind": "speculative",
+      "statement": "Seeing the buildings may make the edge numbers easier to understand for first-time players, so more of them try the puzzle instead of skipping. Not measured."
     }
   ],
   "prediction": {
