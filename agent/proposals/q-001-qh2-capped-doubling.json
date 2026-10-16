@@ -1,0 +1,66 @@
+{
+  "status": "in_review",
+  "createdAt": "2026-10-16T07:15:42.637Z",
+  "createdBy": "engagement agent",
+  "deployment": {
+    "status": "not_deployed"
+  },
+  "reviews": [],
+  "outcomes": [],
+  "id": "q-001-qh2-capped-doubling",
+  "type": "question",
+  "title": "Fix qh2: state what happens at the 20-roll cap",
+  "summary": "qh2 is ill-posed: its text calls the value infinite, then caps the game at 20 rolls without saying what is paid if no 6 appears. The stored answer ($13,675) silently drops the 2.6% of games with no 6. This rewrite states the cap and pays $2^20 in that case.",
+  "base": "main",
+  "replaces": "qh2",
+  "tier": "hard",
+  "question": {
+    "type": "numeric",
+    "title": "Doubling Until a Six, Capped",
+    "description": "You roll a fair die until a <strong>6</strong> appears, but the game stops after at most <strong>20 rolls</strong>.\n\nIf the first 6 comes on roll n, you're paid <strong>$2ⁿ</strong>. If no 6 appears in 20 rolls, you're paid <strong>$2²⁰</strong>.\n\nWhat is your expected payout? Round to the nearest dollar.",
+    "unit": "$",
+    "answer": 41026,
+    "tolerance": 1,
+    "steps": [
+      {
+        "label": "P(first 6 on roll n), n ≤ 20",
+        "value": "(5/6)ⁿ⁻¹ × (1/6)"
+      },
+      {
+        "label": "Payouts from rolls 1–20",
+        "value": "Σ (1/3)(5/3)ⁿ⁻¹ = ((5/3)²⁰ − 1)/2 ≈ $13,675"
+      },
+      {
+        "label": "No 6 in 20 rolls",
+        "value": "(5/6)²⁰ × 2²⁰ = (5/3)²⁰ ≈ $27,351"
+      },
+      {
+        "label": "Expected payout",
+        "value": "≈ $13,675 + $27,351 = $41,026"
+      }
+    ],
+    "explanation": "Each extra roll doubles the payout but happens with probability 5/6, so the terms grow by 5/3 per roll: without a cap the expected value is infinite. With the cap, two-thirds of the value ($27,351) comes from the 2.6% of games that never see a 6, so the expectation is dominated by rare outcomes."
+  },
+  "reasoningPattern": "Expected value of a truncated game: a geometric series plus the tail case.",
+  "sources": [
+    {
+      "citation": "Existing question qh2",
+      "note": "Same game and cap; the no-6 case is now stated"
+    },
+    {
+      "citation": "St. Petersburg paradox (Daniel Bernoulli, 1738)",
+      "note": "General idea of a doubling payout with infinite expectation; wording and numbers here are original"
+    }
+  ],
+  "authenticity": {
+    "likeness": 3,
+    "rationale": "Doubling payouts and infinite expectations are a common interview theme, but asking for a figure to the dollar turns it into a calculation. An interviewer would more likely ask whether you would pay to play and why rare outcomes dominate; this version keeps the bank's numeric format.",
+    "textbookMarkers": [
+      "calculator precision"
+    ]
+  },
+  "verification": "Closed form (3·(5/3)²⁰ − 1)/2 = 41,026.17, computed in Node.",
+  "openQuestions": [
+    "The answer changes from 13,675 to 41,026. Approve the rewrite, or would you rather mark qh2 inactive?"
+  ]
+}

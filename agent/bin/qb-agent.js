@@ -6,6 +6,10 @@
 //   qb-agent approve <EXP-id> --by "<name>" [--attest review:code,...]   human approval (binds to spec hash)
 //   qb-agent start <EXP-id>                   mark approved experiment as running (live on next deploy)
 //   qb-agent analyze <EXP-id> --server <url> | --snapshot f   evaluate results (server needs QB_ADMIN_KEY)
+//   qb-agent review [--port 4100]             local proposal review dashboard + isolated previews
+//   qb-agent proposal list
+//   qb-agent proposal deployed <id> <controlled_test|deployed|rolled_back> --by "<name>" [--ref <sha>] [--note "..."]
+//   qb-agent proposal outcome <id> --metric <name> --value <v> [--source "..."] [--note "..."]
 //   qb-agent conclude <EXP-id> <keep|revert|inconclusive|shipped> --by "<name>" [--note "..."]
 //     (shipped = rolled out to everyone without an A/B test)
 const fs = require('fs');
@@ -81,8 +85,26 @@ async function main() {
       console.log(`${exp.id} concluded: ${decision}.`);
       break;
     }
+    case 'review': {
+      require('../src/review/server').serve({ port: Number(opt('port') || 4100) });
+      return;
+    }
+    case 'proposal': {
+      const P = require('../src/review/proposals');
+      const [, sub, id, state] = args;
+      if (sub === 'list') {
+        for (const p of P.list()) console.log(`${p.id}\t${p.type}\t${p.status}\t${p.deployment?.status || 'not_deployed'}\t${p.title}`);
+      } else if (sub === 'deployed') {
+        const p = P.recordDeployment(id, { status: state, by: opt('by'), ref: opt('ref') || '', note: opt('note') || '' });
+        console.log(`${p.id}: deployment ${p.deployment.status}`);
+      } else if (sub === 'outcome') {
+        const p = P.recordOutcome(id, { metric: opt('metric'), value: opt('value'), source: opt('source') || '', note: opt('note') || '' });
+        console.log(`${p.id}: recorded ${opt('metric')} = ${opt('value')}`);
+      } else throw new Error('usage: proposal list | deployed <id> <state> --by <name> | outcome <id> --metric m --value v');
+      break;
+    }
     default:
-      console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 10).map(l => l.replace(/^\/\/ ?/, '')).join('\n'));
+      console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 15).map(l => l.replace(/^\/\/ ?/, '')).join('\n'));
       process.exitCode = cmd ? 1 : 0;
   }
 }

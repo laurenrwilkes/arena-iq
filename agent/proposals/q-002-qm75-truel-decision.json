@@ -1,0 +1,61 @@
+{
+  "status": "in_review",
+  "createdAt": "2026-10-16T07:15:42.637Z",
+  "createdBy": "engagement agent",
+  "deployment": {
+    "status": "not_deployed"
+  },
+  "reviews": [],
+  "outcomes": [],
+  "id": "q-002-qm75-truel-decision",
+  "type": "question",
+  "title": "Restore the decision in qm75 (three-way duel)",
+  "summary": "qm75 removed the choice that makes this puzzle famous: the weakest shooter's best move is to miss on purpose. Restoring the choice needs an assumption about how the other two aim, so it is proposed here rather than published.",
+  "base": "main",
+  "replaces": "qm75",
+  "tier": "medium",
+  "question": {
+    "type": "numeric",
+    "title": "Three Shooters, One Choice",
+    "description": "Three shooters, A, B and C, take turns in the order A → B → C, skipping anyone who has been hit, until one remains. A hits with probability <strong>0.3</strong>, B always hits, and C hits with probability <strong>0.5</strong>.\n\nB and C always aim at the more accurate of their remaining opponents. On A's first turn only, A may shoot at B, shoot at C, or deliberately miss; after that A also aims at the more accurate opponent.\n\nIf A makes the best first choice, what is A's probability of being the last one standing? Enter a decimal to 3 decimal places.",
+    "unit": "",
+    "answer": 0.3,
+    "tolerance": 0.002,
+    "steps": [
+      {
+        "label": "Deliberately miss",
+        "value": "B removes C; A then shoots first at B and wins with 0.3"
+      },
+      {
+        "label": "Shoot at B",
+        "value": "0.3 × 0.231 (duel with C shooting first) + 0.7 × 0.3 ≈ 0.279"
+      },
+      {
+        "label": "Shoot at C",
+        "value": "0.3 × 0 (B then hits A) + 0.7 × 0.3 = 0.21"
+      },
+      {
+        "label": "Best choice: deliberately miss",
+        "value": "P = 0.3"
+      }
+    ],
+    "explanation": "Hitting someone hurts A: whoever survives then shoots at A with only two left. Missing on purpose lets B and C fight first and gives A the first shot of a two-way duel. A's chance in a duel against C when C shoots first is 0.5 × 0.3 / 0.65 ≈ 0.231."
+  },
+  "reasoningPattern": "Strategic decision with recursion on states: compare the value of each first move.",
+  "sources": [
+    {
+      "citation": "Classic three-way duel (\"truel\") puzzle",
+      "note": "The existing qm75 appears to derive from the version in Mosteller, Fifty Challenging Problems in Probability (1965); this is an audit observation, not checked against the book"
+    }
+  ],
+  "authenticity": {
+    "likeness": 4,
+    "rationale": "Asks for a decision against opponents and rewards a counter-intuitive insight, which is what interviewers probe. Widely published, so some candidates will know the answer.",
+    "textbookMarkers": []
+  },
+  "verification": "Exact values 0.3, 0.2792 and 0.21 derived by hand; a Monte Carlo run of 1,000,000 duels per choice gave 0.2994, 0.2792 and 0.2104.",
+  "openQuestions": [
+    "Assumption: B and C aim at the more accurate remaining opponent. This is the classic convention, but it is an assumption; approve it or suggest another.",
+    "The answer changes from 0.2308 (the old question asked something narrower) to 0.300."
+  ]
+}

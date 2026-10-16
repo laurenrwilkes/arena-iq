@@ -135,4 +135,4 @@ function loadQuestionBank(root = REPO_ROOT) {
   return require(path.join(root, 'server', 'questions.js')).QUESTIONS;
 }
 
-module.exports = { auditQuestions, loadQuestionBank, finalStepNumber, roundingDecimals, wordCount };
+module.exports = { auditQuestions, auditNumeric, loadQuestionBank, finalStepNumber, roundingDecimals, wordCount };
