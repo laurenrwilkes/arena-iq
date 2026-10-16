@@ -1,11 +1,22 @@
 {
-  "status": "in_review",
+  "status": "approved",
   "createdAt": "2026-10-16T07:15:42.637Z",
   "createdBy": "engagement agent",
   "deployment": {
     "status": "not_deployed"
   },
-  "reviews": [],
+  "reviews": [
+    {
+      "decision": "approve",
+      "option": "remove",
+      "label": "Remove",
+      "effect": "Mark qm75 inactive",
+      "status": "approved",
+      "feedback": "",
+      "by": "reviewer",
+      "at": "2026-10-16T07:34:15.124Z"
+    }
+  ],
   "outcomes": [],
   "id": "q-002-qm75-truel-decision",
   "type": "question",

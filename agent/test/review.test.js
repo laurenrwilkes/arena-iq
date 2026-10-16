@@ -15,7 +15,8 @@ const realProposals = () => P.list(path.join(__dirname, '..', 'proposals'));
 
 function sandbox() {
   const dir = tmp(), historyDir = tmp();
-  for (const p of realProposals()) fs.writeFileSync(path.join(dir, `${p.id}.json`), JSON.stringify(p));
+  // Fresh, undecided copies: tests must not depend on real review decisions.
+  for (const p of realProposals()) fs.writeFileSync(path.join(dir, `${p.id}.json`), JSON.stringify({ ...p, status: 'in_review', reviews: [], deployment: { status: 'not_deployed' }, outcomes: [] }));
   return { dir, historyDir };
 }
 
