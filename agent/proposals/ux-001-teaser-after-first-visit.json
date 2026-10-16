@@ -11,6 +11,38 @@
   "type": "ux",
   "title": "Skip the daily puzzle on a visitor's first visit",
   "summary": "New visitors land on the practice page with the daily skyscraper puzzle covering it. This change shows the puzzle from their second visit instead. One change, in brainteaser.js.",
+  "decision": {
+    "issue": "Puzzle covers practice for first-time visitors",
+    "subject": "Homepage · daily brain teaser",
+    "context": "6 of 89 new visitors solved it and 11 skipped it; what the rest did isn't tracked. The change: show it from the second visit.",
+    "options": [
+      {
+        "id": "ship",
+        "label": "Ship it",
+        "outcome": "approve",
+        "effect": "Reviewed deployment to everyone, then compare before and after"
+      },
+      {
+        "id": "track-first",
+        "label": "Track closes first",
+        "outcome": "revise",
+        "needsFeedback": false,
+        "effect": "First record how people close the puzzle, then decide"
+      },
+      {
+        "id": "reject",
+        "label": "Don't ship",
+        "outcome": "reject",
+        "effect": "Keep the puzzle on every first visit"
+      },
+      {
+        "id": "other",
+        "label": "Other",
+        "outcome": "revise",
+        "effect": "Tell me what you want instead"
+      }
+    ]
+  },
   "base": "main",
   "branch": "proposal/ux-001-teaser-after-first-visit",
   "affectedFlow": {

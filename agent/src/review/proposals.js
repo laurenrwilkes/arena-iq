@@ -19,6 +19,12 @@ function validate(p) {
   req(p.type === 'question' || p.type === 'ux', 'type must be question or ux');
   req(p.title, 'title is required');
   req(p.summary, 'summary is required');
+  // The decision shown at the top: one-line issue + 2-5 concrete choices.
+  const d = p.decision || {};
+  req(d.issue, 'decision.issue (one line) is required');
+  req(Array.isArray(d.options) && d.options.length >= 2 && d.options.length <= 5, 'decision.options needs 2-5 choices');
+  for (const o of d.options || []) req(o.id && o.label && Object.keys(DECISIONS).includes(o.outcome), `decision option ${o.id}: needs id, label and outcome approve|reject|revise`);
+  req(new Set((d.options || []).map(o => o.id)).size === (d.options || []).length, 'decision option ids must be unique');
   if (p.type === 'question') {
     const q = p.question || {};
     req(['beginner', 'easy', 'medium', 'hard'].includes(p.tier), 'tier must be beginner|easy|medium|hard');
@@ -69,13 +75,21 @@ function save(p, dir = PROPOSALS_DIR) {
   return p;
 }
 
-// Record a human review decision. Does not deploy anything.
-function decide(id, { decision, feedback = '', by }, { dir = PROPOSALS_DIR, historyDir = DATA_DIR } = {}) {
+// Record a human review decision: one of the proposal's options (or, for
+// older callers, approve | reject | revise). Does not deploy anything.
+function decide(id, { option, decision, feedback = '', by }, { dir = PROPOSALS_DIR, historyDir = DATA_DIR } = {}) {
+  const p = load(id, dir);
+  let choice = null;
+  if (option) {
+    choice = (p.decision?.options || []).find(o => o.id === option);
+    if (!choice) throw new Error(`unknown option "${option}" for ${id}`);
+    decision = choice.outcome;
+  }
   if (!DECISIONS[decision]) throw new Error('decision must be approve | reject | revise');
   if (!by) throw new Error('a reviewer name is required');
-  if (decision === 'revise' && !feedback.trim()) throw new Error('say what to revise');
-  const p = load(id, dir);
-  const entry = { decision, status: DECISIONS[decision], feedback: feedback.trim(), by, at: new Date().toISOString() };
+  const needsNote = decision === 'revise' && (choice ? choice.needsFeedback !== false : true);
+  if (needsNote && !feedback.trim()) throw new Error(choice ? `say what you want for "${choice.label}"` : 'say what to revise');
+  const entry = { decision, ...(choice ? { option: choice.id, label: choice.label, effect: choice.effect || '' } : {}), status: DECISIONS[decision], feedback: feedback.trim(), by, at: new Date().toISOString() };
   p.reviews = [...(p.reviews || []), entry];
   p.status = entry.status;
   p.deployment = p.deployment || { status: 'not_deployed' };

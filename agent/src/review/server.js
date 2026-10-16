@@ -29,7 +29,8 @@ function readBody(req) {
 }
 
 function summary(p) {
-  return { id: p.id, type: p.type, title: p.title, status: p.status, deployment: p.deployment?.status || 'not_deployed', createdAt: p.createdAt };
+  const last = (p.reviews || []).at(-1);
+  return { id: p.id, type: p.type, title: p.title, issue: p.decision?.issue, subject: p.decision?.subject, status: p.status, decided: last ? (last.label || last.decision) : null, deployment: p.deployment?.status || 'not_deployed', createdAt: p.createdAt };
 }
 
 function detail(p, { dir, historyDir }) {
@@ -66,7 +67,7 @@ function createServer({ dir = proposals.PROPOSALS_DIR, historyDir = DATA_DIR } =
         if (req.method === 'POST' && parts[3] === 'preview') return send(res, 200, await startPreviews(p));
         if (req.method === 'POST' && parts[3] === 'decision') {
           const body = await readBody(req);
-          const updated = proposals.decide(p.id, { decision: body.decision, feedback: body.feedback || '', by: body.by || reviewerName() }, { dir, historyDir });
+          const updated = proposals.decide(p.id, { option: body.option, decision: body.decision, feedback: body.feedback || '', by: body.by || reviewerName() }, { dir, historyDir });
           return send(res, 200, detail(updated, { dir, historyDir }));
         }
       }

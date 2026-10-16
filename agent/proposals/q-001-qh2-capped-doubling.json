@@ -1,16 +1,49 @@
 {
-  "status": "in_review",
+  "status": "revision_requested",
   "createdAt": "2026-10-16T07:15:42.637Z",
   "createdBy": "engagement agent",
   "deployment": {
     "status": "not_deployed"
   },
-  "reviews": [],
+  "reviews": [
+    {
+      "decision": "revise",
+      "status": "revision_requested",
+      "feedback": "mark inactive",
+      "by": "reviewer",
+      "at": "2026-10-16T07:24:29.269Z"
+    }
+  ],
   "outcomes": [],
   "id": "q-001-qh2-capped-doubling",
   "type": "question",
   "title": "Fix qh2: state what happens at the 20-roll cap",
   "summary": "qh2 is ill-posed: its text calls the value infinite, then caps the game at 20 rolls without saying what is paid if no 6 appears. The stored answer ($13,675) silently drops the 2.6% of games with no 6. This rewrite states the cap and pays $2^20 in that case.",
+  "decision": {
+    "issue": "Question is ambiguous",
+    "subject": "qh2 · live in hard battles and practice",
+    "context": "It never says what you're paid if no 6 appears in the 20 rolls, so the stored answer (13,675) rests on one reading of an unclear rule.",
+    "options": [
+      {
+        "id": "rewrite",
+        "label": "Rewrite",
+        "outcome": "approve",
+        "effect": "Replace qh2 with the clarified version (answer becomes 41,026)"
+      },
+      {
+        "id": "remove",
+        "label": "Remove",
+        "outcome": "approve",
+        "effect": "Mark qh2 inactive: it stops appearing, history is kept"
+      },
+      {
+        "id": "other",
+        "label": "Other",
+        "outcome": "revise",
+        "effect": "Tell me what you want instead"
+      }
+    ]
+  },
   "base": "main",
   "replaces": "qh2",
   "tier": "hard",

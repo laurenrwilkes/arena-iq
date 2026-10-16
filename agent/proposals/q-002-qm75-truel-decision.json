@@ -11,6 +11,37 @@
   "type": "question",
   "title": "Restore the decision in qm75 (three-way duel)",
   "summary": "qm75 removed the choice that makes this puzzle famous: the weakest shooter's best move is to miss on purpose. Restoring the choice needs an assumption about how the other two aim, so it is proposed here rather than published.",
+  "decision": {
+    "issue": "The decision was stripped out",
+    "subject": "qm75 · three-way duel",
+    "context": "Restoring A's choice needs one assumption: B and C aim at the more accurate remaining shooter. With it, deliberately missing is best (0.300).",
+    "options": [
+      {
+        "id": "rewrite",
+        "label": "Rewrite with this assumption",
+        "outcome": "approve",
+        "effect": "Replace qm75 with the decision version (answer becomes 0.300)"
+      },
+      {
+        "id": "keep",
+        "label": "Keep as it is",
+        "outcome": "reject",
+        "effect": "Leave qm75 unchanged"
+      },
+      {
+        "id": "remove",
+        "label": "Remove",
+        "outcome": "approve",
+        "effect": "Mark qm75 inactive"
+      },
+      {
+        "id": "other",
+        "label": "Other",
+        "outcome": "revise",
+        "effect": "Tell me what you want instead"
+      }
+    ]
+  },
   "base": "main",
   "replaces": "qm75",
   "tier": "medium",

@@ -47,6 +47,18 @@ test('decisions are recorded with reviewer and feedback, and never deploy', () =
   assert.equal(h[0].data.proposalId, 'q-001-qh2-capped-doubling');
 });
 
+test('decisions use the proposal\'s own options; "Other" needs a note', () => {
+  const { dir, historyDir } = sandbox();
+  assert.throws(() => P.decide('q-002-qm75-truel-decision', { option: 'nope', by: 'L' }, { dir, historyDir }), /unknown option/);
+  assert.throws(() => P.decide('q-002-qm75-truel-decision', { option: 'other', by: 'L' }, { dir, historyDir }), /say what you want/);
+  const kept = P.decide('q-002-qm75-truel-decision', { option: 'keep', by: 'Lauren' }, { dir, historyDir });
+  assert.equal(kept.status, 'rejected');
+  assert.equal(kept.reviews.at(-1).label, 'Keep as it is');
+  const ux = P.decide('ux-001-teaser-after-first-visit', { option: 'track-first', by: 'Lauren' }, { dir, historyDir });
+  assert.equal(ux.status, 'revision_requested', 'a revise-type option without needsFeedback needs no note');
+  for (const p of realProposals()) assert.ok(p.decision.options.some(o => o.id === 'other'), `${p.id} offers Other`);
+});
+
 test('only approved proposals can be tested or deployed; outcomes are recorded', () => {
   const { dir, historyDir } = sandbox();
   assert.throws(() => P.recordDeployment('ux-001-teaser-after-first-visit', { status: 'deployed', by: 'L' }, { dir, historyDir }), /only approved/);
@@ -105,9 +117,10 @@ test('dashboard API lists proposals and records decisions', async () => {
     assert.equal(detail.branch.singleChange, true);
     const bad = await fetch(`${base}/api/proposals/ux-001-teaser-after-first-visit/decision`, { method: 'POST', body: JSON.stringify({ decision: 'revise', by: 'L' }) });
     assert.equal(bad.status, 400);
-    const ok = await (await fetch(`${base}/api/proposals/ux-001-teaser-after-first-visit/decision`, { method: 'POST', body: JSON.stringify({ decision: 'revise', feedback: 'Track overlay closes first', by: 'Lauren' }) })).json();
+    const ok = await (await fetch(`${base}/api/proposals/ux-001-teaser-after-first-visit/decision`, { method: 'POST', body: JSON.stringify({ option: 'other', feedback: 'Try a smaller banner instead', by: 'Lauren' }) })).json();
     assert.equal(ok.proposal.status, 'revision_requested');
-    assert.equal(ok.history.at(-1).data.feedback, 'Track overlay closes first');
+    assert.equal(ok.history.at(-1).data.label, 'Other');
+    assert.equal(ok.history.at(-1).data.feedback, 'Try a smaller banner instead');
     assert.equal((await fetch(`${base}/api/proposals/nope`)).status, 404);
   } finally { server.close(); }
 });
