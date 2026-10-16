@@ -230,6 +230,15 @@ function showBrainteaser() {
 }
 
 function initBrainTeaser() {
+  // First-time visitors go straight to the practice questions; the daily
+  // puzzle starts from their second visit.
+  let seenBefore = null;
+  try {
+    seenBefore = localStorage.getItem('qb_seen_homepage');
+    localStorage.setItem('qb_seen_homepage', '1');
+  } catch (_) {}
+  if (!seenBefore) return;
+
   let lastShown = null;
   try { lastShown = localStorage.getItem(BRAINTEASER_SEEN_KEY); } catch (_) {}
   if (lastShown !== btTodayKey()) showBrainteaser();
