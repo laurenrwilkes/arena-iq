@@ -76,6 +76,8 @@ const inactive = {
   qm55: { reason: 'duplicate', keep: 'qh4',  note: 'Same one-step risk-neutral probability; qh4 uses simple rates (0.75), qm55 needs e^0.05' },
   qm43: { reason: 'duplicate', keep: 'qm5',  note: 'Identical CAPM numbers; qm5 is the formatted version' },
   qm67: { reason: 'duplicate', keep: 'qm66', note: 'Same "both pick the same option" setup with 5 options instead of 10' },
+  // Ill-posed: the 20-roll cap never says what is paid with no 6.
+  qh2:  { reason: 'ill-posed', note: 'Reviewer decision on proposal q-001, 2026-10-16: "mark inactive"' },
 };
 
 // Off-trading quant questions (2026-10-15 audit): still in Practice, never in
