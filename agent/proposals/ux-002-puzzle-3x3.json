@@ -1,0 +1,82 @@
+{
+  "id": "ux-002-puzzle-3x3",
+  "type": "ux",
+  "title": "Make the daily puzzle a 3×3 grid",
+  "summary": "Requested by Lauren in her ux-001 review (\"also make the puzzle only a 3 by 3\"). The daily skyscraper puzzle shrinks from 4×4 to 3×3. One change, in brainteaser.js.",
+  "decision": {
+    "issue": "Shrink the daily puzzle to 3×3",
+    "subject": "Homepage · daily brain teaser",
+    "context": "Your request from the ux-001 review. A 3×3 grid is quicker but much easier: there are only 12 possible 3×3 grids, so most players will solve it in seconds.",
+    "options": [
+      {
+        "id": "ship",
+        "label": "Ship it",
+        "outcome": "approve",
+        "effect": "Reviewed deployment to everyone, then compare solve rates before and after"
+      },
+      {
+        "id": "keep",
+        "label": "Keep 4×4",
+        "outcome": "reject",
+        "effect": "Leave the puzzle as it is"
+      },
+      {
+        "id": "other",
+        "label": "Other",
+        "outcome": "revise",
+        "effect": "Tell me what you want instead"
+      }
+    ]
+  },
+  "status": "in_review",
+  "createdAt": "2026-10-16T07:38:03.428Z",
+  "createdBy": "engagement agent (requested by Lauren)",
+  "base": "main",
+  "branch": "proposal/ux-002-puzzle-3x3",
+  "affectedFlow": {
+    "path": "/",
+    "steps": [
+      "Open the homepage (the preview starts as a new visitor, so the puzzle appears; ux-001 is not in these previews).",
+      "Current: a 4×4 grid, numbers 1–4.",
+      "Proposed: a 3×3 grid, numbers 1–3. Try solving it and check the instructions read correctly."
+    ]
+  },
+  "hypothesis": "A smaller grid takes less time, so more of the visitors who see the puzzle will finish it rather than skip or close it.",
+  "evidence": [
+    {
+      "kind": "measured",
+      "statement": "With the 4×4 grid, 6 of 89 new visitors and 2 of 18 returning visitors solved the puzzle; 11 new visitors used Skip.",
+      "source": "GA4 property 546626239 · brainteaser_played, brainteaser_skipped · last 28 days",
+      "asOf": "2026-10-15",
+      "n": 107
+    },
+    {
+      "kind": "code",
+      "statement": "The generator already works for any size; only the two instruction lines hard-coded \"1–4\". All 200 test puzzles generated at 3×3 were valid."
+    },
+    {
+      "kind": "speculative",
+      "statement": "A 3×3 puzzle may feel too easy to be satisfying, which could lower repeat interest. Not measured."
+    }
+  ],
+  "prediction": {
+    "metric": "puzzle_solve_rate",
+    "direction": "increase",
+    "expectedEffect": "More solves per visitor who sees the puzzle. No size is claimed.",
+    "uncertainty": "High: under 20 solves a month today, and the overlay closes (×, Escape, outside click) are not tracked, so the base rate is incomplete."
+  },
+  "successMetric": {
+    "id": "puzzle_solve_rate",
+    "definition": "Solves (brainteaser_played) divided by visitors shown the puzzle.",
+    "guardrails": [
+      "Share of visitors who reach a practice question",
+      "Client error rate"
+    ],
+    "measurementPlan": "Before/after over 4+ weeks each, reported as observational. Tracking puzzle impressions and closes first would give a proper denominator."
+  },
+  "deployment": {
+    "status": "not_deployed"
+  },
+  "reviews": [],
+  "outcomes": []
+}
