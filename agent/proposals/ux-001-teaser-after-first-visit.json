@@ -1,11 +1,22 @@
 {
-  "status": "in_review",
+  "status": "approved",
   "createdAt": "2026-10-16T07:15:42.637Z",
   "createdBy": "engagement agent",
   "deployment": {
     "status": "not_deployed"
   },
-  "reviews": [],
+  "reviews": [
+    {
+      "decision": "approve",
+      "option": "ship",
+      "label": "Ship it",
+      "effect": "Reviewed deployment to everyone, then compare before and after",
+      "status": "approved",
+      "feedback": "also make the pujzzle only a 3 by 3",
+      "by": "reviewer",
+      "at": "2026-10-16T07:35:35.074Z"
+    }
+  ],
   "outcomes": [],
   "id": "ux-001-teaser-after-first-visit",
   "type": "ux",
