@@ -198,6 +198,7 @@
     if (value === 'denied') { store.del(ANON_KEY); queue = []; }
     const el = document.getElementById('qb-consent');
     if (el) el.remove();
+    document.body.style.paddingBottom = '';
   }
 
   function showBanner() {
@@ -228,6 +229,8 @@
       #qb-consent .btn { padding: 8px 16px; font-size: .85rem; }`;
     document.head.appendChild(style);
     document.body.appendChild(el);
+    // The banner is fixed to the bottom; reserve room so it can't cover buttons at the end of the page.
+    document.body.style.paddingBottom = (el.offsetHeight + 32) + 'px';
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showBanner);
   else showBanner();

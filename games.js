@@ -97,7 +97,7 @@ function renderRules() {
       <ul>
         <li>• Mix of addition, subtraction, multiplication, division, and percentages</li>
         <li>• One 8:00 countdown for the whole test — no per-question limit</li>
-        <li>• Press <strong>Enter</strong> to submit an answer, or click <strong>Skip</strong> to move on</li>
+        <li>• Press <strong>Enter</strong> or tap <strong>Submit</strong> to answer, or click <strong>Skip</strong> to move on</li>
         <li>• The test ends automatically at 80 questions or when time runs out</li>
       </ul>
     </div>
@@ -119,12 +119,12 @@ function renderGame() {
   </div>
   <div class="mm-game-area">
     <div class="mm-question">${q.text} = ?</div>
-    <div class="mm-input-row">
-      <input type="text" inputmode="numeric" id="mm-input" class="mm-input" autocomplete="off"
-        onkeydown="if(event.key==='Enter') submitAnswer()" />
-      <button class="btn btn-outline" onclick="skipQuestion()">Skip →</button>
-    </div>
-    <div class="mm-hint">Press Enter to submit</div>
+    <form class="mm-input-row" onsubmit="event.preventDefault(); submitAnswer()">
+      <input type="text" inputmode="numeric" enterkeyhint="go" id="mm-input" class="mm-input" autocomplete="off" />
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="button" class="btn btn-outline" onclick="skipQuestion()">Skip →</button>
+    </form>
+    <div class="mm-hint">Press Enter or tap Submit</div>
   </div>`;
 }
 
@@ -250,7 +250,7 @@ function nextQuestion() {
 
 function submitAnswer() {
   const input = document.getElementById('mm-input');
-  if (!input) return;
+  if (!input || input.disabled) return;
   const raw = input.value.trim();
   if (raw === '') { skipQuestion(); return; }
 
@@ -271,6 +271,7 @@ function submitAnswer() {
 
 function skipQuestion() {
   const input = document.getElementById('mm-input');
+  if (input && input.disabled) return;
   STATE.skipped++;
   if (input) input.disabled = true;
   setTimeout(() => nextQuestion(), 100);
