@@ -309,10 +309,20 @@
     letter-spacing: 1.5px; color: var(--t3); margin-bottom: 14px;
   }
   .answer-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  /* iOS's decimal keypad has no minus key, so touch screens get a ± button. */
+  .sign-btn { display: none; flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--r); border: 1px solid var(--border); background: var(--card); color: var(--t1); font-size: 1.2rem; font-weight: 700; cursor: pointer; }
+  @media (pointer: coarse) { .sign-btn { display: inline-flex; align-items: center; justify-content: center; } }
+  .post-solve:empty { display: none; }
+  .post-solve { margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+  .next-btn { width: 100%; justify-content: center; }
+  .streak-cta { border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.06); border-radius: var(--r); padding: 14px 16px; }
+  .streak-cta-text { font-size: 0.88rem; color: var(--t1); line-height: 1.5; margin-bottom: 10px; }
+  .streak-cta-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .detail-back { display: none; }
   .answer-prefix { font-size: 1.4rem; font-weight: 700; color: var(--green); }
   .answer-suffix { font-size: 1rem; font-weight: 600; color: var(--t2); }
   .answer-input {
-    flex: 1; padding: 12px 16px; font-size: 1.3rem; font-weight: 700;
+    flex: 1; min-width: 0; padding: 12px 16px; font-size: 1.3rem; font-weight: 700;
     background: var(--bg); border: 2px solid var(--border); border-radius: var(--r);
     color: var(--t1); outline: none; text-align: center;
     font-family: 'JetBrains Mono', monospace; transition: border-color 0.2s;
@@ -416,6 +426,11 @@
     .problems-layout { grid-template-columns: 1fr; flex: none; height: auto; min-height: 0; }
     .problems-list-panel, .problem-detail-panel { border-right: none; }
     .problem-detail-panel { border-top: 1px solid var(--border); }
+    .problems-layout { scroll-margin-top: 64px; }
+    .problems-layout.detail-open .sidebar, .problems-layout.detail-open .problems-list-panel { display: none; }
+    .problems-layout:not(.detail-open) .problem-detail-panel { display: none; }
+    .problems-layout.detail-open .problem-detail-panel { border-top: none; }
+    .detail-back { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 14px; padding: 8px 0; background: none; border: none; color: var(--purple); font: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
     .detail-content { padding: 20px; }
     .feature-strip { padding: 28px 20px 36px; }
     .feature-strip-inner { grid-template-columns: 1fr 1fr; }
@@ -447,7 +462,7 @@
   </div>
   <div class="nav-actions">
     <button id="nav-login" class="btn btn-ghost" style="font-size:0.85rem;padding:8px 16px"
-      onclick="showAuthModal(u => { currentUser = u; updateNav(); loadProgress(); refreshProgressUI(); })">Log In / Sign Up</button>
+      onclick="showAuthModal(onSignedIn)">Log In / Sign Up</button>
     <div style="position:relative" id="nav-profile-wrap">
       <button id="nav-avatar" class="nav-avatar-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu" onclick="toggleNav()">?</button>
       <div id="nav-menu" class="nav-menu">
@@ -552,7 +567,7 @@
 <script src="analytics.js"></script>
 <script src="auth.js"></script>
 <script src="storageUtils.js"></script>
-<script src="brainteaser.js"></script>
+<script src="warmup.js"></script>
 <script>
 let currentUser = null;
 let allQuestions = { quant: {}, tech: {} };
@@ -571,8 +586,11 @@ const FLAG_ICON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><pat
 // ── PROGRESS TRACKING (points, streak, per-question To Do/Attempted/Solved) ──
 const POINTS_BY_DIFFICULTY = { beginner: 5, easy: 10, medium: 20, hard: 30 };
 
+// Guests keep progress on this device; signing in moves it into the account,
+// which is stored on the server so the streak follows the user.
+const GUEST_PROGRESS_KEY = 'practice_progress_guest';
 function progressKey() {
-  return `practice_progress_${(currentUser?.username || '').toLowerCase()}`;
+  return currentUser ? `practice_progress_${currentUser.username.toLowerCase()}` : GUEST_PROGRESS_KEY;
 }
 
 function favoritesKey() {
@@ -587,15 +605,85 @@ function defaultProgressState() {
 let progress = defaultProgressState();
 
 function loadProgress() {
-  if (!currentUser) { 
-    progress = defaultProgressState();
-    logProfileEngine(`Progress reset for guest user`);
-    return; 
+  progress = hydrateFromStorage(progressKey(), defaultProgressState());
+  logProfileEngine(`Hydrated practice progress for ${currentUser ? 'user: ' + currentUser.username : 'guest'}`, { points: progress.points, streak: progress.currentStreak });
+  if (currentUser) syncProgress();
+}
+
+function hasProgress(p) {
+  return !!(p && (p.lastSolvedTimestamp || Object.keys(p.questionHistory || {}).length));
+}
+
+function pointsFor(qId) {
+  for (const tiers of Object.values(allQuestions || {})) {
+    for (const [diff, list] of Object.entries(tiers)) {
+      if (list.some(q => q.id === qId)) return POINTS_BY_DIFFICULTY[diff] || 0;
+    }
   }
-  
-  const defaults = defaultProgressState();
-  progress = hydrateFromStorage(progressKey(), defaults);
-  logProfileEngine(`Hydrated practice progress for user: ${currentUser.username}`, { points: progress.points, streak: progress.currentStreak });
+  return 0;
+}
+
+// Combine two copies of progress without double-counting: questions solved only
+// in `extra` add their points, solved days are unioned, and the streak is kept
+// from whichever copy solved most recently.
+function mergeProgress(base, extra) {
+  const out = { ...defaultProgressState(), ...base, questionHistory: { ...(base.questionHistory || {}) } };
+  const rank = { todo: 0, attempted: 1, solved: 2 };
+  for (const [id, e] of Object.entries(extra.questionHistory || {})) {
+    const cur = out.questionHistory[id];
+    if (e.status === 'solved' && (!cur || cur.status !== 'solved')) out.points += pointsFor(id);
+    out.questionHistory[id] = !cur ? { ...e } : {
+      status: rank[e.status] > rank[cur.status] ? e.status : cur.status,
+      attempts: Math.max(cur.attempts || 0, e.attempts || 0),
+      lastInteraction: e.lastInteraction > cur.lastInteraction ? e.lastInteraction : cur.lastInteraction,
+    };
+  }
+  out.solvedDates = [...new Set([...(base.solvedDates || []), ...(extra.solvedDates || [])])].sort().slice(-31);
+  const a = base.lastSolvedTimestamp, b = extra.lastSolvedTimestamp;
+  if (b && (!a || b > a)) { out.lastSolvedTimestamp = b; out.currentStreak = extra.currentStreak || 0; }
+  // Two copies can each hold part of a run of days; count the run in the union too.
+  if (out.lastSolvedTimestamp) {
+    let run = 0;
+    const d = new Date(out.lastSolvedTimestamp);
+    while (out.solvedDates.includes(todayKey(d))) { run++; d.setDate(d.getDate() - 1); }
+    out.currentStreak = Math.max(out.currentStreak || 0, run);
+  }
+  return out;
+}
+
+async function syncProgress() {
+  const user = currentUser;
+  // Merging prices questions by difficulty, so it needs the question list.
+  await questionsReady;
+  if (!Object.keys(allQuestions.quant || {}).length) return;
+  let server = null;
+  try {
+    const res = await fetch('/api/progress', { headers: { Authorization: `Bearer ${Auth.getToken()}` } });
+    if (res.ok) server = (await res.json()).progress;
+  } catch (_) { return; }   // offline: keep the device copy and try again next load
+  if (currentUser !== user) return;
+  let merged = mergeProgress(server || defaultProgressState(), progress);
+  const guest = hydrateFromStorage(GUEST_PROGRESS_KEY, defaultProgressState());
+  if (hasProgress(guest)) merged = mergeProgress(merged, guest);
+  progress = merged;
+  persistToStorage(progressKey(), progress, defaultProgressState());
+  try { localStorage.removeItem(GUEST_PROGRESS_KEY); } catch (_) {}
+  pushProgress();
+  refreshProgressUI();
+}
+
+let pushTimer = null;
+function pushProgress() {
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => {
+    if (!currentUser) return;
+    fetch('/api/progress', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Auth.getToken()}` },
+      body: JSON.stringify({ progress }),
+      keepalive: true,
+    }).catch(() => {});
+  }, 1000);
 }
 
 function loadFavorites() {
@@ -639,8 +727,8 @@ function toggleFavorite(qId, event) {
   applyFilters();
 }
 function saveProgress() {
-  if (!currentUser) return;
   persistToStorage(progressKey(), progress, defaultProgressState());
+  if (currentUser) pushProgress();
 }
 
 function todayKey(d = new Date()) {
@@ -708,6 +796,57 @@ function getEffectiveStreak() {
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const daysSince = Math.round((todayMidnight - lastMidnight) / 86400000);
   return daysSince >= 2 ? 0 : (progress.currentStreak || 0);
+}
+
+// Guests see this after solving something: their streak lives only on this
+// device until they sign up. "Not now" hides it for the rest of the day.
+const STREAK_PROMPT_KEY = 'qb_streak_prompt_dismissed';
+function streakPromptHtml() {
+  if (currentUser) return '';
+  let dismissed = null;
+  try { dismissed = localStorage.getItem(STREAK_PROMPT_KEY); } catch (_) {}
+  if (dismissed === todayKey()) return '';
+  const days = getEffectiveStreak();
+  return `<div class="streak-cta" id="streak-cta">
+    <div class="streak-cta-text">🔥 <strong>${days}-day streak.</strong> Create a free account to save your streak and points so you don't lose them.</div>
+    <div class="streak-cta-actions">
+      <button class="btn btn-primary" onclick="saveStreakSignup()">Save my streak</button>
+      <button class="btn btn-ghost" onclick="dismissStreakPrompt()">Not now</button>
+    </div>
+  </div>`;
+}
+
+function saveStreakSignup() {
+  trackEvent('streak_save_clicked', { streak: getEffectiveStreak() });
+  if (typeof closeWarmup === 'function' && document.getElementById('wu-modal')) closeWarmup();
+  showAuthModal(onSignedIn);
+  if (typeof switchAuthTab === 'function') switchAuthTab('register');
+}
+
+function dismissStreakPrompt() {
+  try { localStorage.setItem(STREAK_PROMPT_KEY, todayKey()); } catch (_) {}
+  document.querySelectorAll('.streak-cta').forEach(el => el.remove());
+}
+
+function onSignedIn(u) {
+  currentUser = u;
+  updateNav();
+  loadProgress();
+  refreshProgressUI();
+  document.querySelectorAll('.streak-cta').forEach(el => el.remove());
+}
+
+// Finishing the daily warm-up (warmup.js) counts as practising today.
+function recordWarmupDay() {
+  updateStreak();
+  saveProgress();
+  refreshProgressUI();
+  return getEffectiveStreak();
+}
+
+// Shown after a solve: the next question, then (for guests) the streak prompt.
+function postSolveHtml() {
+  return `<button class="btn btn-outline next-btn" onclick="nextProblem()">Next question →</button>${streakPromptHtml()}`;
 }
 
 function refreshProgressUI() {
@@ -859,7 +998,7 @@ function statusDotHtml(status) {
   return '<span class="status-dot todo" title="To Do">•</span>';
 }
 
-function selectProblem(id) {
+function selectProblem(id, fromHistory) {
   selectedId = id;
   document.querySelectorAll('.problem-row').forEach(r => {
     r.classList.toggle('active', r.dataset.id === id);
@@ -869,14 +1008,61 @@ function selectProblem(id) {
   const panel = document.getElementById('problem-detail-panel');
   panel.innerHTML = q.type === 'code' ? renderCodeDetail(q) : renderNumericDetail(q);
   panel.scrollTop = 0;
-  // On narrow screens the layout stacks and the detail panel sits below the
-  // whole question list, so bring it into view or the tap looks like it did nothing.
-  if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
-    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  if (isNarrow()) showDetailMobile(id, fromHistory);
   trackEvent('questions_viewed', { question_id: q.id, category: currentCat, difficulty: q.diff });
   QBAnalytics.presentQuestion(q.id, { game_session_id: PRACTICE_SESSION, game: 'practice', category: currentCat, difficulty: q.diff, affected: !!q.affected });
   if (q.affected && q.experiment) QBAnalytics.exposure(q.experiment.id, q.experiment.variant);
+}
+
+function nextProblem() {
+  const list = currentFilteredList;
+  if (!list.length) return;
+  const i = list.findIndex(q => q.id === selectedId);
+  selectProblem(list[(i + 1) % list.length].id);
+}
+
+// ── PHONES: list OR question, never both ─────────────────────────────────────
+// Stacked, the question sat below the whole list (~10,000px down). On narrow
+// screens a question replaces the list; Back (button or the phone's own back
+// gesture) returns to the list where the user left it.
+const narrowQuery = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
+let listScrollY = 0;
+function isNarrow() { return !!(narrowQuery && narrowQuery.matches); }
+
+function showDetailMobile(id, fromHistory) {
+  const layout = document.querySelector('.problems-layout');
+  if (!layout.classList.contains('detail-open')) {
+    listScrollY = window.scrollY;
+    layout.classList.add('detail-open');
+    if (!fromHistory) history.pushState({ practiceQ: id }, '');
+  } else if (!fromHistory) {
+    history.replaceState({ practiceQ: id }, '');
+  }
+  layout.scrollIntoView({ block: 'start' });
+}
+
+function showListMobile() {
+  const layout = document.querySelector('.problems-layout');
+  if (!layout.classList.contains('detail-open')) return;
+  layout.classList.remove('detail-open');
+  window.scrollTo(0, listScrollY);
+}
+
+function backToList() {
+  if (history.state && history.state.practiceQ) history.back();
+  else showListMobile();
+}
+
+window.addEventListener('popstate', e => {
+  if (e.state && e.state.practiceQ && isNarrow()) selectProblem(e.state.practiceQ, true);
+  else showListMobile();
+});
+
+function toggleSign() {
+  const input = document.getElementById('num-input');
+  if (!input) return;
+  input.value = input.value.startsWith('-') ? input.value.slice(1) : '-' + input.value;
+  input.focus();
 }
 
 // One id per practice page visit, so a visit's question events can be grouped.
@@ -920,6 +1106,7 @@ function renderNumericDetail(q) {
 
   return `
   <div class="detail-content">
+    <button class="detail-back" onclick="backToList()">← All questions</button>
     <div class="detail-header"><div>
       <div class="detail-title">${q.title}</div>
       <div class="detail-meta">
@@ -932,8 +1119,9 @@ function renderNumericDetail(q) {
     <div class="answer-area">
       <div class="answer-label-row">Your Answer</div>
       <div class="answer-input-row">
+        <button type="button" class="sign-btn" onclick="toggleSign()" aria-label="Switch between negative and positive">±</button>
         ${hasPrefix ? `<span class="answer-prefix">${q.unit}</span>` : ''}
-        <input type="text" inputmode="decimal" id="num-input" class="answer-input" placeholder=""
+        <input type="text" inputmode="decimal" enterkeyhint="go" id="num-input" class="answer-input" placeholder=""
           onkeydown="if(event.key==='Enter') checkAnswer('${q.id}')" />
         ${hasSuffix ? `<span class="answer-suffix">${q.unit}</span>` : ''}
       </div>
@@ -942,6 +1130,7 @@ function renderNumericDetail(q) {
         <button class="btn btn-outline" onclick="checkAnswer('${q.id}')" style="flex:1">Check</button>
         <button class="btn btn-primary" onclick="revealSolution('${q.id}')" style="flex:1">Show Solution</button>
       </div>
+      <div class="post-solve" id="post-solve"></div>
     </div>
     <div class="solution-box" id="solution-box">
       <div class="solution-label">Solution</div>
@@ -974,6 +1163,7 @@ function renderCodeDetail(q) {
 
   return `
   <div class="detail-content">
+    <button class="detail-back" onclick="backToList()">← All questions</button>
     <div class="detail-header"><div>
       <div class="detail-title">${q.title}</div>
       <div class="detail-meta">
@@ -1066,6 +1256,8 @@ function checkAnswer(qId) {
     const earned = recordSolve(q.id, q.diff);
     feedback.innerHTML = '<span style="color:var(--green)">✅ Correct!</span>' +
       (earned > 0 ? ` <span style="color:#b45309;font-weight:700">+${earned} pts</span>` : '');
+    const post = document.getElementById('post-solve');
+    if (post) post.innerHTML = postSolveHtml();
   } else {
     recordAttempt(q.id);
     feedback.innerHTML = '<span style="color:var(--red)">❌ Not quite. Try again or click Show Solution.</span>';
@@ -1196,7 +1388,7 @@ async function practiceSubmit(qId) {
     if (allPassed) {
       const earned = recordSolve(q.id, q.diff);
       resultEl.innerHTML = '<div style="color:var(--green);font-weight:700;padding:10px 0">🎉 All tests passed! Great work.' +
-        (earned > 0 ? ` <span style="color:#b45309">+${earned} pts</span>` : '') + '</div>';
+        (earned > 0 ? ` <span style="color:#b45309">+${earned} pts</span>` : '') + '</div>' + postSolveHtml();
       const solBox = document.getElementById('solution-box');
       if (solBox) solBox.style.display = 'block';
     } else {
@@ -1235,9 +1427,9 @@ async function flagQuestion(qId) {
   } catch (_) {}
 }
 
+const questionsReady = loadQuestions();
 initAuth();
-loadQuestions();
-initBrainTeaser();
+initWarmup();
 </script>
 </body>
 </html>

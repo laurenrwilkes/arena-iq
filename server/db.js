@@ -55,6 +55,14 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_game_events_anon  ON game_events(anon_id, received_at);
   CREATE INDEX IF NOT EXISTS idx_game_events_event ON game_events(event, received_at);
 
+  -- Practice progress (points, streak, solved questions) for signed-in users, so
+  -- it follows the account across devices. data is the client's progress JSON.
+  CREATE TABLE IF NOT EXISTS user_progress (
+    user_id    INTEGER PRIMARY KEY REFERENCES users(id),
+    data       TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+  );
+
   CREATE TABLE IF NOT EXISTS question_flags (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at  TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -135,6 +143,11 @@ const insertGameEvent = db.prepare(`
   VALUES (@client_ts, @anon_id, @game_session_id, @event, @question_id, @props)
 `);
 const insertGameEvents = db.transaction(rows => { for (const r of rows) insertGameEvent.run(r); });
+const getProgress  = db.prepare('SELECT data FROM user_progress WHERE user_id = ?');
+const saveProgress = db.prepare(`
+  INSERT INTO user_progress (user_id, data) VALUES (?, ?)
+  ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now')
+`);
 const insertQuestionFlag = db.prepare('INSERT INTO question_flags (question_id, reason, context, anon_id, user_id) VALUES (?, ?, ?, ?, ?)');
 // Events for every unit exposed to an experiment, from their first exposure on.
 const getExperimentEvents = db.prepare(`
@@ -188,4 +201,4 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   };
 }
 
-module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword, insertGameEvent, insertGameEvents, insertQuestionFlag, getExperimentEvents };
+module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword, insertGameEvent, insertGameEvents, insertQuestionFlag, getExperimentEvents, getProgress, saveProgress };

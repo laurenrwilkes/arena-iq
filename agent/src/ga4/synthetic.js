@@ -15,7 +15,7 @@ function syntheticGa4({ seed = 7, lookbackDays = 28 } = {}) {
     // fraction of active users in the segment who fire each event
     page_view: 1, start_game_clicked: 0.22, game_started: 0.17, game_completed: 0.11,
     battle_started: 0.2, battle_finished: 0.13, questions_viewed: 0.35, question_submitted: 0.14,
-    account_created: 0.04, returned_next_day: 0.09, brainteaser_played: 0.18, brainteaser_skipped: 0.3,
+    account_created: 0.04, returned_next_day: 0.09, warmup_completed: 0.18, warmup_skipped: 0.3,
   };
   for (const nvr of ['new', 'returning']) {
     for (const device of ['desktop', 'mobile', 'tablet']) {

@@ -7,7 +7,7 @@ const FUNNELS = [
   { id: 'solo_finish', from: 'game_started', to: 'game_completed', label: 'Solo game started → completed' },
   { id: 'solo_click_to_start', from: 'start_game_clicked', to: 'game_started', label: 'Game card clicked → game started' },
   { id: 'practice_view_to_submit', from: 'questions_viewed', to: 'question_submitted', label: 'Practice question viewed → submitted', unit: 'events' },
-  { id: 'brainteaser_play', from: null, to: 'brainteaser_played', label: 'Users playing the brain teaser' },
+  { id: 'warmup_complete', from: null, to: 'warmup_completed', label: 'Users finishing the daily warm-up' },
   { id: 'signup', from: null, to: 'account_created', label: 'Users creating an account' },
   { id: 'next_day_return', from: null, to: 'returned_next_day', label: 'Users returning on a later day (approx.)' },
 ];

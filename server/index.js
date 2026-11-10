@@ -221,6 +221,43 @@ app.post('/api/flag', (req, res) => {
   res.json({ ok: true });
 });
 
+// ── PRACTICE PROGRESS ────────────────────────────────────────────────────────
+// Points, streak and per-question status follow the account. The client merges
+// device, guest and server copies before saving, so the server keeps the latest
+// snapshot after checking its shape.
+const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
+function cleanProgress(p) {
+  if (!p || typeof p !== 'object') return null;
+  const int = (v, max) => (Number.isInteger(v) && v >= 0 && v <= max ? v : null);
+  const points = int(p.points, 1e6), currentStreak = int(p.currentStreak, 1e5);
+  if (points === null || currentStreak === null) return null;
+  const ts = p.lastSolvedTimestamp;
+  if (ts !== null && !(typeof ts === 'string' && ts.length <= 40 && !isNaN(Date.parse(ts)))) return null;
+  if (!Array.isArray(p.solvedDates) || p.solvedDates.length > 62 || !p.solvedDates.every(d => typeof d === 'string' && DATE_KEY.test(d))) return null;
+  const hist = p.questionHistory;
+  if (!hist || typeof hist !== 'object' || Array.isArray(hist) || Object.keys(hist).length > 2000) return null;
+  const questionHistory = {};
+  for (const [id, e] of Object.entries(hist)) {
+    if (!/^[\w-]{1,32}$/.test(id) || !e || !['todo', 'attempted', 'solved'].includes(e.status)) return null;
+    const attempts = int(e.attempts, 1e5);
+    if (attempts === null || !(typeof e.lastInteraction === 'string' && DATE_KEY.test(e.lastInteraction))) return null;
+    questionHistory[id] = { status: e.status, attempts, lastInteraction: e.lastInteraction };
+  }
+  return { points, currentStreak, lastSolvedTimestamp: ts, solvedDates: p.solvedDates, questionHistory };
+}
+
+app.get('/api/progress', authMiddleware, (req, res) => {
+  const row = db.getProgress.get(req.user.id);
+  res.json({ progress: row ? JSON.parse(row.data) : null });
+});
+
+app.put('/api/progress', authMiddleware, (req, res) => {
+  const progress = cleanProgress(req.body?.progress);
+  if (!progress) return res.status(400).json({ error: 'Invalid progress' });
+  db.saveProgress.run(req.user.id, JSON.stringify(progress));
+  res.json({ ok: true });
+});
+
 // ── FIRST-PARTY GAMEPLAY ANALYTICS ───────────────────────────────────────────
 // Batched events from analytics.js (sent only with analytics consent).
 const EVENT_NAMES = new Set([

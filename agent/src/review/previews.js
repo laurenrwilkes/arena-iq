@@ -79,13 +79,13 @@ function applyHarness(dir, { label, question } = {}) {
 }
 
 // Open ?preview=<id> in the practice page once questions have loaded, and
-// close the homepage puzzle overlay so it doesn't cover the question.
+// close the homepage warm-up overlay so it doesn't cover the question.
 function autoOpenScript() {
   return `<script>/* review preview */(function(){
   var id = new URLSearchParams(location.search).get('preview'); if (!id) return;
   var tries = 0, t = setInterval(function(){
     tries++;
-    if (document.getElementById('bt-modal') && typeof closeBrainteaser === 'function') closeBrainteaser();
+    if (document.getElementById('wu-modal') && typeof closeWarmup === 'function') closeWarmup();
     if (typeof flatList !== 'undefined' && flatList.some(function(q){ return q.id === id; })) { clearInterval(t); try { selectProblem(id); } catch (e) {} }
     if (tries > 150) clearInterval(t);
   }, 100);
