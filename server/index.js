@@ -489,7 +489,7 @@ function generateBlitzQuestion(difficulty) {
 }
 
 // ── QUANT BATTLE: PHASE 2 TACTICAL PROBLEM SET ───────────────────────────────
-const BLITZ_DURATION = 60; // seconds (was 120; shortened 2026-10-15 to cut match length)
+const BLITZ_DURATION = 30; // seconds (120 → 60 on 2026-10-15, → 30 on 2026-11-11)
 const TACTICAL_COMPOSITION = {
   easy:   { mix: [['easy', 3], ['medium', 1]], timeLimit: 360 },   // was 480
   medium: { mix: [['easy', 2], ['medium', 2]], timeLimit: 450 },   // was 600
@@ -601,6 +601,46 @@ function simulateBotIfNeeded(game, difficulty) {
   }
 }
 
+// Bot results are decided up front (above); this replays them over time so the
+// human sees the bot's progress live: one blitz solve at a time during the
+// blitz, then tactical questions answered one by one and a final submit.
+// Only progress is shared, never whether an answer is right.
+function randBetween(a, b) { return a + Math.random() * (b - a); }
+
+function scheduleBotBlitz(gameId) {
+  const game = games[gameId];
+  for (const [bot, human] of [[game.p1, game.p2], [game.p2, game.p1]]) {
+    if (!bot.isBot || human.isBot) continue;
+    const times = Array.from({ length: game.blitz[bot.id].score }, () => randBetween(1, BLITZ_DURATION - 0.5)).sort((a, b) => a - b);
+    times.forEach((t, i) => game.botTimers.push(setTimeout(() => {
+      if (!games[gameId] || games[gameId].ended || games[gameId].phase !== 'blitz') return;
+      const q = generateBlitzQuestion(game.difficulty);
+      io.to(human.id).emit('blitz_opponent_update', { opponentScore: i + 1, solved: `${q.text} = ${q.answer}` });
+    }, t * 1000)));
+  }
+}
+
+function scheduleBotTactical(gameId) {
+  const game = games[gameId];
+  const n = game.tacticalQuestions.length, limit = game.tacticalTimeLimit;
+  for (const [bot, human] of [[game.p1, game.p2], [game.p2, game.p1]]) {
+    if (!bot.isBot || human.isBot) continue;
+    const order = Array.from({ length: n }, (_, i) => i).sort(() => Math.random() - 0.5);
+    const times = order.map(() => randBetween(0.15, 0.8) * limit).sort((a, b) => a - b);
+    const answered = [];
+    times.forEach((t, k) => game.botTimers.push(setTimeout(() => {
+      if (!games[gameId] || games[gameId].ended) return;
+      answered.push(order[k]);
+      io.to(human.id).emit('opponent_tactical_progress', { answered: [...answered], submitted: false });
+    }, t * 1000)));
+    const submitAt = Math.min(times[times.length - 1] + randBetween(5, 20), limit - 1);
+    game.botTimers.push(setTimeout(() => {
+      if (!games[gameId] || games[gameId].ended) return;
+      io.to(human.id).emit('opponent_tactical_progress', { answered: order, submitted: true });
+    }, submitAt * 1000));
+  }
+}
+
 function startQuantBattle(p1, p2, difficulty) {
   const gameId = makeGameId();
   const comp = TACTICAL_COMPOSITION[difficulty] || TACTICAL_COMPOSITION.easy;
@@ -627,6 +667,7 @@ function startQuantBattle(p1, p2, difficulty) {
     },
     blitzTimer: null,
     tacticalTimer: null,
+    botTimers: [],
     ended: false,
   };
   const game = games[gameId];
@@ -644,6 +685,7 @@ function startQuantBattle(p1, p2, difficulty) {
   if (!p2.isBot) io.to(p2.id).emit('match_found', payloadFor(p2, p1));
 
   game.blitzTimer = setTimeout(() => endBlitzPhase(gameId), BLITZ_DURATION * 1000);
+  scheduleBotBlitz(gameId);
 
   return gameId;
 }
@@ -673,6 +715,7 @@ function endBlitzPhase(gameId) {
   game.tacticalTimer = setTimeout(() => {
     if (!games[gameId]?.ended) finishQuantBattle(gameId);
   }, (game.tacticalTimeLimit + 5) * 1000);
+  scheduleBotTactical(gameId);
 }
 
 function finishQuantBattle(gameId) {
@@ -698,6 +741,7 @@ function endGame(gameId, winnerSocketId) {
   clearTimeout(game.timer);
   clearTimeout(game.blitzTimer);
   clearTimeout(game.tacticalTimer);
+  (game.botTimers || []).forEach(clearTimeout);
 
   const p1Wins = winnerSocketId !== null && winnerSocketId === game.p1.id;
   const p2Wins = winnerSocketId !== null && winnerSocketId === game.p2.id;
@@ -900,16 +944,28 @@ io.on('connection', (socket) => {
     if (isNaN(val) || Math.abs(val - entry.question.answer) >= 0.005) return;
 
     entry.score++;
+    const solved = `${entry.question.text} = ${entry.question.answer}`;
     entry.question = generateBlitzQuestion(game.difficulty);
-    socket.emit('blitz_question', { yourScore: entry.score, question: entry.question.text });
+    socket.emit('blitz_question', { yourScore: entry.score, question: entry.question.text, solved });
 
     const opponent = game.p1.id === socket.id ? game.p2 : game.p1;
-    if (!opponent.isBot) io.to(opponent.id).emit('blitz_opponent_update', { opponentScore: entry.score });
+    if (!opponent.isBot) io.to(opponent.id).emit('blitz_opponent_update', { opponentScore: entry.score, solved });
   });
 
   // ── QUANT BATTLE PHASE 2: client self-grades (same trust model as the
   // existing numeric/code submissions below) and reports a final tally;
   // clamp defensively so a tampered client can't report an impossible score.
+  socket.on('tactical_progress', ({ gameId, answered }) => {
+    const game = games[gameId];
+    if (!game || game.ended || !game.isQuantBattle || game.phase !== 'tactical') return;
+    const progress = game.tacticalProgress[socket.id];
+    if (!progress || progress.finished || !Array.isArray(answered)) return;
+    const n = game.tacticalQuestions.length;
+    progress.answered = [...new Set(answered.filter(i => Number.isInteger(i) && i >= 0 && i < n))];
+    const opponent = game.p1.id === socket.id ? game.p2 : game.p1;
+    if (!opponent.isBot) io.to(opponent.id).emit('opponent_tactical_progress', { answered: progress.answered, submitted: false });
+  });
+
   socket.on('submit_tactical_results', ({ gameId, correctCount }) => {
     const game = games[gameId];
     if (!game || game.ended || !game.isQuantBattle) return;
@@ -920,6 +976,7 @@ io.on('connection', (socket) => {
     progress.finished = true;
 
     const opponent = game.p1.id === socket.id ? game.p2 : game.p1;
+    if (!opponent.isBot) io.to(opponent.id).emit('opponent_tactical_progress', { answered: progress.answered || [], submitted: true });
     const oppProgress = game.tacticalProgress[opponent.id];
     if (oppProgress?.finished) finishQuantBattle(gameId);
   });
