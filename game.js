@@ -321,9 +321,9 @@ function renderSetup() {
   return `
   <div class="setup-container">
     <div class="setup-header">
-      <div class="section-tag" style="text-align:center">Choose Your Battle</div>
-      <h2 style="text-align:center;margin-bottom:8px;font-weight:800">Start Match</h2>
-      <p style="text-align:center;color:var(--t2);font-size:0.9rem">See where you rank</p>
+      <div class="section-tag" style="text-align:center">Prove Your Rank</div>
+      <h2 style="text-align:center;margin-bottom:8px;font-weight:800">Choose Your Battle</h2>
+      <p style="text-align:center;color:var(--t2);font-size:0.9rem">Climb the board</p>
     </div>
     <div class="setup-step">
       <div class="step-label">1 — Mode</div>
@@ -509,6 +509,11 @@ function renderBlitzPhase() {
         <div class="problem-desc numeric-desc" style="font-size:0.85rem;color:var(--t3)">Answer as many as you can before time runs out.</div>
       </div>
       <div class="numeric-answer-box" style="text-align:center">
+        <div class="blitz-countdown" aria-live="off">
+          <div class="blitz-seconds" id="blitz-seconds">${STATE.blitzTimeLeft}</div>
+          <div class="blitz-seconds-label">seconds left</div>
+          <div class="blitz-bar"><div class="blitz-bar-fill" id="blitz-bar-fill" style="width:${100 * STATE.blitzTimeLeft / (STATE.blitzDuration || 30)}%"></div></div>
+        </div>
         <div class="answer-label">Your Score: <span id="blitz-score" style="color:var(--green)">${STATE.blitzScore}</span> correct</div>
         <div id="blitz-question" style="font-size:2.2rem;font-weight:800;margin:18px 0;font-family:'JetBrains Mono',monospace">${STATE.blitzQuestion?.text || '...'} = ?</div>
         <div class="answer-input-row">
@@ -527,6 +532,10 @@ function startBlitzTimer() {
   clearInterval(STATE.blitzInterval);
   STATE.blitzInterval = setInterval(() => {
     STATE.blitzTimeLeft = Math.max(0, STATE.blitzTimeLeft - 1);
+    const secs = document.getElementById('blitz-seconds');
+    if (secs) { secs.textContent = STATE.blitzTimeLeft; secs.classList.toggle('low', STATE.blitzTimeLeft <= 10); }
+    const bar = document.getElementById('blitz-bar-fill');
+    if (bar) { bar.style.width = `${100 * STATE.blitzTimeLeft / (STATE.blitzDuration || 30)}%`; bar.classList.toggle('low', STATE.blitzTimeLeft <= 10); }
     const el = document.getElementById('blitz-timer');
     if (el) {
       el.textContent = formatTime(STATE.blitzTimeLeft);
@@ -570,7 +579,6 @@ function renderTacticalPhase() {
   const currentVal = (STATE.tacticalAnswers[STATE.tacticalIndex] ?? '').toString().replace(/"/g, '&quot;');
   const hasPrefix = q.unit && !['%', 'days', 'rolls', 'x', 'years', 'bps', 'contracts'].includes(q.unit);
   const hasSuffix = q.unit && ['%', 'days', 'rolls', 'x', 'years', 'bps', 'contracts'].includes(q.unit);
-  const backDisabled = STATE.tacticalIndex === 0;
 
   return `
   <div class="game-container">
@@ -588,7 +596,10 @@ function renderTacticalPhase() {
     </div>
     <div class="battle-body">
     <div class="numeric-game-area">
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${navPills}</div>
+      <div class="tactical-head">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${navPills}</div>
+        <button class="btn btn-primary" onclick="submitTacticalResults()">Submit Final Answers →</button>
+      </div>
       <div class="numeric-problem">
         <div class="problem-title">${q.title}</div>
         <div class="problem-desc numeric-desc">${(q.description || '').replace(/\n/g, '<br/>')}</div>
@@ -601,12 +612,10 @@ function renderTacticalPhase() {
             oninput="setTacticalAnswer(this.value)" />
           ${hasSuffix ? `<span class="answer-suffix">${q.unit}</span>` : ''}
         </div>
-        <div class="numeric-actions">
-          <button class="btn btn-outline" ${backDisabled ? 'disabled style="opacity:0.4;flex:1"' : 'style="flex:1"'} onclick="goToTacticalQuestion(${STATE.tacticalIndex - 1})">← Back</button>
-          ${STATE.tacticalIndex < total - 1 ? `<button class="btn btn-outline" style="flex:1" onclick="goToTacticalQuestion(${STATE.tacticalIndex + 1})">Next →</button>` : ''}
-          <button class="btn btn-primary" style="flex:2" onclick="submitTacticalResults()">Submit Final Answers →</button>
-        </div>
-        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Navigate freely between questions — nothing locks in until you submit</div>
+        ${STATE.tacticalIndex < total - 1
+          ? `<div class="numeric-actions"><button class="btn btn-outline" style="flex:1" onclick="goToTacticalQuestion(${STATE.tacticalIndex + 1})">Next Question →</button></div>`
+          : ''}
+        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Jump between questions with the numbers above — nothing locks in until you submit</div>
       </div>
     </div>
     <aside class="battle-progress" id="battle-progress">${battleProgressHtml()}</aside>
@@ -620,30 +629,28 @@ function renderTacticalPhase() {
 // tactical answer is right.
 function battleProgressHtml() {
   const opp = escapeHtml(STATE.opponent?.username || 'Opponent');
+  const row = (who, done, slots, labels) => `
+    <div class="bp-row">
+      <div class="bp-who"><span>${who}</span><b>${done.filter(Boolean).length}</b></div>
+      <div class="bp-blocks">${Array.from({ length: slots }, (_, i) =>
+        `<span class="bp-block${done[i] ? ' done' : ''}">${labels ? i + 1 : ''}</span>`).join('')}</div>
+    </div>`;
   if (STATE.battlePhase === 'blitz') {
-    const list = items => items.length
-      ? `<ol class="bp-list">${items.slice().reverse().map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ol>`
-      : '<div class="bp-empty">None yet</div>';
+    const mine = STATE.blitzMySolved.length, theirs = STATE.blitzOppSolved.length;
+    const slots = Math.max(10, Math.ceil(Math.max(mine, theirs) / 5) * 5);
     return `
-      <div class="bp-title">Solved</div>
-      <div class="bp-col"><div class="bp-who">You <b>${STATE.blitzMySolved.length}</b></div>${list(STATE.blitzMySolved)}</div>
-      <div class="bp-col"><div class="bp-who">${opp} <b>${STATE.blitzOppSolved.length}</b></div>${list(STATE.blitzOppSolved)}</div>`;
+      <div class="bp-title">Questions completed</div>
+      ${row('You', Array.from({ length: mine }, () => true), slots, false)}
+      ${row(opp, Array.from({ length: theirs }, () => true), slots, false)}`;
   }
+  const n = STATE.tacticalQuestions.length;
   const mine = tacticalAnsweredIndexes();
-  const rows = STATE.tacticalQuestions.map((_, i) => `
-    <tr><td>Q${i + 1}</td>
-      <td>${mine.includes(i) ? '<span class="bp-done">✓ Answered</span>' : '<span class="bp-todo">—</span>'}</td>
-      <td>${STATE.oppTacticalAnswered.includes(i) ? '<span class="bp-done">✓ Answered</span>' : '<span class="bp-todo">—</span>'}</td></tr>`).join('');
+  const done = list => Array.from({ length: n }, (_, i) => list.includes(i));
+  const submitted = flag => `<span class="bp-final${flag ? ' done' : ''}">${flag ? '✓ Submitted' : 'Not submitted'}</span>`;
   return `
-    <div class="bp-title">Progress</div>
-    <table class="bp-table">
-      <thead><tr><th></th><th>You</th><th>${opp}</th></tr></thead>
-      <tbody>${rows}
-        <tr class="bp-submit"><td>Final</td>
-          <td>${STATE.tacticalSubmitted ? '<span class="bp-done">Submitted</span>' : '<span class="bp-todo">Not yet</span>'}</td>
-          <td>${STATE.oppTacticalSubmitted ? '<span class="bp-done">Submitted</span>' : '<span class="bp-todo">Not yet</span>'}</td></tr>
-      </tbody>
-    </table>`;
+    <div class="bp-title">Questions answered</div>
+    ${row('You', done(mine), n, true)}${submitted(STATE.tacticalSubmitted)}
+    ${row(opp, done(STATE.oppTacticalAnswered), n, true)}${submitted(STATE.oppTacticalSubmitted)}`;
 }
 
 function escapeHtml(s) {
