@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Visitors · QuantBattle admin</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<style>
+  :root { --bg:#f7f8fb; --card:#fff; --t1:#0f172a; --t2:#475569; --t3:#94a3b8; --line:#e2e8f0; --accent:#7c3aed; --yes:#047857; --no:#b91c1c; --wait:#b45309; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0b1220; --card:#121b2e; --t1:#e2e8f0; --t2:#a3b1c6; --t3:#64748b; --line:#22304a; --accent:#a78bfa; --yes:#34d399; --no:#f87171; --wait:#fbbf24; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--t1); font: 14px/1.5 -apple-system, system-ui, 'Inter', sans-serif; }
+  main { max-width: 1400px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.2rem; margin: 0 0 4px; }
+  .muted { color: var(--t2); font-size: 0.85rem; }
+  .bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 16px 0; }
+  input, select, button { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--t1); }
+  button { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; min-width: 140px; }
+  .stat b { display: block; font-size: 1.3rem; }
+  .wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; min-width: 1100px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--t2); position: sticky; top: 0; background: var(--card); }
+  td.q { max-width: 260px; }
+  .id { font-family: ui-monospace, monospace; color: var(--t2); }
+  .yes { color: var(--yes); font-weight: 600; } .no { color: var(--no); } .waiting { color: var(--wait); }
+  details summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  details ol { margin: 6px 0 0; padding-left: 18px; color: var(--t2); }
+  .none { color: var(--t3); }
+  .error { color: var(--no); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Visitors</h1>
+  <div class="muted">One row per visitor who allowed analytics. Clicks and questions are from their first visit (until 30 minutes of inactivity); "Made account" and "Returned" look at everything since.</div>
+  <form class="bar" id="form">
+    <input type="password" id="key" placeholder="Admin key" autocomplete="current-password" aria-label="Admin key" />
+    <select id="days" aria-label="First visit within">
+      <option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="180">Last 180 days</option>
+    </select>
+    <button type="submit">Load</button>
+    <span id="status" class="muted"></span>
+  </form>
+  <div class="stats" id="stats"></div>
+  <div class="wrap"><table>
+    <thead><tr>
+      <th>Visitor</th><th>First visit</th><th>Session length</th><th>Landed on</th><th>First click</th><th>Clicked on</th><th>Last click</th>
+      <th>First question</th><th>Questions seen</th><th>Last question</th><th>Made account</th><th>Returned within 7 days</th>
+    </tr></thead>
+    <tbody id="rows"><tr><td colspan="12" class="none">Enter your admin key to load visitors.</td></tr></tbody>
+  </table></div>
+</main>
+<script>
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const none = '<span class="none">—</span>';
+const fmtTime = iso => new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+const fmtLen = s => s < 60 ? `${s}s` : s < 3600 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${Math.floor(s / 3600)}h ${Math.floor(s % 3600 / 60)}m`;
+const RETURNED = { yes: '<span class="yes">Yes</span>', no: '<span class="no">No</span>', waiting: '<span class="waiting">Still waiting</span>' };
+
+try { document.getElementById('key').value = sessionStorage.getItem('qb_admin_key') || ''; } catch (_) {}
+
+function render(rows) {
+  const decided = rows.filter(r => r.returnedWithin7Days !== 'waiting');
+  const pct = (n, d) => d ? `${Math.round(100 * n / d)}%` : '—';
+  document.getElementById('stats').innerHTML = [
+    ['Visitors', rows.length],
+    ['Made an account', pct(rows.filter(r => r.madeAccount).length, rows.length)],
+    ['Returned within 7 days', `${pct(decided.filter(r => r.returnedWithin7Days === 'yes').length, decided.length)}<span class="muted" style="font-size:.75rem"> of ${decided.length} with a full week</span>`],
+    ['Saw at least one question', pct(rows.filter(r => r.questions.length).length, rows.length)],
+  ].map(([label, v]) => `<div class="stat"><span class="muted">${label}</span><b>${v}</b></div>`).join('');
+
+  document.getElementById('rows').innerHTML = rows.length ? rows.map(r => `<tr>
+    <td class="id" title="${esc(r.visitor)}">${esc(r.visitor.slice(0, 6))}…</td>
+    <td>${fmtTime(r.firstVisit)}</td>
+    <td>${fmtLen(r.sessionSeconds)}</td>
+    <td>${r.landing ? esc(r.landing) : none}</td>
+    <td>${r.firstClick ? esc(r.firstClick) : none}</td>
+    <td>${r.clicks.length ? esc(r.clicks.join(', ')) : none}</td>
+    <td>${r.lastClick ? esc(r.lastClick) : none}</td>
+    <td class="q">${r.firstQuestion ? `“${esc(r.firstQuestion)}”` : none}</td>
+    <td>${r.questions.length ? `<details><summary>${r.questions.length}</summary><ol>${r.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ol></details>` : '0'}</td>
+    <td class="q">${r.lastQuestion ? `“${esc(r.lastQuestion)}”` : none}</td>
+    <td>${r.madeAccount ? '<span class="yes">Yes</span>' : 'No'}</td>
+    <td>${RETURNED[r.returnedWithin7Days]}</td>
+  </tr>`).join('') : '<tr><td colspan="12" class="none">No visitors in this period.</td></tr>';
+}
+
+document.getElementById('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const key = document.getElementById('key').value.trim();
+  const status = document.getElementById('status');
+  status.textContent = 'Loading…'; status.className = 'muted';
+  try {
+    const res = await fetch(`/api/admin/visitors?key=${encodeURIComponent(key)}&days=${document.getElementById('days').value}`);
+    if (!res.ok) throw new Error(res.status === 401 ? 'Wrong admin key.' : `Server error (${res.status}).`);
+    const data = await res.json();
+    try { sessionStorage.setItem('qb_admin_key', key); } catch (_) {}
+    render(data.rows);
+    status.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+  } catch (err) {
+    status.textContent = err.message; status.className = 'error';
+  }
+});
+if (document.getElementById('key').value) document.getElementById('form').requestSubmit();
+</script>
+</body>
+</html>

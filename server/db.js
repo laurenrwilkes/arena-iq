@@ -143,6 +143,14 @@ const insertGameEvent = db.prepare(`
   VALUES (@client_ts, @anon_id, @game_session_id, @event, @question_id, @props)
 `);
 const insertGameEvents = db.transaction(rows => { for (const r of rows) insertGameEvent.run(r); });
+// Every event of each visitor whose first event is on or after the cutoff (admin Visitors page).
+const getVisitorEvents = db.prepare(`
+  SELECT e.anon_id, e.received_at, e.event, e.question_id, e.props
+  FROM game_events e
+  JOIN (SELECT anon_id, MIN(received_at) AS first_at FROM game_events GROUP BY anon_id) f ON f.anon_id = e.anon_id
+  WHERE f.first_at >= ?
+  ORDER BY e.anon_id, e.received_at
+`);
 const getProgress  = db.prepare('SELECT data FROM user_progress WHERE user_id = ?');
 const saveProgress = db.prepare(`
   INSERT INTO user_progress (user_id, data) VALUES (?, ?)
@@ -201,4 +209,4 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   };
 }
 
-module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword, insertGameEvent, insertGameEvents, insertQuestionFlag, getExperimentEvents, getProgress, saveProgress };
+module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword, insertGameEvent, insertGameEvents, insertQuestionFlag, getExperimentEvents, getProgress, saveProgress, getVisitorEvents };

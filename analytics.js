@@ -199,6 +199,8 @@
       if (typeof gtag === 'function') gtag('consent', 'update', { analytics_storage: value });
     } catch (_) {}
     if (value === 'denied') { store.del(ANON_KEY); queue = []; }
+    // The load-time page view was skipped while consent was pending in opt-in regions.
+    if (value === 'granted' && inOptInRegion()) logPageView();
     const el = document.getElementById('qb-consent');
     if (el) el.remove();
     document.body.style.paddingBottom = '';
@@ -246,4 +248,8 @@
   };
   // Back-compat: existing pages call trackEvent() for GA4 funnel events.
   window.trackEvent = function (name, params) { ga(name, params); };
+
+  // Server-only page view (GA4 records its own): powers the admin Visitors page.
+  function logPageView() { track('page_view', { path: location.pathname }, { ga: false }); }
+  logPageView();
 })();

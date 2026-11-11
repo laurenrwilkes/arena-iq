@@ -9,10 +9,11 @@ const crypto = require('crypto');
 const cors = require('cors');
 const path = require('path');
 const db = require('./db');
-const { getRandomQuestion, getRandomQuestions } = require('./questions');
+const { QUESTIONS, getRandomQuestion, getRandomQuestions } = require('./questions');
 const { validateQuestionBank } = require('./validate-questions');
 const experiments = require('./experiments');
 const { buildSnapshot } = require('./experimentMetrics');
+const { buildVisitorRows } = require('./visitors');
 const { Resend } = require('resend');
 
 if (process.env.SENTRY_DSN) {
@@ -264,6 +265,7 @@ const EVENT_NAMES = new Set([
   'game_started', 'game_completed', 'game_abandoned', 'battle_started', 'battle_finished',
   'question_presented', 'question_first_input', 'question_answered', 'solution_revealed',
   'post_game_action', 'wait_started', 'wait_ended', 'experiment_exposure', 'client_error', 'account_created',
+  'page_view',
 ]);
 const eventRate = new Map(); // client key -> { windowStart, count }
 
@@ -1030,6 +1032,18 @@ app.get('/api/admin/stats', (req, res) => {
     dbBootCount: meta?.boot_count || null,
     dbFilePath: db.dbFilePath,
   });
+});
+
+// ── VISITORS (admin/visitors.html) ───────────────────────────────────────────
+// One row per consenting visitor whose first visit is within the last ?days (default 30).
+app.get('/api/admin/visitors', (req, res) => {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
+  const days = Math.min(Math.max(parseInt(req.query.days, 10) || 30, 1), 180);
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const titles = {};
+  for (const tiers of Object.values(QUESTIONS)) for (const list of Object.values(tiers)) for (const q of list) titles[q.id] = q.title;
+  res.json({ days, rows: buildVisitorRows(db.getVisitorEvents.all(cutoff), titles) });
 });
 
 // ── EXPERIMENT RESULTS (read by the engagement agent) ───────────────────────
