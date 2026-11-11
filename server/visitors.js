@@ -70,6 +70,9 @@ function summarizeVisit(evs, titles) {
     questions: [...questions].map(([id, status]) => ({ id, title: titles[id] || id, status })),
     madeAccount: evs.some(e => e.event === 'account_created'),
     signedIn: evs.some(e => e.event === 'page_view' && e.props.signed_in === true),
+    // "Used" means did something, not just opened the page.
+    usedQuestions: evs.some(e => e.event === 'question_presented' && e.props.game === 'practice'),
+    usedBattle: evs.some(e => e.event === 'battle_started'),
   };
 }
 
@@ -101,6 +104,8 @@ function buildVisitors(events, titles, now = Date.now()) {
       firstVisit: visits[0].start,
       lastVisit: last.start,
       hasAccount: visits.some(v => v.madeAccount || v.signedIn),
+      usedQuestions: visits.some(v => v.usedQuestions),
+      usedBattle: visits.some(v => v.usedBattle),
       visits: visits.reverse(),          // newest first
     });
   }

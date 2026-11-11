@@ -52,11 +52,24 @@
 
   <section id="list-view">
     <h1>Visitors</h1>
-    <p class="muted">One row per visitor who allowed analytics. A visit ends after 30 minutes without activity. Click a visitor to see each visit.</p>
+    <p class="muted">One row per visitor who allowed analytics. A visit ends after 30 minutes without activity. Click a visitor to see each visit.
+      "Used questions" means they opened at least one practice question; "used battle" means they started at least one battle.</p>
+    <div class="bar">
+      <label class="muted" for="used">Show</label>
+      <select id="used">
+        <option value="all">All visitors</option>
+        <option value="questions">Used questions</option>
+        <option value="battle">Used battle</option>
+        <option value="both">Used both</option>
+        <option value="questions-only">Questions only (no battle)</option>
+        <option value="battle-only">Battle only (no questions)</option>
+        <option value="neither">Used neither</option>
+      </select>
+    </div>
     <div class="stats" id="stats"></div>
     <div class="wrap"><table>
-      <thead><tr><th>Visitor</th><th>Visits</th><th>Has account</th><th>Last visit</th><th>First visit</th></tr></thead>
-      <tbody id="users"><tr><td colspan="5" class="none">Enter your admin key to load visitors.</td></tr></tbody>
+      <thead><tr><th>Visitor</th><th>Visits</th><th>Used</th><th>Has account</th><th>Last visit</th><th>First visit</th></tr></thead>
+      <tbody id="users"><tr><td colspan="6" class="none">Enter your admin key to load visitors.</td></tr></tbody>
     </table></div>
   </section>
 
@@ -83,24 +96,37 @@ const shortId = id => id.slice(0, 6) + '…';
 const RETURNED = { yes: '<span class="yes">Yes</span>', no: '<span class="no">No</span>', waiting: '<span class="waiting">Still waiting</span>' };
 const MARK = { correct: '✓', wrong: '✗', viewed: '·' };
 let visitors = [];
+const FILTERS = {
+  all: () => true,
+  questions: v => v.usedQuestions,
+  battle: v => v.usedBattle,
+  both: v => v.usedQuestions && v.usedBattle,
+  'questions-only': v => v.usedQuestions && !v.usedBattle,
+  'battle-only': v => v.usedBattle && !v.usedQuestions,
+  neither: v => !v.usedQuestions && !v.usedBattle,
+};
+const usedLabel = v => [v.usedQuestions && 'Questions', v.usedBattle && 'Battle'].filter(Boolean).join(', ') || none;
 
 try { document.getElementById('key').value = sessionStorage.getItem('qb_admin_key') || ''; } catch (_) {}
 
 function renderList() {
+  const filter = document.getElementById('used').value;
+  const shown = visitors.filter(FILTERS[filter]);
   const pct = (n, d) => d ? `${Math.round(100 * n / d)}%` : '—';
   document.getElementById('stats').innerHTML = [
-    ['Visitors', visitors.length],
-    ['Came back at least once', pct(visitors.filter(v => v.visitCount > 1).length, visitors.length)],
-    ['Have an account', pct(visitors.filter(v => v.hasAccount).length, visitors.length)],
+    ['Visitors', filter === 'all' ? shown.length : `${shown.length}<span class="muted" style="font-size:.75rem"> of ${visitors.length}</span>`],
+    ['Came back at least once', pct(shown.filter(v => v.visitCount > 1).length, shown.length)],
+    ['Have an account', pct(shown.filter(v => v.hasAccount).length, shown.length)],
   ].map(([label, v]) => `<div class="stat"><span class="muted">${label}</span><b>${v}</b></div>`).join('');
-  document.getElementById('users').innerHTML = visitors.length ? visitors.map(v => `
+  document.getElementById('users').innerHTML = shown.length ? shown.map(v => `
     <tr data-id="${esc(v.visitor)}" tabindex="0">
       <td class="id" title="${esc(v.visitor)}">${esc(shortId(v.visitor))}</td>
       <td>${v.visitCount}</td>
+      <td>${usedLabel(v)}</td>
       <td>${v.hasAccount ? '<span class="yes">Yes</span>' : 'No'}</td>
       <td>${fmtTime(v.lastVisit)}</td>
       <td>${fmtTime(v.firstVisit)}</td>
-    </tr>`).join('') : '<tr><td colspan="5" class="none">No visitors in this period.</td></tr>';
+    </tr>`).join('') : `<tr><td colspan="6" class="none">${visitors.length ? 'No visitors match this filter.' : 'No visitors in this period.'}</td></tr>`;
 }
 
 function renderDetail(id) {
@@ -108,7 +134,7 @@ function renderDetail(id) {
   if (!v) return showView('list');
   document.getElementById('detail-title').textContent = `Visitor ${shortId(v.visitor)}`;
   document.getElementById('detail-sub').textContent =
-    `${v.visitCount} visit${v.visitCount === 1 ? '' : 's'} · ${v.hasAccount ? 'has an account' : 'no account'} · first seen ${fmtTime(v.firstVisit)}`;
+    `${v.visitCount} visit${v.visitCount === 1 ? '' : 's'} · ${v.hasAccount ? 'has an account' : 'no account'} · used ${[v.usedQuestions && 'questions', v.usedBattle && 'battle'].filter(Boolean).join(' and ') || 'neither questions nor battle'} · first seen ${fmtTime(v.firstVisit)}`;
   document.getElementById('visits').innerHTML = v.visits.map(s => `<tr>
     <td><b>#${s.number}</b><br><span class="muted">${fmtTime(s.start)}</span></td>
     <td>${fmtLen(s.seconds)}</td>
@@ -134,6 +160,7 @@ function route() {
   showView(id ? 'detail' : 'list', id);
 }
 window.addEventListener('hashchange', route);
+document.getElementById('used').addEventListener('change', () => { if (visitors.length) renderList(); });
 
 function openVisitor(id) { location.hash = 'v=' + encodeURIComponent(id); }
 document.getElementById('users').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); if (tr) openVisitor(tr.dataset.id); });
