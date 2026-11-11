@@ -123,7 +123,9 @@
     const key = String(questionId);
     if (presented[key]) return false;
     presented[key] = { at: Date.now(), firstInputSent: false, attempts: 0 };
-    track('question_presented', Object.assign({ question_id: key }, props));
+    // Server-only: one per question in every game, too many for GA4 (practice
+    // views also reach GA4 as questions_viewed). The agent reads the server store.
+    track('question_presented', Object.assign({ question_id: key }, props), { ga: false });
     return true;
   }
   function firstInput(questionId, props) {
@@ -135,11 +137,12 @@
   function answerQuestion(questionId, props) {
     const p = presented[String(questionId)];
     if (p) p.attempts++;
+    // Server-only, like question_presented (practice answers also reach GA4 as question_submitted).
     track('question_answered', Object.assign({
       question_id: String(questionId),
       response_ms: p ? Date.now() - p.at : null,
       attempts: p ? p.attempts : 1,
-    }, props));
+    }, props), { ga: false });
   }
   function resetQuestions() { Object.keys(presented).forEach(k => delete presented[k]); }
 
