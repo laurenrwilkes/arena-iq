@@ -206,8 +206,12 @@
     document.body.style.paddingBottom = '';
   }
 
-  function showBanner() {
-    if (consent() !== null || document.getElementById('qb-consent')) return;
+  // The banner appears on its own only in opt-in regions (Europe), where nothing
+  // is collected until the visitor accepts. Elsewhere analytics is on by default
+  // and the "Analytics settings" link at the bottom of each page opens it to opt out.
+  function showBanner(force) {
+    if (document.getElementById('qb-consent')) return;
+    if (!force && (consent() !== null || !inOptInRegion())) return;
     const optIn = inOptInRegion();
     const el = document.createElement('div');
     el.id = 'qb-consent';
@@ -217,7 +221,7 @@
       <p>We use privacy-friendly analytics (Google Analytics plus anonymous gameplay stats) to make the games better. No ads, no selling data.${optIn ? ' Nothing is collected unless you accept.' : ''}</p>
       <div class="qb-consent-actions">
         <button type="button" class="btn btn-ghost" data-consent="denied">Decline</button>
-        <button type="button" class="btn btn-primary" data-consent="granted">${optIn ? 'Accept' : 'OK'}</button>
+        <button type="button" class="btn btn-primary" data-consent="granted">${optIn || force ? 'Accept' : 'OK'}</button>
       </div>`;
     el.addEventListener('click', (e) => {
       const v = e.target && e.target.getAttribute && e.target.getAttribute('data-consent');
@@ -237,8 +241,20 @@
     // The banner is fixed to the bottom; reserve room so it can't cover buttons at the end of the page.
     document.body.style.paddingBottom = (el.offsetHeight + 32) + 'px';
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showBanner);
-  else showBanner();
+
+  function addSettingsLink() {
+    if (document.getElementById('qb-analytics-settings')) return;
+    const link = document.createElement('div');
+    link.id = 'qb-analytics-settings';
+    link.style.cssText = 'text-align:center;padding:20px 16px;font-size:.75rem;';
+    link.innerHTML = '<button type="button" style="background:none;border:none;padding:0;font:inherit;color:var(--t3,#94a3b8);text-decoration:underline;cursor:pointer">Analytics settings</button>';
+    link.querySelector('button').addEventListener('click', () => showBanner(true));
+    document.body.appendChild(link);
+  }
+
+  function initConsentUI() { showBanner(); addSettingsLink(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initConsentUI);
+  else initConsentUI();
 
   window.QBAnalytics = {
     canTrack, anonId, consent, setConsent, track, ga,
