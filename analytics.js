@@ -266,6 +266,7 @@
   window.trackEvent = function (name, params) { ga(name, params); };
 
   // Server-only page view (GA4 records its own): powers the admin Visitors page.
-  function logPageView() { track('page_view', { path: location.pathname }, { ga: false }); }
+  // signed_in is a yes/no only (no user identity), so the page can show who has an account.
+  function logPageView() { track('page_view', { path: location.pathname, signed_in: !!store.get('aiq_token') }, { ga: false }); }
   logPageView();
 })();

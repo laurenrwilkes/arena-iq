@@ -13,7 +13,7 @@ const { QUESTIONS, getRandomQuestion, getRandomQuestions } = require('./question
 const { validateQuestionBank } = require('./validate-questions');
 const experiments = require('./experiments');
 const { buildSnapshot } = require('./experimentMetrics');
-const { buildVisitorRows } = require('./visitors');
+const { buildVisitors } = require('./visitors');
 const { Resend } = require('resend');
 
 if (process.env.SENTRY_DSN) {
@@ -1045,14 +1045,14 @@ app.get('/api/admin/stats', (req, res) => {
 });
 
 // ── VISITORS (admin/visitors.html) ───────────────────────────────────────────
-// One row per consenting visitor whose first visit is within the last ?days (default 30).
+// Consenting visitors active within the last ?days (default 30), each with all their visits.
 app.get('/api/admin/visitors', (req, res) => {
   if (!isAdmin(req)) return res.status(401).json({ error: 'Unauthorized' });
   const days = Math.min(Math.max(parseInt(req.query.days, 10) || 30, 1), 180);
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
   const titles = {};
   for (const tiers of Object.values(QUESTIONS)) for (const list of Object.values(tiers)) for (const q of list) titles[q.id] = q.title;
-  res.json({ days, rows: buildVisitorRows(db.getVisitorEvents.all(cutoff), titles) });
+  res.json({ days, visitors: buildVisitors(db.getVisitorEvents.all(cutoff), titles) });
 });
 
 // ── EXPERIMENT RESULTS (read by the engagement agent) ───────────────────────
