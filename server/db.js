@@ -209,4 +209,9 @@ function applyMatchResult(player1Id, player2Id, winnerId, matchData) {
   };
 }
 
-module.exports = { getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword, insertGameEvent, insertGameEvents, insertQuestionFlag, getExperimentEvents, getProgress, saveProgress, getVisitorEvents };
+// A consistent copy of the live database (including writes still in the WAL).
+function backupTo(destPath) {
+  return db.backup(destPath);
+}
+
+module.exports = { backupTo, getById, getByEmail, getByUsername, createUser, setElo, setCosmetic, setOwnedBadges, useShield, addShields, getLeaderboard, getUserStats, applyMatchResult, countRealUsers, countUsersSince, countMatches, getMeta, dbFilePath, setResetToken, getByResetTokenHash, resetPassword, insertGameEvent, insertGameEvents, insertQuestionFlag, getExperimentEvents, getProgress, saveProgress, getVisitorEvents };

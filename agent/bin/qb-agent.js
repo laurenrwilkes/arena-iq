@@ -112,7 +112,7 @@ async function main() {
 async function fetchSnapshot(server, id) {
   const key = process.env.QB_ADMIN_KEY;
   if (!key) throw new Error('Set QB_ADMIN_KEY (the server\'s ADMIN_KEY) to read experiment results');
-  const res = await fetch(`${server.replace(/\/$/, '')}/api/admin/experiments/${encodeURIComponent(id)}/snapshot?key=${encodeURIComponent(key)}`);
+  const res = await fetch(`${server.replace(/\/$/, '')}/api/admin/experiments/${encodeURIComponent(id)}/snapshot`, { headers: { 'X-Admin-Key': key } });
   if (!res.ok) throw new Error(`Snapshot request failed: HTTP ${res.status}`);
   return res.json();
 }

@@ -102,7 +102,7 @@ node bin/qb-agent.js conclude EXP-001 keep --by "Lauren" --note "..."
 
 - GA4: page/funnel events, as before (respecting Consent Mode).
 - Server `game_events` table: question-level, wait, abandonment and experiment events from `analytics.js` (only with analytics consent; pseudonymous `qb_anon_id`; pruned after 180 days). `question_flags` stores player flags.
-- `GET /api/admin/experiments/:id/snapshot?key=ADMIN_KEY` turns those events into the per-variant counts `analyze` needs.
+- `GET /api/admin/experiments/:id/snapshot` (send `X-Admin-Key: <ADMIN_KEY>`) turns those events into the per-variant counts `analyze` needs.
 
 ## Layout
 

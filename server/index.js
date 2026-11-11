@@ -1004,19 +1004,29 @@ io.on('connection', (socket) => {
   });
 });
 
+// ── ADMIN AUTH ───────────────────────────────────────────────────────────────
+// Admin endpoints take the key in the X-Admin-Key header, never the URL, so it
+// stays out of request logs. (/api/shop/grant keeps ?key= for its webhook.)
+function isAdmin(req) {
+  const adminKey = process.env.ADMIN_KEY;
+  const given = req.get('x-admin-key');
+  if (!adminKey || typeof given !== 'string') return false;
+  const a = Buffer.from(given), b = Buffer.from(adminKey);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
 // ── DATABASE BACKUP ──────────────────────────────────────────────────────────
 app.get('/api/admin/backup', (req, res) => {
-  const adminKey = process.env.ADMIN_KEY;
-  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
-  try { db.pragma('wal_checkpoint(FULL)'); } catch (_) {}
-  const dbPath = path.join(__dirname, 'arena.db');
-  res.download(dbPath, `arena-backup-${new Date().toISOString().slice(0,10)}.db`);
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Unauthorized' });
+  const tmp = path.join(require('os').tmpdir(), `arena-backup-${Date.now()}.db`);
+  db.backupTo(tmp)
+    .then(() => res.download(tmp, `arena-backup-${new Date().toISOString().slice(0,10)}.db`, () => require('fs').unlink(tmp, () => {})))
+    .catch(err => { console.error('Backup failed:', err.message); res.status(500).json({ error: 'Backup failed' }); });
 });
 
 // ── ADMIN STATS ──────────────────────────────────────────────────────────────
 app.get('/api/admin/stats', (req, res) => {
-  const adminKey = process.env.ADMIN_KEY;
-  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Unauthorized' });
   const todayCutoff = new Date().toISOString().slice(0, 10) + ' 00:00:00';
   const weekCutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
   const meta = db.getMeta.get();
@@ -1037,8 +1047,7 @@ app.get('/api/admin/stats', (req, res) => {
 // ── VISITORS (admin/visitors.html) ───────────────────────────────────────────
 // One row per consenting visitor whose first visit is within the last ?days (default 30).
 app.get('/api/admin/visitors', (req, res) => {
-  const adminKey = process.env.ADMIN_KEY;
-  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Unauthorized' });
   const days = Math.min(Math.max(parseInt(req.query.days, 10) || 30, 1), 180);
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
   const titles = {};
@@ -1048,8 +1057,7 @@ app.get('/api/admin/visitors', (req, res) => {
 
 // ── EXPERIMENT RESULTS (read by the engagement agent) ───────────────────────
 app.get('/api/admin/experiments/:id/snapshot', (req, res) => {
-  const adminKey = process.env.ADMIN_KEY;
-  if (!adminKey || req.query.key !== adminKey) return res.status(401).json({ error: 'Unauthorized' });
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Unauthorized' });
   const exp = experiments.experiments.find(e => e.id === req.params.id || e.id.startsWith(`${req.params.id}-`));
   if (!exp) return res.status(404).json({ error: 'Unknown experiment' });
   res.json({ experimentId: exp.id, ...buildSnapshot(exp, db.getExperimentEvents.all(exp.id)) });

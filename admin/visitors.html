@@ -95,7 +95,7 @@ document.getElementById('form').addEventListener('submit', async e => {
   const status = document.getElementById('status');
   status.textContent = 'Loading…'; status.className = 'muted';
   try {
-    const res = await fetch(`/api/admin/visitors?key=${encodeURIComponent(key)}&days=${document.getElementById('days').value}`);
+    const res = await fetch(`/api/admin/visitors?days=${document.getElementById('days').value}`, { headers: { 'X-Admin-Key': key } });
     if (!res.ok) throw new Error(res.status === 401 ? 'Wrong admin key.' : `Server error (${res.status}).`);
     const data = await res.json();
     try { sessionStorage.setItem('qb_admin_key', key); } catch (_) {}
