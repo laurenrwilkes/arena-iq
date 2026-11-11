@@ -610,7 +610,7 @@ function renderTacticalPhase() {
             ? `<button class="btn btn-outline" style="flex:1" onclick="goToTacticalQuestion(${STATE.tacticalIndex + 1})">Next Question →</button>`
             : ''}
         </div>
-        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Jump between questions with the numbers above — nothing locks in until you submit</div>
+        <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Check answers as often as you like. Tied on points? Whoever submits first wins.</div>
       </div>
     </div>
     <aside class="battle-progress" id="battle-progress">${battleProgressHtml()}</aside>
@@ -1234,7 +1234,9 @@ function renderResult() {
     </div>` : '';
 
   const summaryLine = STATE.isQuantBattle
-    ? (isDraw ? 'Your combined Blitz + Tactical score tied with your opponent\'s.' : `${win?'You':'Your opponent'} scored higher across the Blitz and Tactical rounds.`)
+    ? (d.decidedBySpeed
+        ? `Tied on points. ${win ? 'You' : 'Your opponent'} submitted the Tactical round first.`
+        : isDraw ? 'Your combined Blitz + Tactical score tied with your opponent\'s.' : `${win?'You':'Your opponent'} scored higher across the Blitz and Tactical rounds.`)
     : (isDraw ? 'Neither solved it correctly.' : `${win?'You':'Your opponent'} submitted the correct answer first.`);
 
   const leftCard = STATE.isQuantBattle ? `
@@ -1261,6 +1263,8 @@ function renderResult() {
         <div class="summary-row"><span>Opponent Tactical</span><strong>${d.opponentTacticalScore}/${STATE.tacticalQuestions.length} correct</strong></div>
         <div class="summary-row"><span>Your final score</span><strong style="color:var(--purple-l)">${d.yourFinalScore}</strong></div>
         <div class="summary-row"><span>Opponent final score</span><strong>${d.opponentFinalScore}</strong></div>
+        <div class="summary-row"><span>Your Tactical submit</span><strong>${d.yourSubmitSeconds != null ? formatTime(d.yourSubmitSeconds) : '—'}</strong></div>
+        <div class="summary-row"><span>Opponent Tactical submit</span><strong>${d.opponentSubmitSeconds != null ? formatTime(d.opponentSubmitSeconds) : 'Not yet submitted'}</strong></div>
         <div class="summary-row"><span>Result</span><strong>${isDraw?'Draw':win?'Win':'Loss'}</strong></div>
         ${currentUser ? `
         <div class="summary-row"><span>ELO change</span><strong style="color:${eloColor}">${eloChange>=0?'+':''}${eloChange}</strong></div>

@@ -633,6 +633,7 @@ function scheduleBotTactical(gameId) {
       io.to(human.id).emit('opponent_tactical_progress', { answered: [...answered], submitted: false });
     }, t * 1000)));
     const submitAt = Math.min(times[times.length - 1] + randBetween(5, 20), limit - 1);
+    game.tacticalProgress[bot.id].submittedAt = game.tacticalStartedAt + submitAt * 1000;
     game.botTimers.push(setTimeout(() => {
       if (!games[gameId] || games[gameId].ended) return;
       io.to(human.id).emit('opponent_tactical_progress', { answered: order, submitted: true });
@@ -694,6 +695,7 @@ function endBlitzPhase(gameId) {
   if (!game || game.ended || game.phase !== 'blitz') return;
   clearTimeout(game.blitzTimer);
   game.phase = 'tactical';
+  game.tacticalStartedAt = Date.now();
 
   const s1 = game.blitz[game.p1.id].score;
   const s2 = game.blitz[game.p2.id].score;
@@ -725,11 +727,27 @@ function finishQuantBattle(gameId) {
   const p2Final = (game.blitzPoints?.[game.p2.id] || 0) + (game.tacticalProgress[game.p2.id]?.score || 0);
   game.finalScores = { [game.p1.id]: p1Final, [game.p2.id]: p2Final };
 
+  // Speed breaks ties: tied on points, whoever submitted the tactical round
+  // first wins. (A bot's submit time is simulated; if the human submits before
+  // it, the human was faster.) No submit time on either side stays a draw.
   let winnerSocketId = null;
   if (p1Final > p2Final) winnerSocketId = game.p1.id;
   else if (p2Final > p1Final) winnerSocketId = game.p2.id;
+  else {
+    const t1 = game.tacticalProgress[game.p1.id]?.submittedAt ?? Infinity;
+    const t2 = game.tacticalProgress[game.p2.id]?.submittedAt ?? Infinity;
+    if (t1 !== t2) { winnerSocketId = t1 < t2 ? game.p1.id : game.p2.id; game.decidedBySpeed = true; }
+  }
 
   endGame(gameId, winnerSocketId);
+}
+
+// Seconds into the tactical round when this player submitted; null if they
+// hadn't by the end (a bot's simulated submit can still be in the future).
+function submitSeconds(game, socketId) {
+  const at = game.tacticalProgress?.[socketId]?.submittedAt;
+  if (!at || !game.tacticalStartedAt || at > Date.now()) return null;
+  return Math.round((at - game.tacticalStartedAt) / 1000);
 }
 
 // winnerSocketId = socket.id of winner, or null for draw
@@ -781,6 +799,9 @@ function endGame(gameId, winnerSocketId) {
         opponentTacticalScore: game.tacticalProgress[opp.id]?.score || 0,
         yourFinalScore: game.finalScores?.[self.id] ?? 0,
         opponentFinalScore: game.finalScores?.[opp.id] ?? 0,
+        decidedBySpeed: !!game.decidedBySpeed,
+        yourSubmitSeconds: submitSeconds(game, self.id),
+        opponentSubmitSeconds: submitSeconds(game, opp.id),
       };
     }
     return { ...base, explanation: game.question.explanation, answer: game.question.answer };
@@ -972,6 +993,7 @@ io.on('connection', (socket) => {
 
     progress.score = Math.max(0, Math.min(Number(correctCount) || 0, game.tacticalQuestions.length));
     progress.finished = true;
+    progress.submittedAt = Date.now();
 
     const opponent = game.p1.id === socket.id ? game.p2 : game.p1;
     if (!opponent.isBot) io.to(opponent.id).emit('opponent_tactical_progress', { answered: progress.answered || [], submitted: true });
