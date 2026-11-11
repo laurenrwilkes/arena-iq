@@ -68,8 +68,6 @@ const STATE = {
   blitzOppScore: 0,
   blitzDuration: 30,
   blitzTimeLeft: 30,
-  blitzMySolved: [],        // "47 + 38 = 85", newest last
-  blitzOppSolved: [],
   oppTacticalAnswered: [],  // question indexes the opponent has answered
   oppTacticalSubmitted: false,
   tacticalSentAnswered: '',
@@ -77,6 +75,7 @@ const STATE = {
   blitzPointWon: false,
   tacticalQuestions: [],
   tacticalAnswers: {},
+  tacticalChecks: {},       // index -> 'correct' | 'wrong' | 'empty' (shown only to this player)
   tacticalIndex: 0,
   tacticalTimeLimit: 0,
   tacticalTimeLeft: 0,
@@ -131,8 +130,6 @@ function connectSocket() {
       STATE.blitzQuestion = { text: data.blitzQuestion };
       STATE.blitzScore = 0;
       STATE.blitzOppScore = 0;
-      STATE.blitzMySolved = [];
-      STATE.blitzOppSolved = [];
       STATE.oppTacticalAnswered = [];
       STATE.oppTacticalSubmitted = false;
       STATE.tacticalSentAnswered = '';
@@ -163,10 +160,8 @@ function connectSocket() {
   // This only fires once the server has confirmed a correct answer (see
   // submit_blitz_answer) — flash green, then swap in the next question,
   // matching Mental Math's exact 200ms flash-then-advance timing.
-  socket.on('blitz_question', ({ yourScore, question, solved }) => {
+  socket.on('blitz_question', ({ yourScore, question }) => {
     STATE.blitzScore = yourScore;
-    if (solved) STATE.blitzMySolved.push(solved);
-    refreshBattleProgress();
     QBAnalytics.updateGame({ submitted: yourScore });
     playCorrectSound();
     const scoreEl = document.getElementById('blitz-score');
@@ -187,12 +182,10 @@ function connectSocket() {
     }, 200);
   });
 
-  socket.on('blitz_opponent_update', ({ opponentScore, solved }) => {
+  socket.on('blitz_opponent_update', ({ opponentScore }) => {
     STATE.blitzOppScore = opponentScore;
-    if (solved) STATE.blitzOppSolved.push(solved);
     const el = document.getElementById('blitz-opp-score');
     if (el) el.textContent = opponentScore;
-    refreshBattleProgress();
   });
 
   socket.on('opponent_tactical_progress', ({ answered, submitted }) => {
@@ -207,6 +200,7 @@ function connectSocket() {
     STATE.blitzPointWon = !!data.blitzPointWon;
     STATE.tacticalQuestions = data.questions || [];
     STATE.tacticalAnswers = {};
+    STATE.tacticalChecks = {};
     STATE.tacticalIndex = 0;
     STATE.tacticalTimeLimit = data.timeLimit;
     STATE.tacticalTimeLeft = data.timeLimit;
@@ -502,7 +496,6 @@ function renderBlitzPhase() {
       </div>
       <div style="font-size:0.8rem;color:var(--t3)">Opponent: <span id="blitz-opp-score" style="color:var(--gold);font-weight:700">${STATE.blitzOppScore}</span> correct</div>
     </div>
-    <div class="battle-body">
     <div class="numeric-game-area">
       <div class="numeric-problem" style="text-align:center">
         <div class="problem-title">Rapid-Fire Round</div>
@@ -522,8 +515,6 @@ function renderBlitzPhase() {
         </div>
         <div style="font-size:0.75rem;color:var(--t3);margin-top:8px">Type the answer — it advances automatically when correct</div>
       </div>
-    </div>
-    <aside class="battle-progress" id="battle-progress">${battleProgressHtml()}</aside>
     </div>
   </div>`;
 }
@@ -609,12 +600,16 @@ function renderTacticalPhase() {
         <div class="answer-input-row">
           ${hasPrefix ? `<span class="answer-prefix">${q.unit}</span>` : ''}
           <input type="text" inputmode="decimal" id="tactical-input" class="answer-input" value="${currentVal}"
-            oninput="setTacticalAnswer(this.value)" />
+            oninput="setTacticalAnswer(this.value)" onkeydown="if(event.key==='Enter') checkTacticalAnswer()" />
           ${hasSuffix ? `<span class="answer-suffix">${q.unit}</span>` : ''}
         </div>
-        ${STATE.tacticalIndex < total - 1
-          ? `<div class="numeric-actions"><button class="btn btn-outline" style="flex:1" onclick="goToTacticalQuestion(${STATE.tacticalIndex + 1})">Next Question →</button></div>`
-          : ''}
+        <div class="tactical-feedback" id="tactical-feedback">${tacticalFeedbackHtml(STATE.tacticalIndex)}</div>
+        <div class="numeric-actions">
+          <button class="btn btn-outline" style="flex:1" onclick="checkTacticalAnswer()">Check Answer</button>
+          ${STATE.tacticalIndex < total - 1
+            ? `<button class="btn btn-outline" style="flex:1" onclick="goToTacticalQuestion(${STATE.tacticalIndex + 1})">Next Question →</button>`
+            : ''}
+        </div>
         <div style="font-size:0.75rem;color:var(--t3);margin-top:8px;text-align:center">Jump between questions with the numbers above — nothing locks in until you submit</div>
       </div>
     </div>
@@ -623,34 +618,30 @@ function renderTacticalPhase() {
   </div>`;
 }
 
-// ── BATTLE PROGRESS SIDEBAR ──────────────────────────────────────────────────
-// What each side has done so far. Blitz: questions solved. Tactical: which
-// questions are answered and who has submitted. Never shows whether a
-// tactical answer is right.
+// ── TACTICAL PROGRESS PANEL ──────────────────────────────────────────────────
+// Which questions each side has filled in and who has submitted: a red dot
+// until done, then green. Never shows whether an answer is right.
 function battleProgressHtml() {
   const opp = escapeHtml(STATE.opponent?.username || 'Opponent');
-  const row = (who, done, slots, labels) => `
-    <div class="bp-row">
-      <div class="bp-who"><span>${who}</span><b>${done.filter(Boolean).length}</b></div>
-      <div class="bp-blocks">${Array.from({ length: slots }, (_, i) =>
-        `<span class="bp-block${done[i] ? ' done' : ''}">${labels ? i + 1 : ''}</span>`).join('')}</div>
-    </div>`;
-  if (STATE.battlePhase === 'blitz') {
-    const mine = STATE.blitzMySolved.length, theirs = STATE.blitzOppSolved.length;
-    const slots = Math.max(10, Math.ceil(Math.max(mine, theirs) / 5) * 5);
-    return `
-      <div class="bp-title">Questions completed</div>
-      ${row('You', Array.from({ length: mine }, () => true), slots, false)}
-      ${row(opp, Array.from({ length: theirs }, () => true), slots, false)}`;
-  }
-  const n = STATE.tacticalQuestions.length;
+  const dot = (on, label) => `<span class="bp-dot${on ? ' on' : ''}" title="${label}: ${on ? 'done' : 'not yet'}"></span>`;
+  // Tactical: one row per question, a dot for each player, red until filled in.
   const mine = tacticalAnsweredIndexes();
-  const done = list => Array.from({ length: n }, (_, i) => list.includes(i));
-  const submitted = flag => `<span class="bp-final${flag ? ' done' : ''}">${flag ? '✓ Submitted' : 'Not submitted'}</span>`;
+  const rows = STATE.tacticalQuestions.map((q, i) => `
+    <tr class="bp-q${i === STATE.tacticalIndex ? ' current' : ''}" onclick="goToTacticalQuestion(${i})">
+      <td class="bp-qname"><b>${i + 1}.</b> ${escapeHtml(q.title)}</td>
+      <td>${dot(mine.includes(i), 'You')}</td>
+      <td>${dot(STATE.oppTacticalAnswered.includes(i), opp)}</td>
+    </tr>`).join('');
   return `
     <div class="bp-title">Questions answered</div>
-    ${row('You', done(mine), n, true)}${submitted(STATE.tacticalSubmitted)}
-    ${row(opp, done(STATE.oppTacticalAnswered), n, true)}${submitted(STATE.oppTacticalSubmitted)}`;
+    <table class="bp-table">
+      <thead><tr><th></th><th>You</th><th title="${opp}">${opp}</th></tr></thead>
+      <tbody>${rows}
+        <tr class="bp-submitted"><td class="bp-qname">Submitted</td>
+          <td>${dot(STATE.tacticalSubmitted, 'You')}</td><td>${dot(STATE.oppTacticalSubmitted, opp)}</td></tr>
+      </tbody>
+    </table>
+    <div class="bp-legend"><span class="bp-dot"></span> not yet <span class="bp-dot on"></span> done</div>`;
 }
 
 function escapeHtml(s) {
@@ -678,8 +669,33 @@ function sendTacticalProgress() {
 
 function setTacticalAnswer(value) {
   STATE.tacticalAnswers[STATE.tacticalIndex] = value;
+  // A changed answer needs checking again.
+  if (STATE.tacticalChecks[STATE.tacticalIndex]) {
+    delete STATE.tacticalChecks[STATE.tacticalIndex];
+    const fb = document.getElementById('tactical-feedback');
+    if (fb) fb.innerHTML = '';
+  }
   sendTacticalProgress();
   refreshBattleProgress();
+}
+
+// Players can check any answer as often as they like before submitting.
+// Only they see the result; the opponent only sees that it's filled in.
+function checkTacticalAnswer() {
+  const i = STATE.tacticalIndex;
+  const q = STATE.tacticalQuestions[i];
+  const val = parseAnswerValue(STATE.tacticalAnswers[i]);
+  STATE.tacticalChecks[i] = isNaN(val) ? 'empty' : (Math.abs(val - q.answer) <= (q.tolerance ?? 0.01) ? 'correct' : 'wrong');
+  const fb = document.getElementById('tactical-feedback');
+  if (fb) fb.innerHTML = tacticalFeedbackHtml(i);
+}
+
+function tacticalFeedbackHtml(i) {
+  const c = STATE.tacticalChecks[i];
+  if (c === 'correct') return '<span style="color:var(--green)">✓ Correct</span>';
+  if (c === 'wrong') return '<span style="color:var(--red)">✗ Not quite — try again</span>';
+  if (c === 'empty') return '<span style="color:var(--t3)">Enter a number first.</span>';
+  return '';
 }
 
 function goToTacticalQuestion(i) {

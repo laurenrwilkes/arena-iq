@@ -602,8 +602,8 @@ function simulateBotIfNeeded(game, difficulty) {
 }
 
 // Bot results are decided up front (above); this replays them over time so the
-// human sees the bot's progress live: one blitz solve at a time during the
-// blitz, then tactical questions answered one by one and a final submit.
+// human sees the bot's progress live: its blitz score ticking up, then tactical
+// questions answered one by one and a final submit.
 // Only progress is shared, never whether an answer is right.
 function randBetween(a, b) { return a + Math.random() * (b - a); }
 
@@ -614,8 +614,7 @@ function scheduleBotBlitz(gameId) {
     const times = Array.from({ length: game.blitz[bot.id].score }, () => randBetween(1, BLITZ_DURATION - 0.5)).sort((a, b) => a - b);
     times.forEach((t, i) => game.botTimers.push(setTimeout(() => {
       if (!games[gameId] || games[gameId].ended || games[gameId].phase !== 'blitz') return;
-      const q = generateBlitzQuestion(game.difficulty);
-      io.to(human.id).emit('blitz_opponent_update', { opponentScore: i + 1, solved: `${q.text} = ${q.answer}` });
+      io.to(human.id).emit('blitz_opponent_update', { opponentScore: i + 1 });
     }, t * 1000)));
   }
 }
@@ -944,12 +943,11 @@ io.on('connection', (socket) => {
     if (isNaN(val) || Math.abs(val - entry.question.answer) >= 0.005) return;
 
     entry.score++;
-    const solved = `${entry.question.text} = ${entry.question.answer}`;
     entry.question = generateBlitzQuestion(game.difficulty);
-    socket.emit('blitz_question', { yourScore: entry.score, question: entry.question.text, solved });
+    socket.emit('blitz_question', { yourScore: entry.score, question: entry.question.text });
 
     const opponent = game.p1.id === socket.id ? game.p2 : game.p1;
-    if (!opponent.isBot) io.to(opponent.id).emit('blitz_opponent_update', { opponentScore: entry.score, solved });
+    if (!opponent.isBot) io.to(opponent.id).emit('blitz_opponent_update', { opponentScore: entry.score });
   });
 
   // ── QUANT BATTLE PHASE 2: client self-grades (same trust model as the

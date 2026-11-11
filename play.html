@@ -147,21 +147,23 @@
   .feedback-ok { color: var(--green); padding: 8px 14px; background: rgba(16,185,129,0.1); border-radius: 6px; }
   .feedback-wrong { color: var(--red); padding: 8px 14px; background: rgba(239,68,68,0.08); border-radius: 6px; }
 
-  /* QUANT BATTLE: game area + progress chart on the right (above the question on phones) */
+  /* QUANT BATTLE (tactical): game area + progress panel on the right (above the question on phones) */
   .battle-body { flex: 1; display: flex; min-height: 0; }
   .battle-body .numeric-game-area { min-width: 0; }
   .battle-progress { width: 280px; flex-shrink: 0; border-left: 1px solid var(--border); background: var(--card); padding: 18px 16px; overflow-y: auto; }
   .bp-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--t3); margin-bottom: 14px; }
-  .bp-row { margin-bottom: 6px; }
-  .bp-who { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: var(--t1); margin-bottom: 6px; }
-  .bp-who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .bp-who b { color: var(--green); font-variant-numeric: tabular-nums; font-size: 1rem; }
-  .bp-blocks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 14px; }
-  .bp-block { height: 26px; border-radius: 6px; background: var(--bg2, rgba(255,255,255,0.05)); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: var(--t3); transition: background 0.25s, border-color 0.25s; }
-  .bp-block.done { background: var(--green); border-color: var(--green); color: #052e1c; }
-  .bp-final { display: inline-block; margin: -6px 0 16px; font-size: 0.75rem; font-weight: 700; color: var(--t3); }
-  .bp-final.done { color: var(--green); }
+  .bp-dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--red); vertical-align: middle; transition: background 0.25s; }
+  .bp-dot.on { background: var(--green); }
+  .bp-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .bp-table th { font-size: 0.68rem; font-weight: 700; color: var(--t3); text-align: center; padding: 0 4px 8px; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bp-table td { padding: 9px 4px; border-top: 1px solid var(--border); text-align: center; vertical-align: middle; }
+  .bp-table td.bp-qname { text-align: left; color: var(--t2); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bp-q { cursor: pointer; }
+  .bp-q:hover td, .bp-q.current td { background: rgba(139,92,246,0.08); }
+  .bp-submitted td { font-weight: 700; }
+  .bp-submitted td.bp-qname { color: var(--t1); }
+  .bp-legend { margin-top: 12px; font-size: 0.72rem; color: var(--t3); display: flex; align-items: center; gap: 6px; }
+  .bp-legend .bp-dot { width: 10px; height: 10px; }
 
   /* Blitz countdown */
   .blitz-countdown { margin-bottom: 18px; }
@@ -172,6 +174,7 @@
   .blitz-bar-fill { height: 100%; background: var(--green); border-radius: 99px; transition: width 1s linear, background 0.3s; }
   .blitz-bar-fill.low { background: var(--red); }
 
+  .tactical-feedback { min-height: 22px; margin-top: 10px; text-align: center; font-size: 0.88rem; font-weight: 700; }
   /* Tactical: question numbers + Submit on one row above the question */
   .tactical-head { max-width: 680px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
@@ -182,9 +185,8 @@
     .battle-body .numeric-game-area { flex: none; overflow-y: visible; padding: 20px 16px; }
     .battle-progress { order: -1; width: auto; border-left: none; border-bottom: 1px solid var(--border); padding: 12px 16px; }
     .bp-title { margin-bottom: 8px; }
-    .bp-blocks { grid-template-columns: repeat(10, 1fr); gap: 4px; margin-bottom: 8px; }
-    .bp-block { height: 18px; font-size: 0.65rem; }
-    .bp-final { margin: -2px 0 8px; }
+    .bp-table td { padding: 7px 4px; }
+    .bp-table td.bp-qname { max-width: none; }
     .tactical-head .btn-primary { width: 100%; justify-content: center; }
   }
 
