@@ -302,11 +302,22 @@ function renderSetup() {
   <div class="setup-container">
     <div class="setup-header">
       <div class="section-tag" style="text-align:center">Choose Your Battle</div>
-      <h2 style="text-align:center;margin-bottom:8px">Configure your match</h2>
-      <p style="text-align:center;color:var(--t2);font-size:0.9rem">Solve the problem — first correct submission wins. No account needed to play.</p>
+      <h2 style="text-align:center;margin-bottom:8px;font-weight:800">Start Match</h2>
+      <p style="text-align:center;color:var(--t2);font-size:0.9rem">See where you rank</p>
     </div>
     <div class="setup-step">
-      <div class="step-label">1 — Arena</div>
+      <div class="step-label">1 — Mode</div>
+      <div class="option-grid" id="mode-grid">
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Challenge a Friend — private room with link" onclick="selectOption('mode','private',this)" onkeydown="handleOptionKey(event,this)">
+          <div class="opt-icon">🔗</div><div class="opt-name">Challenge a Friend</div><div class="opt-sub">Private room with link</div>
+        </div>
+        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Online 1v1 Ranked — ELO matchmaking" onclick="selectOption('mode','ranked',this)" onkeydown="handleOptionKey(event,this)">
+          <div class="opt-icon">⚔️</div><div class="opt-name">Online 1v1 Ranked</div><div class="opt-sub">ELO matchmaking</div>
+        </div>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="step-label">2 — Arena</div>
       <div class="option-grid" id="cat-grid">
         <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Quant Finance — Calculate the exact answer" onclick="selectOption('category','quant',this)" onkeydown="handleOptionKey(event,this)">
           <div class="opt-icon">📊</div><div class="opt-name">Quant Finance</div><div class="opt-sub">Calculate the exact answer</div>
@@ -317,27 +328,16 @@ function renderSetup() {
       </div>
     </div>
     <div class="setup-step">
-      <div class="step-label">2 — Difficulty</div>
+      <div class="step-label">3 — Difficulty</div>
       <div class="option-grid" id="diff-grid">
         <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Easy" onclick="selectOption('difficulty','easy',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon" style="font-size:1.5rem">🟢</div><div class="opt-name" style="color:var(--green)">Easy</div><div class="opt-sub" id="diff-sub-easy">5 min limit</div>
+          <div class="opt-icon" style="font-size:1.5rem">🟢</div><div class="opt-name" style="color:var(--green)">Easy</div>
         </div>
         <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Medium" onclick="selectOption('difficulty','medium',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon" style="font-size:1.5rem">🟡</div><div class="opt-name" style="color:var(--gold)">Medium</div><div class="opt-sub" id="diff-sub-medium">8 min limit</div>
+          <div class="opt-icon" style="font-size:1.5rem">🟡</div><div class="opt-name" style="color:var(--gold)">Medium</div>
         </div>
         <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Hard" onclick="selectOption('difficulty','hard',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon" style="font-size:1.5rem">🔴</div><div class="opt-name" style="color:var(--red)">Hard</div><div class="opt-sub" id="diff-sub-hard">12 min limit</div>
-        </div>
-      </div>
-    </div>
-    <div class="setup-step">
-      <div class="step-label">3 — Mode</div>
-      <div class="option-grid" id="mode-grid">
-        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="1v1 Ranked — ELO matchmaking" onclick="selectOption('mode','ranked',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon">⚔️</div><div class="opt-name">1v1 Ranked</div><div class="opt-sub">ELO matchmaking</div>
-        </div>
-        <div class="option-card lift-hover rise-in" role="button" tabindex="0" aria-label="Challenge a Friend — private room with link" onclick="selectOption('mode','private',this)" onkeydown="handleOptionKey(event,this)">
-          <div class="opt-icon">🔗</div><div class="opt-name">Challenge a Friend</div><div class="opt-sub">Private room with link</div>
+          <div class="opt-icon" style="font-size:1.5rem">🔴</div><div class="opt-name" style="color:var(--red)">Hard</div>
         </div>
       </div>
     </div>
@@ -364,7 +364,7 @@ function renderSetup() {
     </div>
     <div style="text-align:center;margin-top:8px">
       <button class="btn btn-primary btn-lg" id="find-btn" onclick="findMatch()" disabled style="opacity:0.4;cursor:not-allowed;min-width:260px">⚔️ Find Match</button>
-      <div style="margin-top:12px;font-size:0.8rem;color:var(--t3)" id="setup-status">Select arena, difficulty, and mode to continue</div>
+      <div style="margin-top:12px;font-size:0.8rem;color:var(--t3)" id="setup-status">Select mode, arena, and difficulty to continue</div>
     </div>
   </div>`;
 }
@@ -373,27 +373,11 @@ function handleOptionKey(event, el) {
   if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); el.click(); }
 }
 
-// Quant's timing is now two-phase (fixed 2-min Blitz + a per-difficulty
-// Tactical round); Tech stays a single timed question as before.
-const DIFF_TIME_LABELS = {
-  quant: { easy: '1 min Blitz + 6 min Tactical', medium: '1 min Blitz + 7.5 min Tactical', hard: '1 min Blitz + 9 min Tactical' },
-  tech: { easy: '5 min limit', medium: '8 min limit', hard: '12 min limit' },
-};
-
-function updateDifficultyLabels() {
-  const labels = DIFF_TIME_LABELS[STATE.category] || DIFF_TIME_LABELS.tech;
-  ['easy', 'medium', 'hard'].forEach(d => {
-    const el = document.getElementById(`diff-sub-${d}`);
-    if (el) el.textContent = labels[d];
-  });
-}
-
 function selectOption(field, val, el) {
   const grids = { category:'cat-grid', difficulty:'diff-grid', mode:'mode-grid' };
   document.querySelectorAll(`#${grids[field]} .option-card`).forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   STATE[field] = val;
-  if (field === 'category') updateDifficultyLabels();
   if (field === 'mode') {
     const sec = document.getElementById('private-room-section');
     const btn = document.getElementById('find-btn');
@@ -409,7 +393,7 @@ function checkSetupReady() {
   if (btn) { btn.disabled = !ready; btn.style.opacity = ready ? '1' : '0.4'; btn.style.cursor = ready ? 'pointer' : 'not-allowed'; }
   const status = document.getElementById('setup-status');
   const labels = { tech:'Tech', quant:'Quant Finance' };
-  if (status && ready) status.textContent = `${labels[STATE.category]} · ${STATE.difficulty} · ${STATE.mode}`;
+  if (status && ready) status.textContent = `Online 1v1 Ranked · ${labels[STATE.category]} · ${STATE.difficulty}`;
 }
 
 // ── MATCHMAKING ───────────────────────────────────────────────────────────────
