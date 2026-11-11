@@ -322,7 +322,7 @@ function renderSetup() {
     <div class="setup-header">
       <div class="section-tag" style="text-align:center">Prove Your Rank</div>
       <h2 style="text-align:center;margin-bottom:8px;font-weight:800">Choose Your Battle</h2>
-      <p style="text-align:center;color:var(--t2);font-size:0.9rem">Climb the board</p>
+      <p style="text-align:center;color:var(--t2);font-size:0.9rem">Go head-to-head. Climb the board.</p>
     </div>
     <div class="setup-step">
       <div class="step-label">1 — Mode</div>
