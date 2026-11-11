@@ -276,12 +276,17 @@ function copyInviteLink(code) {
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
+let lastRenderedScreen = null;
 function render() {
   const app = document.getElementById('app');
   if (STATE.phase === 'setup') app.innerHTML = renderSetup();
   else if (STATE.phase === 'matchmaking') app.innerHTML = renderMatchmaking();
   else if (STATE.phase === 'game') app.innerHTML = renderGame();
   else if (STATE.phase === 'result') app.innerHTML = renderResult();
+  // A new screen starts at the top; otherwise the scroll left over from setup
+  // (Find Match is low on the page) hides the timer bar under the fixed nav.
+  const screen = `${STATE.phase}:${STATE.isQuantBattle ? STATE.battlePhase : ''}`;
+  if (screen !== lastRenderedScreen) { lastRenderedScreen = screen; window.scrollTo(0, 0); }
   updateNavUser();
   if (STATE.phase === 'setup' && STATE.pendingRoomCode) {
     setTimeout(() => {
@@ -502,11 +507,6 @@ function renderBlitzPhase() {
         <div class="problem-desc numeric-desc" style="font-size:0.85rem;color:var(--t3)">Answer as many as you can before time runs out.</div>
       </div>
       <div class="numeric-answer-box" style="text-align:center">
-        <div class="blitz-countdown" aria-live="off">
-          <div class="blitz-seconds" id="blitz-seconds">${STATE.blitzTimeLeft}</div>
-          <div class="blitz-seconds-label">seconds left</div>
-          <div class="blitz-bar"><div class="blitz-bar-fill" id="blitz-bar-fill" style="width:${100 * STATE.blitzTimeLeft / (STATE.blitzDuration || 30)}%"></div></div>
-        </div>
         <div class="answer-label">Your Score: <span id="blitz-score" style="color:var(--green)">${STATE.blitzScore}</span> correct</div>
         <div id="blitz-question" style="font-size:2.2rem;font-weight:800;margin:18px 0;font-family:'JetBrains Mono',monospace">${STATE.blitzQuestion?.text || '...'} = ?</div>
         <div class="answer-input-row">
@@ -523,10 +523,6 @@ function startBlitzTimer() {
   clearInterval(STATE.blitzInterval);
   STATE.blitzInterval = setInterval(() => {
     STATE.blitzTimeLeft = Math.max(0, STATE.blitzTimeLeft - 1);
-    const secs = document.getElementById('blitz-seconds');
-    if (secs) { secs.textContent = STATE.blitzTimeLeft; secs.classList.toggle('low', STATE.blitzTimeLeft <= 10); }
-    const bar = document.getElementById('blitz-bar-fill');
-    if (bar) { bar.style.width = `${100 * STATE.blitzTimeLeft / (STATE.blitzDuration || 30)}%`; bar.classList.toggle('low', STATE.blitzTimeLeft <= 10); }
     const el = document.getElementById('blitz-timer');
     if (el) {
       el.textContent = formatTime(STATE.blitzTimeLeft);
