@@ -68,8 +68,8 @@
     </div>
     <div class="stats" id="stats"></div>
     <div class="wrap"><table>
-      <thead><tr><th>Visitor</th><th>Visits</th><th>Used</th><th>Has account</th><th>Last visit</th><th>First visit</th></tr></thead>
-      <tbody id="users"><tr><td colspan="6" class="none">Enter your admin key to load visitors.</td></tr></tbody>
+      <thead><tr><th>Visitor</th><th>Visits</th><th>Avg session</th><th>Used</th><th>Has account</th><th>Last visit</th><th>First visit</th></tr></thead>
+      <tbody id="users"><tr><td colspan="7" class="none">Enter your admin key to load visitors.</td></tr></tbody>
     </table></div>
   </section>
 
@@ -105,6 +105,7 @@ const FILTERS = {
   'battle-only': v => v.usedBattle && !v.usedQuestions,
   neither: v => !v.usedQuestions && !v.usedBattle,
 };
+const avgLen = visits => visits.length ? fmtLen(Math.round(visits.reduce((t, s) => t + s.seconds, 0) / visits.length)) : '—';
 const usedLabel = v => [v.usedQuestions && 'Questions', v.usedBattle && 'Battle'].filter(Boolean).join(', ') || none;
 
 try { document.getElementById('key').value = sessionStorage.getItem('qb_admin_key') || ''; } catch (_) {}
@@ -117,16 +118,18 @@ function renderList() {
     ['Visitors', filter === 'all' ? shown.length : `${shown.length}<span class="muted" style="font-size:.75rem"> of ${visitors.length}</span>`],
     ['Came back at least once', pct(shown.filter(v => v.visitCount > 1).length, shown.length)],
     ['Have an account', pct(shown.filter(v => v.hasAccount).length, shown.length)],
+    ['Avg time per session', avgLen(shown.flatMap(v => v.visits))],
   ].map(([label, v]) => `<div class="stat"><span class="muted">${label}</span><b>${v}</b></div>`).join('');
   document.getElementById('users').innerHTML = shown.length ? shown.map(v => `
     <tr data-id="${esc(v.visitor)}" tabindex="0">
       <td class="id" title="${esc(v.visitor)}">${esc(shortId(v.visitor))}</td>
       <td>${v.visitCount}</td>
+      <td>${avgLen(v.visits)}</td>
       <td>${usedLabel(v)}</td>
       <td>${v.hasAccount ? '<span class="yes">Yes</span>' : 'No'}</td>
       <td>${fmtTime(v.lastVisit)}</td>
       <td>${fmtTime(v.firstVisit)}</td>
-    </tr>`).join('') : `<tr><td colspan="6" class="none">${visitors.length ? 'No visitors match this filter.' : 'No visitors in this period.'}</td></tr>`;
+    </tr>`).join('') : `<tr><td colspan="7" class="none">${visitors.length ? 'No visitors match this filter.' : 'No visitors in this period.'}</td></tr>`;
 }
 
 function renderDetail(id) {
@@ -134,7 +137,7 @@ function renderDetail(id) {
   if (!v) return showView('list');
   document.getElementById('detail-title').textContent = `Visitor ${shortId(v.visitor)}`;
   document.getElementById('detail-sub').textContent =
-    `${v.visitCount} visit${v.visitCount === 1 ? '' : 's'} · ${v.hasAccount ? 'has an account' : 'no account'} · used ${[v.usedQuestions && 'questions', v.usedBattle && 'battle'].filter(Boolean).join(' and ') || 'neither questions nor battle'} · first seen ${fmtTime(v.firstVisit)}`;
+    `${v.visitCount} visit${v.visitCount === 1 ? '' : 's'} · avg session ${avgLen(v.visits)} · ${v.hasAccount ? 'has an account' : 'no account'} · used ${[v.usedQuestions && 'questions', v.usedBattle && 'battle'].filter(Boolean).join(' and ') || 'neither questions nor battle'} · first seen ${fmtTime(v.firstVisit)}`;
   document.getElementById('visits').innerHTML = v.visits.map(s => `<tr>
     <td><b>#${s.number}</b><br><span class="muted">${fmtTime(s.start)}</span></td>
     <td>${fmtLen(s.seconds)}</td>
