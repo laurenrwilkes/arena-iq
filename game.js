@@ -238,6 +238,9 @@ function connectSocket() {
       game_session_id: STATE.gameSessionId, won: !!data.youWin, is_draw: !!data.isDraw, is_quant_battle: !!STATE.isQuantBattle,
       category: STATE.category, difficulty: STATE.difficulty, opponent_type: STATE.opponentType,
       duration_ms: finished ? Date.now() - finished.startedAt : null,
+      your_score: data.isQuantBattle ? data.yourFinalScore : null,
+      opponent_score: data.isQuantBattle ? data.opponentFinalScore : null,
+      decided_by_speed: !!data.decidedBySpeed,
     });
     QBAnalytics.showResult(STATE.gameSessionId, 'battle');
     clearInterval(STATE.timerInterval);

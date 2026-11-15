@@ -23,7 +23,7 @@
   .stat b { display: block; font-size: 1.3rem; }
   .wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
   table { border-collapse: collapse; width: 100%; }
-  #visits-table { min-width: 1000px; }
+  #visits-table { min-width: 1150px; }
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--t2); background: var(--card); }
   #users tr { cursor: pointer; }
@@ -35,6 +35,8 @@
   .mark { display: inline-block; width: 1.2em; font-weight: 700; }
   .mark.correct { color: var(--yes); } .mark.wrong { color: var(--no); } .mark.viewed { color: var(--t3); }
   .none { color: var(--t3); }
+  .tag { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 0 6px; margin-left: 6px; border-radius: 6px; background: var(--hover); color: var(--t2); }
+  ul.qs .q-sub { color: var(--t3); font-size: 0.8rem; }
   .error { color: var(--no); }
   [hidden] { display: none !important; }
 </style>
@@ -68,8 +70,8 @@
     </div>
     <div class="stats" id="stats"></div>
     <div class="wrap"><table>
-      <thead><tr><th>Visitor</th><th>Visits</th><th>Avg session</th><th>Used</th><th>Has account</th><th>Last visit</th><th>First visit</th></tr></thead>
-      <tbody id="users"><tr><td colspan="7" class="none">Enter your admin key to load visitors.</td></tr></tbody>
+      <thead><tr><th>Visitor</th><th>Visits</th><th>Avg session</th><th>Used</th><th>Battles</th><th>Has account</th><th>Last visit</th><th>First visit</th></tr></thead>
+      <tbody id="users"><tr><td colspan="8" class="none">Enter your admin key to load visitors.</td></tr></tbody>
     </table></div>
   </section>
 
@@ -80,11 +82,11 @@
     <div class="wrap"><table id="visits-table">
       <thead><tr>
         <th>Visit</th><th>Session length</th><th>Landed on</th><th>First click</th><th>Clicked into</th><th>Last click</th>
-        <th>Questions</th><th>Made account this visit</th><th>Returned within 7 days</th>
+        <th>Questions</th><th>Battles</th><th>Made account this visit</th><th>Returned within 7 days</th>
       </tr></thead>
       <tbody id="visits"></tbody>
     </table></div>
-    <p class="muted"><span class="mark correct">✓</span>answered correctly · <span class="mark wrong">✗</span>answered wrong · <span class="mark viewed">·</span>viewed only</p>
+    <p class="muted"><span class="mark correct">✓</span>answered correctly · <span class="mark wrong">✗</span>answered wrong · <span class="mark viewed">·</span>viewed only · <span class="tag" style="margin-left:0">battle</span> asked in a battle (otherwise on the practice page) · "No result" means the battle never reported an end (still playing, or the browser closed without telling us)</p>
   </section>
 </main>
 <script>
@@ -106,6 +108,23 @@ const FILTERS = {
   neither: v => !v.usedQuestions && !v.usedBattle,
 };
 const avgLen = visits => visits.length ? fmtLen(Math.round(visits.reduce((t, s) => t + s.seconds, 0) / visits.length)) : '—';
+const PHASE = { blitz: 'the mental math round', tactical: 'the tactical round', waiting: 'waiting for the opponent', question: 'the question' };
+const RESULT = { won: '<span class="yes">Won</span>', lost: '<span class="no">Lost</span>', draw: 'Draw', quit: '<span class="no">Quit</span>', unknown: '<span class="none">No result</span>' };
+function battlesSummary(c) {
+  if (!c || !c.started) return none;
+  const parts = [`${c.started} started`, `${c.finished} finished`];
+  if (c.won) parts.push(`${c.won} won`);
+  if (c.quit) parts.push(`<span class="no">${c.quit} quit</span>`);
+  return parts.join(' · ');
+}
+function battleLine(b) {
+  const bits = [RESULT[b.result] || esc(b.result)];
+  if (b.score != null && b.opponentScore != null) bits.push(`${b.score}–${b.opponentScore}${b.decidedBySpeed ? ' <span class="q-sub">(tie, decided by submit speed)</span>' : ''}`);
+  if (b.result === 'quit' && b.quitDuring) bits.push(`during ${esc(PHASE[b.quitDuring] || b.quitDuring)}`);
+  if (b.opponent) bits.push(`vs ${esc(b.opponent === 'bot' ? 'bot' : b.opponent)}`);
+  if (b.seconds != null) bits.push(`<span class="q-sub">(${fmtLen(b.seconds)})</span>`);
+  return `<li>${bits.join(' ')}</li>`;
+}
 const usedLabel = v => [v.usedQuestions && 'Questions', v.usedBattle && 'Battle'].filter(Boolean).join(', ') || none;
 
 try { document.getElementById('key').value = sessionStorage.getItem('qb_admin_key') || ''; } catch (_) {}
@@ -119,6 +138,7 @@ function renderList() {
     ['Came back at least once', pct(shown.filter(v => v.visitCount > 1).length, shown.length)],
     ['Have an account', pct(shown.filter(v => v.hasAccount).length, shown.length)],
     ['Avg time per session', avgLen(shown.flatMap(v => v.visits))],
+    ['Battles finished', (() => { const b = shown.map(v => v.battles || {}); const st = b.reduce((t, c) => t + (c.started || 0), 0); return st ? `${pct(b.reduce((t, c) => t + (c.finished || 0), 0), st)}<span class="muted" style="font-size:.75rem"> of ${st} started</span>` : '—'; })()],
   ].map(([label, v]) => `<div class="stat"><span class="muted">${label}</span><b>${v}</b></div>`).join('');
   document.getElementById('users').innerHTML = shown.length ? shown.map(v => `
     <tr data-id="${esc(v.visitor)}" tabindex="0">
@@ -126,10 +146,11 @@ function renderList() {
       <td>${v.visitCount}</td>
       <td>${avgLen(v.visits)}</td>
       <td>${usedLabel(v)}</td>
+      <td>${battlesSummary(v.battles)}</td>
       <td>${v.hasAccount ? '<span class="yes">Yes</span>' : 'No'}</td>
       <td>${fmtTime(v.lastVisit)}</td>
       <td>${fmtTime(v.firstVisit)}</td>
-    </tr>`).join('') : `<tr><td colspan="7" class="none">${visitors.length ? 'No visitors match this filter.' : 'No visitors in this period.'}</td></tr>`;
+    </tr>`).join('') : `<tr><td colspan="8" class="none">${visitors.length ? 'No visitors match this filter.' : 'No visitors in this period.'}</td></tr>`;
 }
 
 function renderDetail(id) {
@@ -145,7 +166,8 @@ function renderDetail(id) {
     <td>${s.firstClick ? esc(s.firstClick) : none}</td>
     <td>${s.clicks.length ? esc(s.clicks.join(', ')) : none}</td>
     <td>${s.lastClick ? esc(s.lastClick) : none}</td>
-    <td>${s.questions.length ? `<ul class="qs">${s.questions.map(q => `<li><span class="mark ${q.status}">${MARK[q.status]}</span>${esc(q.title)}</li>`).join('')}</ul>` : none}</td>
+    <td>${s.questions.length ? `<ul class="qs">${s.questions.map(q => `<li><span class="mark ${q.status}">${MARK[q.status]}</span>${esc(q.title)}${q.source === 'battle' ? '<span class="tag">battle</span>' : ''}</li>`).join('')}</ul>` : none}</td>
+    <td>${s.battles && s.battles.length ? `<ul class="qs">${s.battles.map(battleLine).join('')}</ul>` : none}</td>
     <td>${s.madeAccount ? '<span class="yes">Yes</span>' : 'No'}</td>
     <td>${RETURNED[s.returnedWithin7Days]}</td>
   </tr>`).join('');

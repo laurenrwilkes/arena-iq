@@ -49,14 +49,41 @@ function summarizeVisit(evs, titles) {
     if (label && clicks[clicks.length - 1] !== label) clicks.push(label);
   }
 
-  // Questions in the order seen; 'correct' beats 'wrong' beats 'viewed'.
+  // Questions in the order seen, tagged with where they were asked (practice
+  // page or a battle); 'correct' beats 'wrong' beats 'viewed'.
   const questions = new Map();
   for (const e of evs) {
     if (!e.question_id) continue;
-    if (e.event === 'question_presented' && !questions.has(e.question_id)) questions.set(e.question_id, 'viewed');
+    const source = e.props.game === 'battle' ? 'battle' : 'questions';
+    const key = `${source}:${e.question_id}`;
+    if (e.event === 'question_presented' && !questions.has(key)) questions.set(key, { id: e.question_id, source, status: 'viewed' });
     if (e.event === 'question_answered') {
-      const prev = questions.get(e.question_id);
-      questions.set(e.question_id, e.props.correct ? 'correct' : (prev === 'correct' ? 'correct' : 'wrong'));
+      const q = questions.get(key) || { id: e.question_id, source, status: 'viewed' };
+      q.status = e.props.correct || q.status === 'correct' ? 'correct' : 'wrong';
+      questions.set(key, q);
+    }
+  }
+
+  // Battles in the order started. Each ends as won / lost / draw, quit (left
+  // the page mid-battle, with the phase they were in), or unknown (no end
+  // event: still playing, or the browser closed without telling us).
+  const battles = new Map();
+  for (const e of evs) {
+    const id = e.game_session_id || e.props.game_session_id;
+    if (e.event === 'battle_started' && id) {
+      battles.set(id, { result: 'unknown', opponent: e.props.opponent_type || null, difficulty: e.props.difficulty || null });
+    } else if (e.event === 'battle_finished' && battles.has(id)) {
+      Object.assign(battles.get(id), {
+        result: e.props.is_draw ? 'draw' : e.props.won ? 'won' : 'lost',
+        score: e.props.your_score ?? null, opponentScore: e.props.opponent_score ?? null,
+        decidedBySpeed: !!e.props.decided_by_speed,
+        seconds: Number.isFinite(e.props.duration_ms) ? Math.round(e.props.duration_ms / 1000) : null,
+      });
+    } else if (e.event === 'game_abandoned' && e.props.game === 'battle' && battles.has(id)) {
+      Object.assign(battles.get(id), {
+        result: 'quit', quitDuring: e.props.phase || null,
+        seconds: Number.isFinite(e.props.elapsed_ms) ? Math.round(e.props.elapsed_ms / 1000) : null,
+      });
     }
   }
 
@@ -67,13 +94,24 @@ function summarizeVisit(evs, titles) {
     clicks,
     firstClick: clicks[0] || null,
     lastClick: clicks[clicks.length - 1] || null,
-    questions: [...questions].map(([id, status]) => ({ id, title: titles[id] || id, status })),
+    questions: [...questions.values()].map(q => ({ ...q, title: titles[q.id] || q.id })),
+    battles: [...battles.values()],
     madeAccount: evs.some(e => e.event === 'account_created'),
     signedIn: evs.some(e => e.event === 'page_view' && e.props.signed_in === true),
     // "Used" means did something, not just opened the page.
     usedQuestions: evs.some(e => e.event === 'question_presented' && e.props.game === 'practice'),
     usedBattle: evs.some(e => e.event === 'battle_started'),
   };
+}
+
+function battleCounts(battles) {
+  const c = { started: battles.length, finished: 0, won: 0, quit: 0 };
+  for (const b of battles) {
+    if (['won', 'lost', 'draw'].includes(b.result)) c.finished++;
+    if (b.result === 'won') c.won++;
+    if (b.result === 'quit') c.quit++;
+  }
+  return c;
 }
 
 // events: [{ anon_id, received_at, event, question_id, props }] sorted by anon_id, received_at.
@@ -106,10 +144,11 @@ function buildVisitors(events, titles, now = Date.now()) {
       hasAccount: visits.some(v => v.madeAccount || v.signedIn),
       usedQuestions: visits.some(v => v.usedQuestions),
       usedBattle: visits.some(v => v.usedBattle),
+      battles: battleCounts(visits.flatMap(v => v.battles)),
       visits: visits.reverse(),          // newest first
     });
   }
   return visitors.sort((a, b) => b.lastVisit.localeCompare(a.lastVisit));
 }
 
-module.exports = { buildVisitors, SESSION_GAP_MS };
+module.exports = { buildVisitors, battleCounts, SESSION_GAP_MS };
