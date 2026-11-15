@@ -269,4 +269,32 @@
   // signed_in is a yes/no only (no user identity), so the page can show who has an account.
   function logPageView() { track('page_view', { path: location.pathname, signed_in: !!store.get('aiq_token') }, { ga: false }); }
   logPageView();
+
+  // Server-only: the text of each button or link clicked (never anything typed),
+  // so the Visitors page can show the last thing someone clicked before leaving.
+  // The signed-in user's own username is replaced with [you].
+  function ownUsername() {
+    try {
+      const t = store.get('aiq_token');
+      return t ? JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).username || null : null;
+    } catch (_) { return null; }
+  }
+  function clickLabel(el) {
+    let s = el.getAttribute('data-track') || el.getAttribute('aria-label') ||
+      (el.innerText || '').trim().split('\n')[0] || el.getAttribute('title') || el.id || el.tagName.toLowerCase();
+    s = s.replace(/\s+/g, ' ').trim().slice(0, 60);
+    const me = ownUsername();
+    if (me) s = s.split(me).join('[you]');
+    return s;
+  }
+  let lastClick = { label: null, at: 0 };
+  document.addEventListener('click', e => {
+    if (!canTrack()) return;
+    const el = e.target && e.target.closest && e.target.closest('a, button, [role="button"], [onclick], summary, .option-card');
+    if (!el || el.closest('#qb-consent, [data-no-track]')) return;
+    const label = clickLabel(el);
+    if (!label || (label === lastClick.label && Date.now() - lastClick.at < 1000)) return;
+    lastClick = { label, at: Date.now() };
+    track('ui_click', { label, path: location.pathname }, { ga: false });
+  }, true);
 })();

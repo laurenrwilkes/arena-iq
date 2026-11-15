@@ -87,13 +87,16 @@ function summarizeVisit(evs, titles) {
     }
   }
 
+  // The very last button or link they clicked, and on which part of the site.
+  const lastUi = [...evs].reverse().find(e => e.event === 'ui_click' && e.props.label);
+
   return {
     start: new Date(evs[0].t).toISOString(),
     seconds: Math.round((evs[evs.length - 1].t - evs[0].t) / 1000),
     landing,
     clicks,
     firstClick: clicks[0] || null,
-    lastClick: clicks[clicks.length - 1] || null,
+    lastClick: lastUi ? `${lastUi.props.label} (${sectionFor(lastUi.props.path)})` : (clicks[clicks.length - 1] || null),
     questions: [...questions.values()].map(q => ({ ...q, title: titles[q.id] || q.id })),
     battles: [...battles.values()],
     madeAccount: evs.some(e => e.event === 'account_created'),
@@ -145,6 +148,8 @@ function buildVisitors(events, titles, now = Date.now()) {
       usedQuestions: visits.some(v => v.usedQuestions),
       usedBattle: visits.some(v => v.usedBattle),
       battles: battleCounts(visits.flatMap(v => v.battles)),
+      questionSessions: visits.filter(v => v.usedQuestions).length,
+      battleSessions: visits.filter(v => v.usedBattle).length,
       visits: visits.reverse(),          // newest first
     });
   }

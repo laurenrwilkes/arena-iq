@@ -265,7 +265,7 @@ const EVENT_NAMES = new Set([
   'game_started', 'game_completed', 'game_abandoned', 'battle_started', 'battle_finished',
   'question_presented', 'question_first_input', 'question_answered', 'solution_revealed',
   'post_game_action', 'wait_started', 'wait_ended', 'experiment_exposure', 'client_error', 'account_created',
-  'page_view',
+  'page_view', 'ui_click',
 ]);
 const eventRate = new Map(); // client key -> { windowStart, count }
 

@@ -55,7 +55,7 @@
   <section id="list-view">
     <h1>Visitors</h1>
     <p class="muted">One row per visitor who allowed analytics. A visit ends after 30 minutes without activity. Click a visitor to see each visit.
-      "Used questions" means they opened at least one practice question; "used battle" means they started at least one battle.</p>
+      A question session is a visit where they opened at least one practice question; a battle session is a visit where they started at least one battle.</p>
     <div class="bar">
       <label class="muted" for="used">Show</label>
       <select id="used">
@@ -70,7 +70,7 @@
     </div>
     <div class="stats" id="stats"></div>
     <div class="wrap"><table>
-      <thead><tr><th>Visitor</th><th>Visits</th><th>Avg session</th><th>Used</th><th>Battles</th><th>Has account</th><th>Last visit</th><th>First visit</th></tr></thead>
+      <thead><tr><th>Visitor</th><th>Visits</th><th>Avg session</th><th>Question sessions</th><th>Battle sessions</th><th>Has account</th><th>Last visit</th><th>First visit</th></tr></thead>
       <tbody id="users"><tr><td colspan="8" class="none">Enter your admin key to load visitors.</td></tr></tbody>
     </table></div>
   </section>
@@ -81,7 +81,7 @@
     <p class="muted" id="detail-sub"></p>
     <div class="wrap"><table id="visits-table">
       <thead><tr>
-        <th>Visit</th><th>Session length</th><th>Landed on</th><th>First click</th><th>Clicked into</th><th>Last click</th>
+        <th>Visit</th><th>Session length</th><th>Landed on</th><th>First click</th><th>Clicked into</th><th>Last thing clicked</th>
         <th>Questions</th><th>Battles</th><th>Made account this visit</th><th>Returned within 7 days</th>
       </tr></thead>
       <tbody id="visits"></tbody>
@@ -110,13 +110,6 @@ const FILTERS = {
 const avgLen = visits => visits.length ? fmtLen(Math.round(visits.reduce((t, s) => t + s.seconds, 0) / visits.length)) : '—';
 const PHASE = { blitz: 'the mental math round', tactical: 'the tactical round', waiting: 'waiting for the opponent', question: 'the question' };
 const RESULT = { won: '<span class="yes">Won</span>', lost: '<span class="no">Lost</span>', draw: 'Draw', quit: '<span class="no">Quit</span>', unknown: '<span class="none">No result</span>' };
-function battlesSummary(c) {
-  if (!c || !c.started) return none;
-  const parts = [`${c.started} started`, `${c.finished} finished`];
-  if (c.won) parts.push(`${c.won} won`);
-  if (c.quit) parts.push(`<span class="no">${c.quit} quit</span>`);
-  return parts.join(' · ');
-}
 function battleLine(b) {
   const bits = [RESULT[b.result] || esc(b.result)];
   if (b.score != null && b.opponentScore != null) bits.push(`${b.score}–${b.opponentScore}${b.decidedBySpeed ? ' <span class="q-sub">(tie, decided by submit speed)</span>' : ''}`);
@@ -125,7 +118,6 @@ function battleLine(b) {
   if (b.seconds != null) bits.push(`<span class="q-sub">(${fmtLen(b.seconds)})</span>`);
   return `<li>${bits.join(' ')}</li>`;
 }
-const usedLabel = v => [v.usedQuestions && 'Questions', v.usedBattle && 'Battle'].filter(Boolean).join(', ') || none;
 
 try { document.getElementById('key').value = sessionStorage.getItem('qb_admin_key') || ''; } catch (_) {}
 
@@ -138,15 +130,14 @@ function renderList() {
     ['Came back at least once', pct(shown.filter(v => v.visitCount > 1).length, shown.length)],
     ['Have an account', pct(shown.filter(v => v.hasAccount).length, shown.length)],
     ['Avg time per session', avgLen(shown.flatMap(v => v.visits))],
-    ['Battles finished', (() => { const b = shown.map(v => v.battles || {}); const st = b.reduce((t, c) => t + (c.started || 0), 0); return st ? `${pct(b.reduce((t, c) => t + (c.finished || 0), 0), st)}<span class="muted" style="font-size:.75rem"> of ${st} started</span>` : '—'; })()],
   ].map(([label, v]) => `<div class="stat"><span class="muted">${label}</span><b>${v}</b></div>`).join('');
   document.getElementById('users').innerHTML = shown.length ? shown.map(v => `
     <tr data-id="${esc(v.visitor)}" tabindex="0">
       <td class="id" title="${esc(v.visitor)}">${esc(shortId(v.visitor))}</td>
       <td>${v.visitCount}</td>
       <td>${avgLen(v.visits)}</td>
-      <td>${usedLabel(v)}</td>
-      <td>${battlesSummary(v.battles)}</td>
+      <td>${v.questionSessions || 0}</td>
+      <td>${v.battleSessions || 0}</td>
       <td>${v.hasAccount ? '<span class="yes">Yes</span>' : 'No'}</td>
       <td>${fmtTime(v.lastVisit)}</td>
       <td>${fmtTime(v.firstVisit)}</td>
