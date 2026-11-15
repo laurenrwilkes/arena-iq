@@ -265,7 +265,7 @@ const EVENT_NAMES = new Set([
   'game_started', 'game_completed', 'game_abandoned', 'battle_started', 'battle_finished',
   'question_presented', 'question_first_input', 'question_answered', 'solution_revealed',
   'post_game_action', 'wait_started', 'wait_ended', 'experiment_exposure', 'client_error', 'account_created',
-  'page_view', 'ui_click',
+  'page_view', 'ui_click', 'page_hidden',
 ]);
 const eventRate = new Map(); // client key -> { windowStart, count }
 
@@ -291,6 +291,10 @@ app.post('/api/events', express.text({ type: '*/*', limit: '64kb' }), (req, res)
   let body = req.body;
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch { return res.status(400).end(); } }
   const events = Array.isArray(body?.events) ? body.events.slice(0, 50) : [];
+  // Events wait in the browser for up to a few seconds before being sent. With
+  // the batch's send time we store when each one happened on the server clock
+  // (so a wrong clock on the visitor's device doesn't matter).
+  const sentAt = Number.isFinite(body?.sent_at) ? body.sent_at : null;
   const rows = [];
   for (const e of events) {
     if (!e || !EVENT_NAMES.has(e.event) || !experiments.isValidAnonId(e.anon_id)) continue;
@@ -304,7 +308,10 @@ app.post('/api/events', express.text({ type: '*/*', limit: '64kb' }), (req, res)
     const propsStr = JSON.stringify(props);
     if (propsStr.length > 2000) continue;
     rows.push({
-      client_ts: Number.isFinite(e.client_ts) ? Math.round(e.client_ts) : null,
+      client_ts: !Number.isFinite(e.client_ts) ? null
+        : sentAt !== null && sentAt - e.client_ts >= 0 && sentAt - e.client_ts < 10 * 60 * 1000
+          ? Math.round(now - (sentAt - e.client_ts))
+          : Math.round(e.client_ts),
       anon_id: e.anon_id,
       game_session_id: typeof e.game_session_id === 'string' ? e.game_session_id.slice(0, 64) : null,
       event: e.event,

@@ -89,6 +89,9 @@ function summarizeVisit(evs, titles) {
 
   // The very last button or link they clicked, and on which part of the site.
   const lastUi = [...evs].reverse().find(e => e.event === 'ui_click' && e.props.label);
+  // How long they stayed after that click: until the last time they left the
+  // page (closed it, switched away or locked the phone), if the browser told us.
+  const lastLeave = evs[evs.length - 1].event === 'page_hidden' ? evs[evs.length - 1] : null;
 
   return {
     start: new Date(evs[0].t).toISOString(),
@@ -96,6 +99,8 @@ function summarizeVisit(evs, titles) {
     landing,
     clicks,
     firstClick: clicks[0] || null,
+    stayedAfterLastClick: lastUi && lastLeave && lastLeave.t >= lastUi.t ? Math.round((lastLeave.t - lastUi.t) / 1000) : null,
+    leftTracked: !!lastLeave,
     lastClick: lastUi ? `${lastUi.props.label} (${sectionFor(lastUi.props.path)})` : (clicks[clicks.length - 1] || null),
     questions: [...questions.values()].map(q => ({ ...q, title: titles[q.id] || q.id })),
     battles: [...battles.values()],
@@ -117,16 +122,28 @@ function battleCounts(battles) {
   return c;
 }
 
+// Events reach the server in batches, up to a few seconds after they happen.
+// client_ts is when the event happened (moved onto the server clock when the
+// batch arrives); use it unless it's implausibly far from the receive time.
+function timeEvents(evs) {
+  for (const e of evs) {
+    const lag = e.received - e.client_ts;
+    e.t = Number.isFinite(e.client_ts) && lag >= -5000 && lag < 10 * 60 * 1000 ? e.client_ts : e.received;
+  }
+  evs.sort((a, b) => a.t - b.t);
+}
+
 // events: [{ anon_id, received_at, event, question_id, props }] sorted by anon_id, received_at.
 function buildVisitors(events, titles, now = Date.now()) {
   const byVisitor = new Map();
   for (const e of events) {
     if (!byVisitor.has(e.anon_id)) byVisitor.set(e.anon_id, []);
-    byVisitor.get(e.anon_id).push({ ...e, t: Date.parse(e.received_at), props: parseProps(e.props) });
+    byVisitor.get(e.anon_id).push({ ...e, received: Date.parse(e.received_at), props: parseProps(e.props) });
   }
 
   const visitors = [];
   for (const [anonId, evs] of byVisitor) {
+    timeEvents(evs);
     const raw = splitVisits(evs);
     const visits = raw.map((v, i) => {
       const start = v[0].t;

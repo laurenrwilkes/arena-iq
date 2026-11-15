@@ -86,7 +86,7 @@
       </tr></thead>
       <tbody id="visits"></tbody>
     </table></div>
-    <p class="muted"><span class="mark correct">✓</span>answered correctly · <span class="mark wrong">✗</span>answered wrong · <span class="mark viewed">·</span>viewed only · <span class="tag" style="margin-left:0">battle</span> asked in a battle (otherwise on the practice page) · "No result" means the battle never reported an end (still playing, or the browser closed without telling us)</p>
+    <p class="muted"><span class="mark correct">✓</span>answered correctly · <span class="mark wrong">✗</span>answered wrong · <span class="mark viewed">·</span>viewed only · <span class="tag" style="margin-left:0">battle</span> asked in a battle (otherwise on the practice page) · "at least" before a session length means the browser didn't tell us when they left (common on phones, and for visits before this was tracked), so it ends at their last action · "No result" means the battle never reported an end (still playing, or the browser closed without telling us)</p>
   </section>
 </main>
 <script>
@@ -152,11 +152,11 @@ function renderDetail(id) {
     `${v.visitCount} visit${v.visitCount === 1 ? '' : 's'} · avg session ${avgLen(v.visits)} · ${v.hasAccount ? 'has an account' : 'no account'} · used ${[v.usedQuestions && 'questions', v.usedBattle && 'battle'].filter(Boolean).join(' and ') || 'neither questions nor battle'} · first seen ${fmtTime(v.firstVisit)}`;
   document.getElementById('visits').innerHTML = v.visits.map(s => `<tr>
     <td><b>#${s.number}</b><br><span class="muted">${fmtTime(s.start)}</span></td>
-    <td>${fmtLen(s.seconds)}</td>
+    <td>${s.leftTracked ? '' : '<span class="muted" title="The browser didn\'t say when they left, so this ends at their last action.">at least </span>'}${fmtLen(s.seconds)}</td>
     <td>${s.landing ? esc(s.landing) : none}</td>
     <td>${s.firstClick ? esc(s.firstClick) : none}</td>
     <td>${s.clicks.length ? esc(s.clicks.join(', ')) : none}</td>
-    <td>${s.lastClick ? esc(s.lastClick) : none}</td>
+    <td>${s.lastClick ? esc(s.lastClick) : none}${s.stayedAfterLastClick != null ? `<br><span class="muted">then stayed ${fmtLen(s.stayedAfterLastClick)}</span>` : ''}</td>
     <td>${s.questions.length ? `<ul class="qs">${s.questions.map(q => `<li><span class="mark ${q.status}">${MARK[q.status]}</span>${esc(q.title)}${q.source === 'battle' ? '<span class="tag">battle</span>' : ''}</li>`).join('')}</ul>` : none}</td>
     <td>${s.battles && s.battles.length ? `<ul class="qs">${s.battles.map(battleLine).join('')}</ul>` : none}</td>
     <td>${s.madeAccount ? '<span class="yes">Yes</span>' : 'No'}</td>

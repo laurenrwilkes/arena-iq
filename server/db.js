@@ -145,7 +145,7 @@ const insertGameEvent = db.prepare(`
 const insertGameEvents = db.transaction(rows => { for (const r of rows) insertGameEvent.run(r); });
 // All events of each visitor active on or after the cutoff (admin Visitors page).
 const getVisitorEvents = db.prepare(`
-  SELECT e.anon_id, e.received_at, e.event, e.question_id, e.game_session_id, e.props
+  SELECT e.anon_id, e.received_at, e.client_ts, e.event, e.question_id, e.game_session_id, e.props
   FROM game_events e
   JOIN (SELECT anon_id, MAX(received_at) AS last_at FROM game_events GROUP BY anon_id) l ON l.anon_id = e.anon_id
   WHERE l.last_at >= ?

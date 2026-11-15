@@ -59,7 +59,7 @@
   function flush(useBeacon) {
     if (!queue.length) return;
     const batch = queue.splice(0, MAX_QUEUE);
-    const body = JSON.stringify({ events: batch });
+    const body = JSON.stringify({ events: batch, sent_at: Date.now() });
     try {
       if (useBeacon && navigator.sendBeacon) {
         navigator.sendBeacon('/api/events', new Blob([body], { type: 'text/plain' }));
@@ -176,13 +176,26 @@
     track('experiment_exposure', { experiment_id: experimentId, variant });
   }
 
+  // Server-only: when the visitor leaves (closes the tab, switches away, locks
+  // the phone), so the Visitors page knows how long they stayed after their last
+  // action. Sent once per time the page goes out of view.
+  let leaveSent = false;
+  function logLeave() {
+    if (leaveSent) return;
+    leaveSent = true;
+    track('page_hidden', { path: location.pathname }, { ga: false });
+  }
   window.addEventListener('pagehide', () => {
     endWait('left');
     abandonGame('page_exit');
     postGameAction('leave');
+    logLeave();
     flush(true);
   });
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(true); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { logLeave(); flush(true); }
+    else leaveSent = false;
+  });
 
   // Client errors feed the experiment error-rate guardrail (server only, capped).
   let errorsSent = 0;
