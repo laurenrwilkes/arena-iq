@@ -112,6 +112,54 @@ function summarizeVisit(evs, titles) {
   };
 }
 
+// Buttons inside the log in / sign up form (for clicks logged before they
+// were flagged with in_auth_form).
+const AUTH_FORM_LABELS = new Set(['Log In', 'Sign Up', 'Create Free Account →', 'Sign up free', 'Log in', 'Close', 'Forgot password?', '← Back to log in']);
+
+// The click that led to signing up: the last one before they were inside the
+// sign-up form (whose own buttons, like "Create Free Account", always come last).
+function markPrompt(clicks) {
+  for (let i = clicks.length - 1; i >= 0; i--) {
+    if (!clicks[i].inForm) { clicks[i].prompt = true; break; }
+  }
+  return clicks;
+}
+
+// What happened before each account sign-up: time on the site, where they
+// went, what they clicked (the last one is what they clicked right before
+// signing up), and the questions and battles they did first.
+function summarizeSignups(rawVisits, titles) {
+  const out = [];
+  let earlierSeconds = 0, earlierQuestions = 0, earlierBattles = 0;
+  rawVisits.forEach((visit, i) => {
+    for (const s of visit.filter(e => e.event === 'account_created')) {
+      const before = visit.filter(e => e.t <= s.t && e !== s);
+      const summary = before.length ? summarizeVisit(before, titles) : null;
+      const thisVisit = Math.round((s.t - visit[0].t) / 1000);
+      out.push({
+        at: new Date(s.t).toISOString(),
+        visitNumber: i + 1,
+        secondsThisVisit: thisVisit,
+        secondsAllVisits: earlierSeconds + thisVisit,
+        landing: summary ? summary.landing : null,
+        sections: summary ? summary.clicks : [],
+        clicks: markPrompt(before.filter(e => e.event === 'ui_click' && e.props.label).map(e => ({
+          label: e.props.label, section: sectionFor(e.props.path), secondsBefore: Math.round((s.t - e.t) / 1000),
+          inForm: !!e.props.in_auth_form || AUTH_FORM_LABELS.has(e.props.label),
+        }))),
+        questions: summary ? summary.questions : [],
+        battles: summary ? summary.battles : [],
+        earlierQuestions, earlierBattles,
+      });
+    }
+    const v = summarizeVisit(visit, titles);
+    earlierSeconds += v.seconds;
+    earlierQuestions += v.questions.length;
+    earlierBattles += v.battles.length;
+  });
+  return out;
+}
+
 function battleCounts(battles) {
   const c = { started: battles.length, finished: 0, won: 0, quit: 0 };
   for (const b of battles) {
@@ -156,6 +204,7 @@ function buildVisitors(events, titles, now = Date.now()) {
       };
     });
     const last = visits[visits.length - 1];
+    const signups = summarizeSignups(raw, titles);
     visitors.push({
       visitor: anonId,
       visitCount: visits.length,
@@ -167,6 +216,7 @@ function buildVisitors(events, titles, now = Date.now()) {
       battles: battleCounts(visits.flatMap(v => v.battles)),
       questionSessions: visits.filter(v => v.usedQuestions).length,
       battleSessions: visits.filter(v => v.usedBattle).length,
+      signups,
       visits: visits.reverse(),          // newest first
     });
   }

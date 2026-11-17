@@ -308,6 +308,8 @@
     const label = clickLabel(el);
     if (!label || (label === lastClick.label && Date.now() - lastClick.at < 1000)) return;
     lastClick = { label, at: Date.now() };
-    track('ui_click', { label, path: location.pathname }, { ga: false });
+    const props = { label, path: location.pathname };
+    if (el.closest('#auth-modal')) props.in_auth_form = true;   // clicks inside the log in / sign up form
+    track('ui_click', props, { ga: false });
   }, true);
 })();

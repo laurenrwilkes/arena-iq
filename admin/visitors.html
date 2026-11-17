@@ -24,6 +24,11 @@
   .wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
   table { border-collapse: collapse; width: 100%; }
   #visits-table { min-width: 1150px; }
+  #signups-table { min-width: 1150px; }
+  ol.clicks { margin: 0; padding-left: 1.3em; }
+  ol.clicks li { padding: 1px 0; }
+  ol.clicks li.final { font-weight: 700; }
+  ol.clicks li.in-form { color: var(--t3); }
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--t2); background: var(--card); }
   #users tr { cursor: pointer; }
@@ -47,6 +52,10 @@
     <input type="password" id="key" placeholder="Admin key" autocomplete="current-password" aria-label="Admin key" />
     <select id="days" aria-label="Active within">
       <option value="7">Active in last 7 days</option><option value="30" selected>Active in last 30 days</option><option value="90">Active in last 90 days</option><option value="180">Active in last 180 days</option>
+    </select>
+    <select id="view" aria-label="View">
+      <option value="visitors">Visitors</option>
+      <option value="signups">Sign-ups</option>
     </select>
     <button type="submit">Load</button>
     <span id="status" class="muted"></span>
@@ -75,8 +84,24 @@
     </table></div>
   </section>
 
+  <section id="signups-view" hidden>
+    <h1>Sign-ups</h1>
+    <p class="muted">Every account created by a visitor who allowed analytics, newest first, with what they did before signing up.
+      Time and clicks are from the visit they signed up on; "all visits" adds the time from their earlier visits.</p>
+    <div class="stats" id="signup-stats"></div>
+    <div class="wrap"><table id="signups-table">
+      <thead><tr>
+        <th>Signed up</th><th>Visitor</th><th>Time on site before</th><th>Landed on</th><th>Went to</th>
+        <th>Questions before</th><th>Battles before</th><th>Clicks before signing up</th>
+      </tr></thead>
+      <tbody id="signups"></tbody>
+    </table></div>
+    <p class="muted">Clicks are in order, with how long before signing up each happened. The bold one is what they clicked right before opening the sign-up form; grey ones are clicks inside the form itself.
+      Clicks are only recorded from Nov 15 on, so older sign-ups show none.</p>
+  </section>
+
   <section id="detail-view" hidden>
-    <p><button class="link" type="button" onclick="history.back()">← All visitors</button></p>
+    <p><button class="link" type="button" onclick="history.back()">← Back</button></p>
     <h1 id="detail-title"></h1>
     <p class="muted" id="detail-sub"></p>
     <div class="wrap"><table id="visits-table">
@@ -164,17 +189,53 @@ function renderDetail(id) {
   </tr>`).join('');
 }
 
+function renderSignups() {
+  const rows = visitors.flatMap(v => (v.signups || []).map(s => ({ ...s, visitor: v.visitor })))
+    .sort((a, b) => b.at.localeCompare(a.at));
+  const median = xs => { if (!xs.length) return null; const s = [...xs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2); };
+  const lastClicks = rows.map(r => (r.clicks.find(c => c.prompt) || {}).label).filter(Boolean);
+  const counts = {}; lastClicks.forEach(l => { counts[l] = (counts[l] || 0) + 1; });
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  const med = median(rows.map(r => r.secondsThisVisit));
+  document.getElementById('signup-stats').innerHTML = [
+    ['Sign-ups', rows.length],
+    ['Median time on site before', med == null ? '—' : fmtLen(med)],
+    ['Signed up on first visit', rows.length ? `${Math.round(100 * rows.filter(r => r.visitNumber === 1).length / rows.length)}%` : '—'],
+    ['Most common click right before', top ? `<span style="font-size:1rem">${esc(top[0])}</span><span class="muted" style="font-size:.75rem"> (${top[1]})</span>` : '—'],
+  ].map(([label, v]) => `<div class="stat"><span class="muted">${label}</span><b>${v}</b></div>`).join('');
+  const qList = qs => qs.length ? `<ul class="qs">${qs.map(q => `<li><span class="mark ${q.status}">${MARK[q.status]}</span>${esc(q.title)}${q.source === 'battle' ? '<span class="tag">battle</span>' : ''}</li>`).join('')}</ul>` : '';
+  const earlier = (n, what) => n ? `<div class="q-sub">+ ${n} ${what} on earlier visits</div>` : '';
+  document.getElementById('signups').innerHTML = rows.length ? rows.map(r => `<tr>
+    <td>${fmtTime(r.at)}<br><span class="muted">visit #${r.visitNumber}</span></td>
+    <td><a class="id" href="#v=${encodeURIComponent(r.visitor)}" style="color:var(--accent)">${esc(shortId(r.visitor))}</a></td>
+    <td>${fmtLen(r.secondsThisVisit)}${r.visitNumber > 1 ? `<br><span class="muted">${fmtLen(r.secondsAllVisits)} all visits</span>` : ''}</td>
+    <td>${r.landing ? esc(r.landing) : none}</td>
+    <td>${r.sections.length ? esc(r.sections.join(', ')) : none}</td>
+    <td>${qList(r.questions) || (r.earlierQuestions ? '' : none)}${earlier(r.earlierQuestions, 'questions')}</td>
+    <td>${r.battles.length ? `<ul class="qs">${r.battles.map(battleLine).join('')}</ul>` : (r.earlierBattles ? '' : none)}${earlier(r.earlierBattles, 'battles')}</td>
+    <td>${r.clicks.length ? `<ol class="clicks">${r.clicks.map(c => `<li class="${c.prompt ? 'final' : c.inForm ? 'in-form' : ''}">${esc(c.label)} <span class="q-sub">(${esc(c.section)}, ${fmtLen(c.secondsBefore)} before)</span>${c.prompt ? ' <span class="tag">right before signing up</span>' : ''}</li>`).join('')}</ol>` : none}</td>
+  </tr>`).join('') : `<tr><td colspan="8" class="none">No sign-ups from visitors active in this period.</td></tr>`;
+}
+
 function showView(which, id) {
   document.getElementById('list-view').hidden = which !== 'list';
   document.getElementById('detail-view').hidden = which !== 'detail';
+  document.getElementById('signups-view').hidden = which !== 'signups';
   if (which === 'detail') renderDetail(id);
+  if (which === 'signups') renderSignups();
+  document.getElementById('view').value = which === 'signups' ? 'signups' : 'visitors';
   window.scrollTo(0, 0);
 }
 
 function route() {
-  const id = new URLSearchParams(location.hash.slice(1)).get('v');
-  showView(id ? 'detail' : 'list', id);
+  const params = new URLSearchParams(location.hash.slice(1));
+  const id = params.get('v');
+  showView(id ? 'detail' : params.has('signups') ? 'signups' : 'list', id);
 }
+document.getElementById('view').addEventListener('change', e => {
+  location.hash = e.target.value === 'signups' ? 'signups' : '';
+  if (e.target.value !== 'signups') route();
+});
 window.addEventListener('hashchange', route);
 document.getElementById('used').addEventListener('change', () => { if (visitors.length) renderList(); });
 
