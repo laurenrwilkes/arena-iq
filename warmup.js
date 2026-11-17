@@ -1,9 +1,9 @@
-// Daily warm-up: five quick mental math questions shown once per day on the
+// Daily warm-up: one quick mental math question shown once per day on the
 // homepage, from a visitor's second visit on. Finishing it counts toward the
 // practice streak (via recordWarmupDay in index.html). Every path out of the
 // modal (X, overlay click, Escape, Skip, Start practicing) hides it until tomorrow.
 const WARMUP_SEEN_KEY = 'qb_warmup_last_shown';
-const WARMUP_LENGTH = 5;
+const WARMUP_LENGTH = 1;
 
 function wuTodayKey() {
   const d = new Date();
@@ -70,7 +70,7 @@ function wuRenderQuestion() {
   const q = WU.questions[WU.index];
   const dots = WU.questions.map((_, i) => `<span class="wu-dot${i < WU.index ? ' done' : i === WU.index ? ' now' : ''}"></span>`).join('');
   document.getElementById('wu-body').innerHTML = `
-    <div class="wu-dots" aria-label="Question ${WU.index + 1} of ${WU.questions.length}">${dots}</div>
+    ${WU.questions.length > 1 ? `<div class="wu-dots" aria-label="Question ${WU.index + 1} of ${WU.questions.length}">${dots}</div>` : ''}
     <div class="wu-question">${q.text} = ?</div>
     <form class="wu-form" onsubmit="event.preventDefault(); wuSubmit()">
       <input id="wu-input" class="wu-input" type="text" inputmode="numeric" enterkeyhint="go" autocomplete="off" aria-label="Your answer" />
@@ -105,7 +105,7 @@ function wuFinish() {
   trackEvent('warmup_completed', { correct: WU.correct, seconds: secs, streak });
   const prompt = typeof streakPromptHtml === 'function' ? streakPromptHtml() : '';
   document.getElementById('wu-body').innerHTML = `
-    <div class="wu-result">${WU.correct}/${WU.questions.length}</div>
+    <div class="wu-result" style="${WU.questions.length > 1 ? '' : `font-size:2rem;${WU.correct ? '' : 'color:var(--red)'}`}">${WU.questions.length > 1 ? `${WU.correct}/${WU.questions.length}` : WU.correct ? 'Correct ✓' : `Answer: ${WU.questions[0].answer}`}</div>
     <p class="wu-sub" style="text-align:center">in ${secs}s${streak ? ` · 🔥 ${streak}-day streak` : ''}</p>
     ${prompt}
     <button class="btn ${prompt ? 'btn-outline' : 'btn-primary'}" style="width:100%;justify-content:center;margin-top:12px" onclick="closeWarmup()">Start practicing →</button>`;
@@ -122,7 +122,7 @@ function showWarmup() {
       <div class="wu-box">
         <button class="wu-close" id="wu-close-btn" aria-label="Close">&times;</button>
         <h2 id="wu-title">⚡ Daily warm-up</h2>
-        <p class="wu-sub">Five quick mental math questions. Finish to keep your streak going.</p>
+        <p class="wu-sub">One quick mental math question. Answer it to keep your streak going.</p>
         <div id="wu-body"></div>
       </div>
     </div>`;
